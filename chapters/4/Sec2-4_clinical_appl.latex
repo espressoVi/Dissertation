@@ -1,0 +1,149 @@
+The preceding discussion highlights that a collection of metrics is insufficient
+for making deployment decisions, underscoring the necessity for a single metric 
+with pertinent attributes to effectively compare different computational models.
+In the following discussion, we will see that the metrics borrowed from \ac{ML}
+do not adequately address clinical needs. Our benchmark for assessing the
+clinical relevance of these metrics will be based on the criteria outlined in
+Section \ref{sec:diagconst}. Specifically, we will evaluate whether a wrong
+diagnosis (WD) is penalized more heavily than a missed diagnosis (MD), which in
+turn faces a greater penalty than over-diagnosis (OD), with the perfect 
+diagnosis (PD) receiving the highest scores, i.e.,
+\begin{equation}
+	\tag{Clinical~Order}
+	\text{score}_{WD} < \text{score}_{MD} < \text{score}_{OD} < \text{score}_{PD} 
+	\label{eq:order}
+\end{equation}
+
+\subsubsection{Label-based metrics}
+\label{sec:labelbased}
+
+It is commonly agreed that example-based metrics are more appropriate for 
+evaluating \ac{MLC} tasks \cite{manyMetricsBetter}. Nevertheless, for a 
+comprehensive analysis, we will also examine some widely used label-based 
+metrics.
+
+In the subsequent discussion, we shall consider four hypothetical classifiers 
+and their corresponding output sets $\mathcal{P}_O, \mathcal{P}_M, 
+\mathcal{P}_W$, and $\mathcal{P}$, which only have over, missed, wrong, and 
+perfect diagnoses, respectively (e.g., in $\mathcal{P}_O$ we have $y_i 
+\subsetneq \hat{z}_i, \forall (\hat{z}_i, y_i) \in \mathcal{P}_O$).
+
+$\blacklozenge$ \textbf{Macro precision, macro recall, and macro $\mathbf{F_1}$}--macro 
+precision and macro recall cannot be used in isolation, as we are free to change
+one at the expense of the other. However, Macro $F_1$, which is a macro-average
+of the harmonic means of precision and recall, is a serviceable metric. Macro
+$F_1$ is defined as:
+\begin{align*}
+    MacroF_1(\mathcal{P}) &= \frac{1}{P} \sum_{j=1}^{P} F_{1(j)}(\mathcal{P}), \text{ where, }\\
+    F_{1(j)}(\mathcal{P}) &= \frac{2\cdot p_j(\mathcal{P}) \cdot r_j(\mathcal{P})}{p_j(\mathcal{P})+r_j(\mathcal{P})}
+\end{align*}
+Where $p_j, r_j$ is precision and recall for the $j^{th}$ class respectively.
+Consider the case where $r_j(\mathcal{P}_M) \geq p_j(\mathcal{P}_O)$ (note,
+$p_j(\mathcal{P}_M) = r_j(\mathcal{P}_O) = 1$). Then we have,
+\begin{align*}
+    \frac{2\cdot r_j(\mathcal{P}_M)}{ 1 + r_j(\mathcal{P}_M)} & \geq \frac{2\cdot p_j(\mathcal{P}_O)}{1+p_j(\mathcal{P}_O)}\\
+    \frac{2\cdot p_j(\mathcal{P}_M)\cdot r_j(\mathcal{P}_M)}{ p_j(\mathcal{P}_M) + r_j(\mathcal{P}_M)} & \geq \frac{2\cdot p_j(\mathcal{P}_O) \cdot r_j(\mathcal{P}_O)}{p_j(\mathcal{P}_O) + r_j(\mathcal{P}_O)}\\
+    F_{1(j)}(\mathcal{P}_M) &\geq F_{1(j)}(\mathcal{P}_O)
+\end{align*}
+If this holds for all $j$, we have the exact opposite inequality as desired, and
+even if it is only true for some $j$, no guarantees can be made that a system
+that always misses diagnoses is worse than one that always over-diagnoses.
+
+$\blacklozenge$ \textbf{Micro precision, micro recall, and micro 
+$\mathbf{F_1}$}--similar to their macro counterparts, micro precision and recall
+cannot be used in isolation, but micro $F_1$ can be used independently to
+evaluate the quality of a computational diagnostic system. It is defined as:
+\begin{align*}
+    MicroF_1(\mathcal{P}) &= \frac{2\cdot\text{micro-precision}\cdot\text{micro-recall}}{\text{micro-precision}+\text{micro-recall}} \quad\text{ , where,}\\
+    MicroPrecision(\mathcal{P}) &= \frac{\sum_{j=1}^{P} tp_j}{\sum_{j=1}^{P} tp_j + \sum_{j=1}^{P} fp_j} \quad\text{, and}\\
+    MicroRecall(\mathcal{P}) &= \frac{\sum_{j=1}^{P} tp_j}{\sum_{j=1}^{P} tp_j + \sum_{j=1}^{P} fn_j}
+\end{align*}
+We know $fp_j = 0$ in $\mathcal{P}_M$ and $fn_j = 0$ in $\mathcal{P}_O$. So,
+\begin{align*}
+    & MicroPrecision(\mathcal{P}_M) = 1\\
+    &\Rightarrow MicroF_1(\mathcal{P}_M) = \frac{2\cdot MicroRecall(\mathcal{P}_M)}{1 + MicroRecall(\mathcal{P}_M)},\text{ and, similarly,}\\
+    & MicroRecall(\mathcal{P}_O) = 1\\
+    & \Rightarrow MicroF_1(\mathcal{P}_O) = \frac{2\cdot MicroPrecision(\mathcal{P}_O)}{1 + MicroPrecision(\mathcal{P}_O)}
+\end{align*}
+So we have $MicroF_1(\mathcal{P}_M) \geq MicroF_1(\mathcal{P}_O)$ whenever, 
+$MicroRecall(\mathcal{P}_M) \geq  MicroPrecision(\mathcal{P}_O)$. This means if
+two diagnostic systems have the same number of true positives and one has a
+higher number of false positives than the other has false negatives, then
+$MicroF_1(\mathcal{P}_M) \geq MicroF_1(\mathcal{P}_O)$. This is the opposite of
+the desired ordering in clinical practice, as false negatives are generally more
+deleterious. 
+
+\subsubsection{Example-based metrics}
+
+In the ensuing discussion, we consider predictions $m_i$, $o_i$, and $w_i$,
+which are missed, over, and wrong diagnoses, respectively, for the ground truth
+label $y_i$, and check if \ref{eq:order} holds. (Note: $m_i \subsetneq y_i, y_i 
+\subsetneq o_i$, and $y_i \cap w_i = \phi$).
+
+$\blacklozenge$ \textbf{Hamming Loss} is defined as 
+\begin{equation*}
+    hloss(\mathcal{P}) = \frac{1}{N} \sum_{i = 1}^{N} \frac{1}{P} |\hat{z}_i \Delta y_i|
+\end{equation*}
+So, from the definition, we have:
+\begin{equation*}
+    hloss(\{(m_i,y_i)\}) = hloss(\{(o_i,y_i)\}) \text{ whenever } |y_i - m_i| = |o_i - y_i|
+\end{equation*}
+So, missing $k$ diagnoses is penalized just as harshly as producing $k$ 
+over-diagnoses. Since classifiers are tuned to target certain metrics, it must
+be noted that Hamming loss is usually not optimal for sensitive systems \cite{manyMetricsBetter}.
+
+$\blacklozenge$ \textbf{Accuracy} is widely known to be an unreliable measure in
+a clinical context, where imbalanced datasets are the norm \cite{spBad}. It is
+defined as
+\begin{align*}
+    accuracy(\mathcal{P}) &= \frac{1}{N} \sum_{i = 1}^{N} \frac{|\hat{z}_i \cap y_i|}{|\hat{z}_i \cup y_i|}, 
+    \text{so, if we have }
+    |m_i|\cdot |o_i| \geq |y_i|^2  \\
+    & \Rightarrow accuracy(\{(m_i, y_i)\}) \geq accuracy(\{o_i, y_i\})
+\end{align*}
+Thus, \ref{eq:order} doesn't hold in general. As an example, consider $|y_i| = k
+\geq 2, |m_i| = k-1, |o_i| = k+2$, then $accuracy(\{(m_i, y_i)\}) =
+\frac{k-1}{k} \geq \frac{k}{k+2} = accuracy(\{(o_i, y_i)\})$.
+
+$\blacklozenge$ \textbf{Subset accuracy} is the strictest metric and is defined
+as 
+\begin{align*}
+    SAccuracy(\mathcal{P}) &= \frac{1}{N} \sum_{i = 1}^{N} I (\hat{z}_i = y_i), \text{ so, we have,}\\
+    SAccuracy(\{(m_i,y_i)\}) &= SAccuracy(\{(w_i,y_i)\}) \\
+    &= SAccuracy(\{(o_i,y_i)\}) = 0 
+\end{align*}
+which violates \ref{eq:order}.
+
+$\blacklozenge$ \textbf{$\mathbf{F_1}$ score} is defined as
+\begin{equation*}
+    F_1(\mathcal{P}) = \frac{1}{N} \sum_{i = 1}^{N} \frac{2\times|\hat{z}_i \cap y_i|}{|\hat{z}_i| + |y_i|}
+\end{equation*}
+Suppose $|y_i| = k, |m_i| = k-1$ (one diagnosis missed), and $|o_i| = k+r$ ($r$
+extra predictions). We have:
+\begin{equation*}
+    F_1(\{(m_i, y_i)\}) \geq F_1(\{(o_i, y_i)\}) \text{ whenever } r \geq \Big\lceil \frac{k}{k-1} \Big\rceil 
+\end{equation*}
+So, \ref{eq:order} doesn't hold in general. As in the case of label-based
+metrics, example based precision and recall aren't meaningful in isolation and
+aren't discussed here.
+
+$\blacklozenge$ \textbf{PhysioNet 2020/21 Challenge Metric} is defined in
+Equations \ref{eq:cm2} and \ref{eq:cm1}. Since $w_{jk}$ is integral to the
+metric, it is limited for use on the PhysioNet 2020/21 Dataset. Without the
+weight matrix (i.e., $w = I_{n\times n}$) this is the same as accuracy and 
+inherits all its problems. Even on the PhysioNet 2020/21 dataset, it does not
+guarantee satisfaction of the inequality (\ref{eq:order}). Of note are the
+issues introduced by their normalization scheme (as defined in \ref{eq:cm1}).
+Consider the scenario where the ground truth label contains 
+$y_i = \{ NSR, a_j, a_k \}$ (NSR is the normal class), and we predict
+$\hat{z}_1 = \{ NSR \}$, and $\hat{z}_{2} = \{a_j\}$. We have:
+\begin{align*}
+    t(y,\hat{z}_1) = t(y, \hat{z}_{\{NSR\}}) &= \frac{1 + w_{j, NSR} + w_{k, NSR}}{3}\\
+    t(y,\hat{z}_2) &= \frac{1 + w_{NSR, j} + w_{k, j}}{3}\\
+    CM(y,\hat{z}_1) &= 0\\
+    CM(y,\hat{z}_2) &= \frac{1 + w_{NSR, j} + w_{k, j} - 1 - w_{j, NSR} - w_{k, NSR}}{3(t(y,y) - t(y,\hat{z}_1))}\\
+    CM(y,\hat{z}_2) &= \frac{w_{k, j} - w_{k, NSR}}{3(t(y,y) - t(y,\hat{z}_1))}\\
+    \Rightarrow CM(y,\hat{z}_2) &< 0 \text{, for some choice of } a_j \:(\text{ As } w_{jk} \text{ is symmetric.})
+\end{align*}
+Therefore, this metric discourages detection of cardiovascular conditions, in
+favor of detecting the normal class, which is contrary to clinical expectations.

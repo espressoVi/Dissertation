@@ -1,0 +1,224 @@
+Successfully solving crosswords demands a high level of mastery in interpreting 
+contextual clues, semantics, wordplay, character manipulation, world knowledge,
+arithmetics, and reasoning (see Figure \ref{fig:crosswordFig}). Additionally, 
+it requires adhering to constraints such as length restrictions and character 
+overlaps. For wider proliferation of \acp{LLM}, it is essential for them to 
+exhibit the ability to comply with constraints that may arise from knowledge 
+graphs, formal languages, tabular data, or other domain-specific demands. Hence, 
+examining crossword solving can improve the adaptability of LLMs to relatively 
+less explored domains where constraints coexist with linguistic challenges. 
+Given that crossword solving encompasses several desirable competencies, and 
+identifying areas for improvement could benefit other linguistic applications, 
+the aim of this chapter is to evaluate the abilities of LLMs in tackling this 
+multifaceted task.
+
+\begin{figure}[!ht]
+	\centering
+    \begin{subfigure}[t]{0.49\textwidth}
+        \footnotesize{
+        \begin{tcolorbox}[colback=boxcol,colframe=black]
+\texttt{\bf{Clue}: Laser-focused mindset (12)\\
+\bf{Answer}: TUNNELVISION}
+        \end{tcolorbox}}
+    \caption{\texttt{`TUNNELVISION'} is a synonym for `Laser-focused mindset'}
+    \end{subfigure}
+	\hfill
+    \begin{subfigure}[t]{0.49\textwidth}
+        \footnotesize{
+        \begin{tcolorbox}[colback=boxcol,colframe=black]
+\texttt{\bf{Clue}: Vegas nickname (7)\\
+\bf{Answer}: SINCITY}
+        \end{tcolorbox}}
+    \caption{`Vegas', a shorthand for Las Vegas, Nevada, is also known as `Sin
+        City'.}
+    \end{subfigure}
+    \caption{
+        \textbf{Examples of straight crossword clues with explanations.}\\
+        Examples are taken from \href{https://www.xwordinfo.com}{xwordinfo.com}.
+    }
+\label{fig:straighteg}
+\end{figure}
+
+Two kinds of crosswords are studied in this chapter: the first is the American 
+style, or \emph{straight} crossword, which typically features denser grids with 
+relatively straightforward clues, and solutions typically involve synonyms or 
+world knowledge (see Figure \ref{fig:straighteg} for examples). The other form
+of crossword studied is the UK style, or \emph{cryptic} crossword. These have
+sparser grids but feature more formidable clues involving anagrams, homophones,
+world knowledge, puns, string manipulation, and a variety of domain-specific
+tactics. An example \emph{cryptic} clue and solution is outlined in Figure
+\ref{fig:crypticeg} and further examples can be found in Figure
+\ref{fig:crosswordFig}.
+
+\begin{figure}[!ht]
+	\centering
+    \footnotesize{
+    \begin{tcolorbox}[colback=boxcol,colframe=black]
+\texttt{\bf{Clue}: Culminating point of story about Judy's husband by the railway track (5,4)\\
+\bf{Answer}: PUNCH LINE}
+    \end{tcolorbox}}
+    \caption{
+        \textbf{Example of cryptic crossword clue with explanation.}\\
+        Answering this clue requires connecting ``Judy'' to the popular puppet
+        show \emph{Punch and Judy}, and inferring that \texttt{``Judy's
+        husband''} refers to ``Punch''. Additionally, we must observe that
+        ``railway track'' is synonymous with ``line'', and combining these gives
+        \texttt{``PUNCH LINE''} which also means ``Culminating point of story''.
+        Example is taken from \href{https://lovattspuzzles.com}{lovattspuzzles.com}.
+    }
+\label{fig:crypticeg}
+\end{figure}
+
+Traditional methodologies for solving \emph{straight} crossword puzzles comprise 
+two primary elements: a candidate answer proposal system and a grid-filling 
+algorithm \cite{webcrow, drfill}. The candidate answer proposal systems often
+employ similarity-based search on massive clue-answer databases, fine-tuned
+\acp{LM}, or a combination of both \cite{proverb1, arsehole}. Grid-filling, on 
+the other hand, utilizes versions of constraint satisfaction problem (CSP) 
+algorithms. An example is the system \emph{Proverb} \cite{proverb}, which 
+achieves a 98.1\% letter accuracy on New York Times (NYT) crosswords. 
+\citet{arsehole} fine-tuned BERT and ByT5 on a dataset of 6.4 million 
+clue-answer pairs and, using a belief propagation algorithm, reached a 99.7\% 
+letter accuracy. \citet{dacross} set benchmarks using foundational language 
+models, underscoring this task as ``\emph{... a new high bar for AI systems}''. 
+They attempted to solve NYT crossword puzzles using foundational \acp{LM} in
+conjunction with a Satisfiability Modulo Theory (SMT) solver, achieving limited
+success, and ultimately had to prune the crossword grid based on candidate
+generations and ground truth answers. Our focus in this work is to examine the
+capability of foundational \acp{LLM} at this task, rather than improving upon
+automated crossword-solving systems. 
+
+\emph{Cryptic} crosswords pose a greater challenge, and conventional algorithms 
+using large datasets of clues along with a CFG parser \cite{deits} have 
+performed poorly, achieving only 7\% accuracy \cite{llmcryptic}. Recent research 
+has explored leveraging \acp{LLM} to solve cryptic crossword clues. 
+\citet{cryptonite} compiled an extensive dataset of cryptic crossword clues from 
+UK newspapers such as \emph{The Times} and \emph{The Telegraph} and fine-tuned 
+a T5-Large \cite{t5} model to establish baseline performances. They utilized a 
+training split ensuring mutual exclusivity between the training and test sets 
+to prevent memorization. \citet{curriculum} gathered a dataset from \emph{The 
+Guardian} and fine-tuned a T5-Large model through curriculum learning, 
+demonstrating performance enhancements. They criticized \citet{cryptonite}'s 
+methodology, arguing that a disjoint train-test split does not sufficiently 
+teach models to solve cryptic crosswords, as models show “... robustness to 
+plural and other inflections.” Instead, they suggested grouping similar-root 
+words in a split and found that this more rigorous criterion led to decreased 
+performance. \citet{llmcryptic} analyze the performance of contemporary LLMs 
+like Mistral-7B \cite{mistral}, LLaMA2-7B \cite{llama2}, and ChatGPT \cite{chatgpt} 
+in few-shot settings, in addition to fine-tuning the Mistral model. They found 
+that ChatGPT outperformed other models, achieving an accuracy of 9.5\%. They 
+noted several limitations in their study, such as the restricted set of 
+\acp{LLM} used and the potential for data contamination.
+
+These recent studies on cryptic crossword solving with LLMs highlight a \emph{
+significant performance gap between LLMs and human experts}, who solve 99\% of 
+cryptic crossword clues \cite{llmcryptic}. However, these studies approach the 
+problem as a \ac{QA} task and \emph{neglect the constraints imposed by the grid}.
+Further investigation is needed to explore whether an appropriate method that 
+incorporates constraint information into LLMs can lead to substantial 
+performance improvements.
+
+\subsubsection{Datasets}
+
+Our analysis primarily utilizes three crossword puzzle datasets. The first two 
+datasets, \emph{Cryptonite}\footnote{\href{https://github.com/aviaefrat/cryptonite}{github.com/aviaefrat/cryptonite}} 
+by \citet{cryptonite} and \emph{word-init-disjoint}\footnote{
+    \href{https://github.com/jsrozner/decrypt}{github.com/jsrozner/decrypt}}
+(abbreviated as \emph{Init}) by \citet{curriculum}, pertain to \emph{cryptic} 
+crossword puzzles. The methodological differences between \emph{Cryptonite} and 
+\emph{Init}, as discussed in the preceding section, are not significant to our 
+work since we \emph{do not perform any training}. We randomly selected 2000 
+samples for reporting results, and in-context examples were also randomly drawn 
+from a substantial pool of samples that did not overlap with the testing set.
+
+\begin{table}[!ht]
+    \caption{\textbf{Details of various crossword datasets used.}\\
+    Results are primarily reported using the NYT \emph{(straight)}, Cryptonite, 
+    and Init \emph{(cryptic)} datasets. Further, some smaller datasets are used
+    to test for generalizability and reasoning. The NYT (Grids) dataset refers
+    to a dataset of 100 full crossword puzzles we collected and contains 7700 
+    clues alongside grid information like their position, orientation, etc.
+    }
+    \label{tab:dataset_details}
+    \begin{center}
+        \footnotesize{
+        \setlength\tabcolsep{1.5pc}
+        \begin{tabular}[c]{l l c r}
+            \toprule
+            \textbf{Dataset}    & \textbf{Train}    & \textbf{Validation}       & \textbf{Test}   \\
+            \midrule
+            Cryptonite          & 470,804           & 26,156                    & 26,157 \\
+            word-init-disjoint  & 75,847            & 32,628                    & 33,905 \\
+            \cline{2-3}
+            NYT (Clues)         & \multicolumn{2}{c}{10,000}                  & 2,000  \\
+            \cline{2-4}
+            NYT (Grids)         & \multicolumn{3}{r}{\emph{(test only)} 100 grids $\equiv$ 7700 clues} \\
+            \midrule
+            \multicolumn{4}{c}{After May 20, 2024 -- \emph{(post-cutoff)}}\\
+            \midrule
+            Lovatts             & \multicolumn{3}{r}{242}  \\
+            The Guardian        & \multicolumn{3}{r}{200}  \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+Finally, we collected a dataset from the \emph{New York Times}\footnote{
+    \href{https://www.nytimes.com/crosswords/}{nytimes.com/crosswords}} 
+for our analysis of \emph{straight} crossword puzzles. In addition to 12,000 
+randomly sampled clue-answer pairs split into two sets--\emph{test} (2000) and 
+\emph{support} (10,000)--we collected 100 randomly sampled Monday crossword 
+puzzles ranging from 20th January 1969 to 7th August 2023 with all clues (7700) 
+and grid information, which are used to report results for full grid solving. 
+All three sets are completely disjoint. Most of the results are presented on the 
+\emph{NYT} dataset for \emph{straight} crosswords and \emph{Init} for cryptic 
+crosswords, as it posed a greater challenge for LLMs compared to 
+\emph{Cryptonite}. 
+
+Some additional ``post-cutoff'' datasets,\footnote{
+\href{https://www.theguardian.com/crosswords/series/cryptic}{theguardian.com}, \href{https://lovattspuzzles.com/online-puzzles-competitions/daily-cryptic-crossword/}{lovattspuzzles.com}} 
+i.e., puzzles published after the training cut-off time of every \ac{LLM} 
+considered in this study, were collected for testing generalization performance 
+and analysis of reasoning abilities. Dataset statistics are summarized in Table
+\ref{tab:dataset_details}.
+
+
+\subsubsection{Models}
+
+\begin{table}[ht!]
+    \caption{\textbf{Models used in this study and their details.}\\
+        The open weights models were run on a server consisting of 2$\times$
+        80G A100 NVIDIA GPUs and were implemented in \texttt{PyTorch}
+        \cite{pytorch} and \texttt{huggingface} \cite{huggingface}. All models 
+        were used in \texttt{bf16} format whenever supported. The proprietary 
+        models were used with their respective APIs.
+    }
+    \label{tab:model-details}
+    \begin{center}
+        \small{
+        \begin{tabular}[c]{l r r r}
+            \toprule
+            \textbf{Model}                                     & \textbf{Params.} & \textbf{Context Length} & \textbf{Knowledge Cut-off} \\
+            \midrule
+            Phi 3 mini Instruct \cite{phi3}                    & 3.8B  & 4K    & Oct. 2023     \\
+            Mistral v0.2 Instruct \cite{mistral}               & 7B    & 32K   & Dec. 2023    \\
+            LLaMA 3 {Instruct} \cite{llama3}                   & 8B    &  8K   & Mar. 2023       \\
+            Mixtral v0.1 \cite{mixtral}                        & 8x7B  &  32K  & Dec. 2023    \\
+            LLaMA 2 \cite{llama2}                              & 70B   &   4K  & Sep. 2022   \\
+            LLaMA 3 \cite{llama3}                              & 70B   &   8K  & Dec. 2023    \\
+            Claude 3 sonnet \texttt{20140229} \cite{claude}    &   ?   & 200K  & Mar. 2024       \\
+            GPT-3.5-Turbo-\texttt{0125} \cite{gpt4}            &   ?   &  16K  & Sep. 2021   \\
+            GPT-4-Turbo \texttt{2024-04-09} \cite{gpt4}        &   ?   &  128K & May 2024         \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+We employed various open-source and proprietary \acp{LLM} in our study with
+varying architectures (mixture of experts, grouped query attention, etc.) and
+a wide range of parameter scales. The details of the model are summarized in
+Table \ref{tab:model-details}. Our generations were achieved with the random 
+sampling strategy (with $\texttt{T}=0.5$) in all cases, and all other settings
+were left unchanged. For few-shot prompt responses, \texttt{max-tokens} were set 
+to 10, and for chain-of-thought \cite{cot} responses, \texttt{max-tokens} were 
+set to 1000.

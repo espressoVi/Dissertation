@@ -1,0 +1,69 @@
+\newpage
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{Abbreviations}
+
+\acrodef{SoTA}{state-of-the-art}
+
+\acrodef{AI}{artificial intelligence}
+\acrodef{ML}{machine learning}
+\acrodef{DL}{deep learning}
+\acrodef{CV}{computer vision}
+\acrodef{NLP}{natural language processing}
+
+\acrodef{LM}{language model}
+\acrodef{LLM}{large language model}
+
+\acrodef{NN}{neural network}
+\acrodef{FC}{fully connected}
+\acrodef{MLP}{multi-layer perceptron}
+\acrodef{RNN}{recurrent neural network}
+\acrodef{LSTM}{long short term memory network}
+\acrodef{CNN}{convolutional neural network}
+
+\acrodef{MLC}{multi-label classification}
+\acrodef{MCC}{multi-class classification}
+
+\acrodef{QA}{question answering}
+
+\acrodef{MSE}{mean-squared error}
+\acrodef{CE}{cross-entropy}
+\acrodef{BCE}{binary cross-entropy}
+\hypertarget{abbrev}{\hphantom{1em}}
+\begin{table*}[h]
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{p{0.28\textwidth} p{0.67\textwidth}}
+            \toprule
+            \textbf{Abbreviation} & \textbf{Meaning} \\
+            \midrule
+            \acs{SoTA}  & \Acl{SoTA}  \\
+            \acs{AI}    & \Acl{AI}  \\
+            \acs{ML}    & \Acl{ML}  \\
+            \acs{DL}    & \Acl{DL}  \\
+            \acs{CV}    & \Acl{CV}  \\
+            \acs{NLP}   & \Acl{NLP} \\
+            \acs{LM}    & \Acl{LM}  \\
+            \acs{LLM}   & \Acl{LLM} \\
+            \acs{NN}    & \Acl{NN}  \\
+            \acs{FC}    & \Acl{FC}  \\
+            \acs{MLP}   & \Acl{MLP} \\
+            \acs{RNN}   & \Acl{RNN}\\
+            \acs{LSTM}  & \Acl{LSTM}\\
+            \acs{CNN}   & \Acl{CNN} \\
+            \acs{MLC}   & \Acl{MLC} \\
+            \acs{MCC}   & \Acl{MCC} \\
+            \acs{QA}    & \Acl{QA}  \\
+            \acs{MSE}   & \Acl{MSE} \\
+            \acs{CE}    & \Acl{CE}  \\
+            \acs{BCE}   & \Acl{BCE} \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table*}
+
+\acresetall
+
+\newpage
+\null
+\thispagestyle{empty}
+\newpage

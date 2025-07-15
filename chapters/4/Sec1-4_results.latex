@@ -1,0 +1,127 @@
+Just like we noted in Section \ref{sec:Are Rules Learnt}, we observe that, even 
+without any noisy annotations in the dataset, standard \ac{DL} algorithms 
+still produce contradictory predictions (see Table \ref{tab:cleanCont}).
+Our fine-tuned ResNet50 pre-trained \cite{resnet} on ImageNet \cite{imagenet} 
+for the PASCAL VOC task was comparatively better than the model trained on 
+PhysioNet, perhaps owing to the large-scale pre-training.
+
+\begin{table}[!ht]
+	\centering
+    \caption{\textbf{\ac{DL} model trained on clean dataset produces contradictions.}\\
+    We report 10-fold cross-validation $C(Y)$ results (see Equation \ref{eq:contradiction-metric}).}
+	\label{tab:cleanCont}
+	\begin{tabular}{c|c|c}
+		\toprule
+                        & \textbf{PhysioNet 2020} & \textbf{PASCAL VOC} \\
+		\hline
+        Train 		    &   $4.02\%$ \scriptsize{$\pm 1.65$}    & $0.05\%$ \scriptsize{$\pm 0.04$} \\
+        \textbf{Test}	&   $3.57\%$ \scriptsize{$\pm 1.32$}    & $0.11\%$ \scriptsize{$\pm 0.09$} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Our experimental results consistently show that increasing the percentage of 
+noisy annotations negatively impacts both the quantity of contradictions and 
+overall model performance (see Figure \ref{fig:noise-effect}).
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/4/noise_effect.png}
+    \caption{\textbf{Effect of noise on performance of \ac{DL} models.}\\
+	With increasing amounts of noise model performance continually degrades, whereas contradictions increase.
+	The X-axis represents the percentage of training instances containing contradictions.
+	(A-E) shows various metrics for PhysioNet dataset, and (F-J) for PASCAL VOC. }
+	\label{fig:noise-effect}
+\end{figure}
+
+Subsequently, we evaluated the impact of two mitigation strategies on 
+contradictory outputs: the naive approach of filtering out conflicting 
+annotations and our proposed \textbf{DOST} paradigm (see Figure 
+\ref{fig:noise-dost}). Since we apply the self-supervision loss update solely on
+$\mathcal{D}_C$ (see Equation \ref{eq:DOSTloss}, Algorithm \ref{alg:dost}), the 
+two strategies should yield similar outcomes when $\mathcal{D}_C$ is small. We 
+observe that DOST significantly reduces contradictory predictions, particularly 
+at higher noise levels.
+
+As previously mentioned, the fine-tuned ResNet50 model applied to the PASCAL 
+VOC task exhibits fewer contradictory predictions, and this remains stable 
+throughout the filtering strategy. Although slight improvements with DOST are
+noted at higher noise levels, the difference is marginal. The effect is more
+substantial in the model trained from scratch on the PhysioNet dataset, where
+DOST effectively reduces contradictory outputs to levels better than baseline in
+most cases (see Table \ref{tab:noise-dost}).
+
+\begin{table}[ht!]
+	\centering
+    \caption{\textbf{Performance of DOST at various noise levels.}\\
+    DOST eliminates contradictory outputs at high noise levels and even 
+    outperforms the ideal no-noise scenario. We report $C(Y)$ per hundred 
+    instances from the PhysioNet dataset. Perfect dataset refers to a dataset
+    with 0\% noise level.}
+	\label{tab:noise-dost}
+	\begin{tabular}{l c c c c}
+		\toprule
+        Noise level & Perfect dataset & \textbf{DOST}	& Filtered dataset	& Noisy	dataset\\
+        \midrule
+        $12.5\%$ &\multirow{4}{*}{$3.57$ \scriptsize{$ \pm 1.32$}}  & $3.82$ \scriptsize{$\pm 0.41$}	& $4.42 $ \scriptsize{$\pm 1.67$} & $14.90$ \scriptsize{$\pm 4.38$}	\\[2pt]
+        $25\%$     &			                    & \textbf{2.46} \scriptsize{$\pm 1.19$}	& $4.22 $ \scriptsize{$\pm 1.78$} & $18.09$ \scriptsize{$\pm 3.31$}	\\[2pt]
+		$37.5\%$ & 			                        & \textbf{1.36} \scriptsize{$\pm 0.61$}	& $5.67 $ \scriptsize{$\pm 2.33$} & $21.61$ \scriptsize{$\pm 2.86$}	\\[2pt]
+		$50\%$   &			                        & \textbf{1.61} \scriptsize{$\pm 0.56$}	& $10.07$ \scriptsize{$\pm 4.10$} & $23.66$ \scriptsize{$\pm 3.98$}	\\[2pt]
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.8\textwidth]{images/4/dost_noise.png}
+	\caption{\textbf{DOST paradigm significantly reduces rule violations}\\
+    The \emph{top} panel presents results from the PhysioNet dataset and the
+    \emph{bottom} panel presents results from PASCAL-VOC. The shaded region in 
+    the figure below is a magnified view of the curves close to the X-axis.
+    Figure is reproduced from \citet{myDost}.}
+	\label{fig:noise-dost}
+\end{figure}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.95\textwidth]{images/4/dost_metrics.png}
+	\caption{\textbf{DOST paradigm improves performance across several metrics.}\\
+	The shaded region above the blue line (performance of the model trained on a
+    noisy dataset) is the potential room for improvement, given a hypothetical 
+    clean dataset, which is usually not available in practice. \textbf{DOST} 
+    outperforms the naive filtering approach in all cases, and on the PASCAL VOC 
+    dataset, almost manages to counteract the effect of noise altogether. 
+    The \emph{left} (A-D) panel consists of plots of various metrics for PASCAL 
+    VOC, and the \emph{right} (E-H) panel plots the same for PhysioNet. Figure
+    is reproduced from \citet{myDost}.}
+	\label{fig:dost-effect}
+\end{figure}
+
+\begin{table}[!ht]
+	\centering
+	\caption{
+        Even with 50\% of instances containing noisy labels, DOST successfully counteracts the effect of noise.
+        Filtered dataset refers to the dataset with erroneously annotated samples removed, i.e., it is smaller
+        in size.
+    }
+	\label{tab:pascal-dost}
+    \small{
+	\begin{tabular}{l c c c c}
+		\toprule
+		Metric	& Perfect Dataset	& \textbf{DOST}	& Noisy Dataset	& Filtered Dataset	\\
+		\midrule
+        \textbf{Noise Level}	    & $0\%$			    & $50\%$	        & $50\%$		        & $0\%$			        \\
+		\hline
+        Accuracy	    & $0.809$ \tiny{$\pm 0.004$} & $0.791$ \tiny{$\pm 0.008$} & $0.673$ \tiny{$\pm 0.011$} 	& $0.771$ \tiny{$\pm 0.008$} 	\\[2pt]
+		F1		        & $0.851$ \tiny{$\pm 0.004$} & $0.836$ \tiny{$\pm 0.008$} & $0.716$ \tiny{$\pm 0.008$} 	& $0.820$ \tiny{$\pm 0.007$} 	\\[2pt]
+		Macro F1	    & $0.815$ \tiny{$\pm 0.007$} & $0.798$ \tiny{$\pm 0.011$} & $0.613$ \tiny{$\pm 0.017$} 	& $0.768$ \tiny{$\pm 0.007$} 	\\[2pt]
+		Subset Accuracy	& $0.677$ \tiny{$\pm 0.010$} & $0.656$ \tiny{$\pm 0.010$} & $0.549$ \tiny{$\pm 0.017$} 	& $0.621$ \tiny{$\pm 0.017$} 	\\[2pt]
+		\bottomrule
+	\end{tabular}}
+\end{table}
+
+Lastly, we assessed the influence of both strategies on overall performance. The 
+\textbf{DOST} paradigm surpasses the naive filtering strategy, showing notable 
+improvements across various metrics (see Figure \ref{fig:dost-effect}). In
+particular, with the PASCAL VOC dataset, the DOST paradigm almost entirely
+mitigates the effects of noise (see Table \ref{tab:pascal-dost}).

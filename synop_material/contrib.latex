@@ -1,0 +1,54 @@
+The dissertation starts (Chapter 1) with a summary of requisite background
+pertaining to \ac{DL} techniques, architectures, language modeling, and related
+prior work in this area. This is followed by \emph{four} contributory chapters.
+
+\textbf{Chapter 2} \emph{(Do vision systems learn rules?)} focuses
+on \ac{DL} systems' ability to adhere to domain rules for vision tasks. It
+introduces a new dataset to combat the lack of large-scale rule-annotated
+datasets and, with its assistance, demonstrates the constraint adherence deficit
+displayed by \ac{SoTA} \ac{DL}-based \ac{CV} techniques. Further analysis
+demonstrates key limitations of vision models in performing crucial tasks like
+counting and localization.
+
+\textbf{Chapter 3} \emph{(Faithful Language Modeling)} analyzes \acp{LM} and
+points out critical deficiencies they exhibit in adhering to domain expectations
+with the aid of interventions during training and inference. A notion of
+semantic faithfulness is introduced, which demands that \acp{LM}' answers should
+change in response to withholding of relevant context, and it is empirically
+demonstrated that \acp{LM} do not abide by this requirement. Further, an
+intervention-based training strategy is proposed that alleviates this effect.
+
+\textbf{Chapter 4} \emph{(Domain-aware Learning and Evaluation)} puts forth a
+technique called Domain Obedient Self-supervised Training (DOST) to incorporate
+logical constraint information into \ac{DL} systems. DOST leverages domain rules
+alongside data to disincentivize incoherent predictions and improve predictive
+performance. This algorithm is more data-efficient and results in models that
+show enhanced \emph{trustworthiness}. Additionally, chapter 4 tackles model
+evaluation and points out issues with a domain-blind approach to evaluation. A
+framework for constructing a metric that takes domain knowledge into account is
+proposed and exemplified with a real-life medical use case.
+
+\textbf{Chapter 5} \emph{(Constrained Inference)} explores inference with
+\acp{LLM} in a constrained setting. In particular, crosswords--a word puzzle
+featuring rich linguistic requirements alongside constraint satisfaction--are
+analyzed. Various subtasks of this problem are examined with an emphasis on
+isolating key areas of weaknesses for \acp{LLM}. Further, a new algorithm is
+presented, which uses in-context learning paired with a search strategy to
+successfully solve crosswords. This chapter presents several results that
+improve upon previously reported \ac{SoTA} results by a factor of 2-3.
+
+\textbf{Chapter 6} consists of some concluding remarks. We highlight that the
+inability of \ac{DL}-based systems to leverage established domain-specific 
+principles is inexpedient. An approach to learning that acts within the
+framework of laid-out rules and learns from them is a key objective of \ac{DL}
+research. The findings in the dissertation are a step towards a general
+framework for domain-obedient learning systems, paving the way for encouraging
+future research opportunities. In particular, agentic systems reasoning toward
+achieving goals could greatly benefit from domain-knowledge guidance, and
+future work tackling this challenge would be compelling.
+
+Domain knowledge-aware \ac{DL} also promises to be a major milestone towards
+scientific applications of deep learning. In this vein, we undertook a
+preliminary study attempting to address a problem arising from cosmology, where
+the known laws of physics serve as constraining information. Results from this
+study are presented in \textbf{Appendix A}.

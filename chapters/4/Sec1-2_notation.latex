@@ -1,0 +1,68 @@
+We start with a dataset $\mathcal{D} = \{(x_i, y_i)| \: \forall i \in \{1,
+\ldots, N\}\}$ where $x_i \in \Lambda$ are the data instances and $y_i$ are the
+corresponding (potentially erroneous) labels. We have a set of target classes
+$A = \{ a_1, a_2, \ldots, a_p \}$, and we have $y_i \subseteq A \; \forall i \in
+\{1, \ldots, N\}$. Let $a_j$ also denote a unary predicate, and $a_j(x_i)$ is
+\texttt{true}, if $x_i$ is an instance of $a_j$ else \texttt{false}. So, the
+ordered pair $(x_i, y_i)$ induces the formula:
+\begin{equation}
+    \begin{split}
+        \mathrm{F}(x_i,y_i) &= a_{\beta_1}(x_i) \wedge a_{\beta_2}(x_i) \wedge \ldots a_{\beta_t}(x_i) \wedge \\
+            &\neg a_{\gamma_{t+1}}(x_i) \wedge \neg a_{\gamma_{t+2}}(x_i) \wedge \ldots \neg a_{\gamma_p}(x_i)
+    \end{split}
+\end{equation}
+where, $\forall j$, $a_{\beta_j}$ are in $y_i$ and $a_{\gamma_j}$ are not in
+$y_i$. $\beta_1 < \ldots < \beta_t < \gamma_{t+1} < \ldots < \gamma_p$.
+
+We also have a set of domain rules $\mathrm{R} = \{r_1, r_2, \ldots \}$, where
+each $r_k$ takes the form $r_k = \forall x, \: \phi_k(x) \rightarrow \psi_k(x)$,
+where $\phi_k$ and $\psi_k$ are first-order logic formulas built from the 
+predicates in $A$ and the logical connectives $\{\wedge, \vee, \neg\}$.
+
+We call an annotation $y_i$ of $x_i$ \textbf{contradictory} or a 
+\textbf{contradiction} (denoted $C(y_i)$) with the rules $\mathrm{R}$ if and 
+only if:
+\begin{equation}
+	\exists \: r \in \mathrm{R},\: \text{such that } r \Rightarrow \neg \mathrm{F}(x_i,y_i)
+\end{equation}
+To measure the amount of contradiction in a set of annotations $Y = \{y_i|i \in 
+\{1\ldots n\}\}$, we use the metric $C(Y)$, which is defined by the following 
+equation:
+\begin{equation}
+	C(Y) = \frac{1}{|Y|}\sum_{i=1}^{n} \text{Number of rule violations in }y_i
+	\label{eq:contradiction-metric}
+\end{equation}
+
+With the domain rules $\mathrm{R}$, we define two auxiliary datasets, 
+$\mathcal{D}_C$ and $\hat{\mathcal{D}} = \mathcal{D} - \mathcal{D}_C$, where 
+$\mathcal{D}_C$ is the subset of the dataset with contradictory annotations, 
+i.e., $(x_i,y_i) \in \mathcal{D}_C \iff y_i$ is a contradictory annotation.
+Let $|\mathcal{D}_C| = N_C$, and $p_c = \frac{N_C}{N}$ represents the proportion 
+of contradictory samples.
+
+\subsubsection{Problem Setup}
+
+Given dataset $\mathcal{D}$ and a rule set $\mathrm{R}$, we want $f_{\nu}$, such that:
+\begin{equation}
+\begin{split}
+	f_{\nu} : \Lambda &\rightarrow [0,1]^p\\
+	[f_{\nu}(x)]_k &\approx P\big(a_k(x)\big)
+\end{split}
+\end{equation}
+The \ac{MLC} prediction $y$ is then given by:
+\begin{equation}
+	y = g_{\nu,\mu}(x) = \{a_k | [f_{\nu}(x)]_k \geq \mu, \: \forall a_k \in A \}
+\end{equation}
+for some constant $\mu \in [0, 1]$. Ideally, we should have
+\begin{align*}
+	P\Big(a_k \in g_{\nu,\mu}(x)\Big|& a_k(x)\Big) \rightarrow 1\\
+	P\Big(a_k \in g_{\nu,\mu}(x)\Big|& \neg a_k(x)\Big) \rightarrow 0\\
+	P\Big(C\big(g_{\nu,\mu}(x)\big)\Big)& \rightarrow 0
+\end{align*}
+Or, simply put, we want to have an accurate multi-label classifier that avoids 
+contradictory annotations.
+
+In the ensuing discussion, we only consider rules of the form $\forall x,\: 
+a_i(x) \Rightarrow \neg \big(a_{\beta_1}(x) \vee a_{\beta_2}(x) \vee \ldots 
+a_{\beta_t} (x)\big)$ for $a_{\beta_l} \in A$ ($\beta_l \neq i$) in order to 
+simplify creation of $\mathrm{R}$.

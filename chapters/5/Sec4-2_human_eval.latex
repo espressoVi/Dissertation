@@ -1,0 +1,183 @@
+\subsubsection{Data Contamination}
+
+We observed significant performance gains in \ac{SoTA} \acp{LLM} across the
+board, which might point to potential data contamination, i.e., the models have
+seen some of the clue-answer pairs during training. To ensure that our observed 
+performance enhancements were not merely a result of data contamination, we 
+assembled additional datasets consisting of cryptic crossword clues, all sourced 
+from puzzles released after \emph{May 20, 2024, which is after the knowledge 
+cutoff for all \acp{LLM} evaluated} (see Table \ref{tab:dataset_details}). To 
+guard against any inadvertent duplications, we checked the answers in these 
+\emph{post-cutoff} datasets against the entire pool of cryptic crossword 
+datasets utilized within our study, totaling 665,497 answers. We found no 
+duplicates in the \emph{post-cutoff} Guardian set and only two in the 
+\emph{post-cutoff} Lovatts set, which were removed. The \emph{Init} dataset is 
+also derived from \emph{The Guardian}, ensuring that the results displayed in
+Table \ref{tab:post_cutoff} maintain consistency.
+
+\begin{table}[!ht]
+    \caption{
+        \textbf{Performance of LLMs on \emph{post-cutoff} datasets.}\\
+        Note, \emph{Init} by \citet{curriculum}, also sourced their data from 
+        \emph{The Guardian}, thus these results provide a fair head-to-head 
+        comparison of performance. We report exact match $(\%)$.
+    }
+    \label{tab:post_cutoff}
+    \begin{center}
+        \begin{tabular}[c]{ l r r r }
+            \toprule
+            Model           & \textbf{Lovatts}    & \textbf{Guardian} & \textbf{Init} \\
+            \midrule
+            Llama 3 70B     $\qquad$&    26.03\%     & 5.5 \% & 6.4 \%  \\
+            Claude 3 Sonnet $\qquad$&    46.28\%     & 12.5\% & 10.8\%  \\
+            GPT 4 Turbo     $\qquad$&    61.57\%     & 18.5\% & 18.7\%  \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Since \emph{no appreciable difference in performance on the post-cutoff dataset}
+(see Table \ref{tab:post_cutoff}) is observed, we conclude that these \acp{LLM}
+can generalize beyond potential contamination in their training set.
+
+\subsubsection{Human Evaluation}
+
+To determine the capacity of models to reason about cryptic crossword clues, we
+perform \textbf{human evaluation}. We used a 3-shot \emph{Chain-of-thought} 
+prompt to elicit a reasoned response to crossword clues from GPT-4-Turbo, which 
+are then analyzed for soundness vis-\`a-vis factual and logical errors. In 
+checking whether a justification for an answer given by the \ac{LLM} is 
+logically and factually sound, we assess grammatical soundness and phraseological 
+meaningfulness of the sentences in the answer, the existence of counterfactual 
+statements (e.g., ``BULKY has 4 characters'', ``the initial letters of ARE RATS 
+TIRED NOW are ARTS'', etc.), and whether it presents a statement as an inference 
+from previous statements when it does not follow from those, etc. If an answer 
+by the \ac{LLM} is found unsatisfactory in any of these aforementioned areas, it 
+is labeled \textbf{unsound}. All responses were evaluated by 3 annotators\footnote{
+authors of \citet{myCrossword}.} and in case of conflicting answers (4 out of 
+100, Fleiss' $\kappa$ = 0.94), discussions were held to reach a consensus. We 
+chose the 100 samples from the post-cutoff \emph{Lovatts} set for this to allay 
+concerns of contamination. 
+
+\begin{table}[!ht]
+    \caption{
+        \textbf{Results from human evaluation.}\\
+        An answer is called \textbf{correct} if the model prediction exactly 
+        matches the ground truth. The answer is called sound if it contains no 
+        logical or factual errors. Results are with GPT-4-Turbo on the 
+        \emph{post-cutoff} Lovatts set.
+    }
+    \label{tab:human-eval}
+    \begin{center}
+        \begin{tabular}[c]{ l|l|r }
+            \toprule
+            \multicolumn{1}{c}{}  & \multicolumn{1}{c}{\textbf{Sound}}   & \multicolumn{1}{c}{$\neg$\textbf{Sound}} \\[4pt]
+            \multicolumn{1}{c}{}  & \multicolumn{1}{c}{(61)}             & \multicolumn{1}{c}{(39)}                  \\
+            \midrule
+            Correct (65) $\qquad$ &  48\%    & 17\% \\
+            \cline{2-3}
+            Wrong (35)   $\qquad$ &  13\%    & 22\% \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+The results (see Table \ref{tab:human-eval}) show that \textbf{74\%} of the time 
+GPT-4-Turbo provided a correct answer, it also gave \emph{sound reasoning in 
+support of the answer}. This leads us to conjecture that they possibly have a
+significant ability to reason and generalize.
+
+\subsubsection{Potential Pitfalls}
+
+To further analyze if \acp{LLM} demonstrate any common failure modes, we 
+manually tagged the human evaluation dataset based on the principal skill 
+required to solve a particular puzzle clue. The skill-based categories are:
+\begin{itemize}
+    \item \textbf{ANG}--the answer is an \emph{anagram} of some words of the
+        clue (e.g., \texttt{\colorbox{shadecol}{Cubit is} mixed up cookie } $\rightarrow$ \texttt{BISCUIT}).
+    \item \textbf{HOM}--the answer is a \emph{homophone} of some words of the 
+        clue (e.g., \texttt{Heard \colorbox{shadecol}{prints} are for royalty} $\rightarrow$ \texttt{PRINCE}).
+    \item \textbf{CNT}--the answer is disguised in a contiguous section of the 
+        clue (e.g., \texttt{The Press leaves pres\colorbox{shadecol}{enter}s to go in} $\rightarrow$ \texttt{ENTER}).
+    \item \textbf{SCJ}--the answer is found by combining several words that are
+        synonyms of various parts of the clue (e.g., \texttt{Reasonable \colorbox{boxcol}{food allowance} for \colorbox{shadecol}{Capone}} $\rightarrow$ \texttt{\colorbox{boxcol}{RATION}\colorbox{shadecol}{AL}}).
+    \item \textbf{OTH}--this class lumps together a variety of other skills like
+        Spoonerisms, acronyms, world knowledge, and various other kinds of
+        character manipulations 
+        (e.g., \texttt{\colorbox{shadecol}{Pi}p\colorbox{shadecol}{er} loses
+        heart on jetty} $\rightarrow$ \texttt{PIER}).
+\end{itemize}
+
+\begin{table}[!ht]
+    \caption{
+        \textbf{Are there common failure modes for \acp{LLM}?}\\
+        \textbf{ANG} refers to \emph{anagrams}, \textbf{SCJ} refers to 
+        \emph{synonym conjugation}, \textbf{CNT} refers to \emph{containment}, 
+        \textbf{HOM} refers to \emph{homophones}, and \textbf{OTH} refers to 
+        \emph{others}. The percentages in parentheses refer to the prevalence
+        of a particular type of clue in the database.
+    }
+    \label{tab:failure-mode}
+    \begin{center}
+        \begin{subtable}{\textwidth}
+            \centering
+            \begin{tabular}[c]{lrrrrr}
+                \toprule
+                \multirow{2}{*}{\emph{Lovatts}} & \textbf{ANG}   & \textbf{CNT}      & \textbf{SCJ}  & \textbf{HOM}  & \textbf{OTH}  \\
+                                                & (27\%)         & (26\%)            & (18\%)        & (8\%)         & (21\%)        \\
+                \midrule
+                GPT 4 Turbo     & 74\%           & 56\%              & 50\%          & 100\%         & 67\% \\
+                \bottomrule
+            \end{tabular}
+            \caption{Results for \emph{Lovatts} dataset (human-annotated).}
+            \label{tab:failure-mode1}
+        \end{subtable}
+
+        \begin{subtable}{.45\textwidth}
+            \centering
+            \begin{tabular}[c]{lrr}
+                \toprule
+                \multirow{2}{*}{\emph{Init}+\emph{Cryptonite}} & \textbf{ANG} & \textbf{CNT} \\
+                                                    &   (8.5\%)      & (2.5\%)               \\
+                \midrule
+                Llama 3 70B     & 2.6\%        & 12.2\%                                          \\
+                Claude 3 Sonnet & 7.9\%        & 15.3\%                                          \\
+                GPT 4 Turbo     & 25.0\%       & 33.7\%                                          \\
+                \bottomrule
+            \end{tabular}
+            \caption{Results for \emph{Init}+\emph{Cryptonite} dataset.}
+            \label{tab:failure-mode2}
+        \end{subtable}
+    \end{center}
+\end{table}
+
+Due to the limited number of human annotations, our results (Table 
+\ref{tab:failure-mode1}) are not statistically significant; however, these 
+results hint at the fact that GPT-4-Turbo demonstrates strong performance in 
+\emph{anagrams} and \emph{homophone}-based clues, boasting 74\%  and 100\% 
+accuracy, respectively (baseline\footnote{Baseline refers to mean accuracy across 
+all kinds of clues.} - 65\%).
+
+We extended this analysis to the \emph{Cryptonite} and \emph{Init} datasets (Table \ref{tab:failure-mode2}),
+which together include 4000 clue-answer pairs, finding similar trends:
+GPT-4-Turbo maintained respectable anagram performance with 25\% accuracy over
+a 21.1\% baseline. Conversely, Llama 3 70B recorded a meager 2.6\% accuracy,
+lagging behind a 7.16\% baseline, and Claude 3 Sonnet mirrored this trend with
+7.9\% accuracy compared to an 11.85\% baseline. These findings suggest that
+Llama 3 70B and Claude 3 Sonnet may struggle more with anagram-based clues. It
+should be noted that unlike \textbf{(ANG, CNT)}, categories like \textbf{(HOM,
+SCJ, OTH)} cannot be reliably identified automatically, presenting a limitation
+in broader analysis for these types of clues.
+
+To better understand the influence of \emph{sub-token counting performance} on 
+clue-solving capabilities, we crafted an additional experiment. We consider all
+such clues where the model successfully interpreted the clue’s semantics but 
+failed to comply with the specified length constraints (e.g., \texttt{LECTURER} 
+instead of \texttt{PROFESSOR} or \texttt{NANNA} instead of \texttt{GRANNY}). We
+counted the number of \emph{wrong \ac{LLM} predictions with high semantic 
+similarity to ground truth answers}.\footnote{Similarity score of 0.5 or higher 
+as measured by OpenAI \texttt{text-embedding-3-large}} We found that 
+GPT-4-Turbo and Llama 3 70B, respectively, produced length error predictions 
+\textbf{46.4\%} and \textbf{59.9\%} of the time. These findings underscore how 
+weak length constraint adherence ability severely hampers the clue-solving 
+potential of \acp{LLM}, highlighting a key area for improvement.

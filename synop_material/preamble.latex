@@ -1,0 +1,45 @@
+\usepackage[square, sort, numbers]{natbib}
+\usepackage{xcolor}
+\usepackage[a4paper,left=30mm,right=30mm,top=20mm,bottom=20mm,heightrounded=true, includeheadfoot]{geometry}
+\usepackage{fancyhdr}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{calc}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{afterpage}
+\usepackage[parfill]{parskip}
+\usepackage[most]{tcolorbox}
+\usepackage[printonlyused]{acronym}
+
+\definecolor{linkcol}{RGB}{40, 52, 102}
+\definecolor{urlcol}{RGB}{18, 55, 77}
+\definecolor{citecol}{RGB}{96, 32, 64}
+\definecolor{shadecol}{RGB}{230, 230, 240}
+\definecolor{boxcol}{RGB}{207, 238, 255}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = linkcol,
+    urlcolor = urlcol,
+    citecolor = citecol,
+}
+\frenchspacing
+\singlespacing
+\lhead{\textsc{\textbf{Synopsis} | Domain Obedient Deep Learning}}
+\rhead{\thepage}
+\fancyfoot{}
+\pagestyle{fancy}

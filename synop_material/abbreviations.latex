@@ -1,0 +1,21 @@
+\acrodef{SoTA}{state-of-the-art}
+\acrodef{AI}{artificial intelligence}
+\acrodef{ML}{machine learning}
+\acrodef{DL}{deep learning}
+\acrodef{CV}{computer vision}
+\acrodef{NLP}{natural language processing}
+\acrodef{LM}{language model}
+\acrodef{LLM}{large language model}
+\acrodef{NN}{neural network}
+\acrodef{FC}{fully connected}
+\acrodef{MLP}{multi-layer perceptron}
+\acrodef{RNN}{recurrent neural network}
+\acrodef{LSTM}{long short term memory network}
+\acrodef{CNN}{convolutional neural network}
+\acrodef{MLC}{multi-label classification}
+\acrodef{MCC}{multi-class classification}
+\acrodef{QA}{question answering}
+\acrodef{MSE}{mean-squared error}
+\acrodef{CE}{cross-entropy}
+\acrodef{BCE}{binary cross-entropy}
+

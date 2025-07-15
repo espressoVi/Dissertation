@@ -1,0 +1,16 @@
+\newpage
+\thispagestyle{empty}
+\begin{center}
+    \footnotesize{
+        \vspace*{70mm}
+        \textit{``Turing believes machines think}\\
+        \textit{Turing lies with men}\\
+        \textit{Therefore machines do not think''}\\
+        \vspace*{10mm}
+        \hspace*{50mm} -- Alan Turing
+    }
+\end{center}
+\newpage
+\null
+\thispagestyle{empty}
+\newpage

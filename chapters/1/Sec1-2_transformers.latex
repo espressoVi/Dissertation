@@ -1,0 +1,72 @@
+The \emph{transformer} model, proposed by \citet{transformer}, has achieved 
+\ac{SoTA} performance across a variety of tasks in \ac{NLP}, \ac{CV}, etc., by 
+enabling greater scalability owing to its parallelizable design. Although it was 
+first proposed in the context of \ac{NLP} tasks, it is now the model of choice 
+for a plethora of other tasks \cite{sam, vit, alphafold}. There are subtle 
+differences in the architecture in different use cases, e.g., creating patches
+of images for \ac{CV} tasks \cite{vit}, etc., and we only go over the primary 
+\ac{NLP} variant in this section. Figure \ref{fig:transformer} contains a 
+pictorial representation of the transformer encoder/decoder block\footnote{
+Conventionally an encoder-only or decoder-only transformer is used, and the only 
+difference between them is in masking. The decoder block is different when used 
+in an encoder-decoder configuration.}.
+
+\begin{figure}[!ht]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{images/Chapter1/transformer.png}
+    \end{center}
+    \caption{Diagram of transformer \cite{transformer} model.}
+    \label{fig:transformer}
+\end{figure}
+
+The dataset used to train transformers in the \ac{NLP} setting is copious 
+amounts of unstructured plain text, and in order to train one, the first step is 
+training a \emph{tokenizer} model. This model breaks up text into chunks called 
+\emph{tokens}, based on occurrence frequency, so that (a) any piece of text can 
+be written as a combination of these tokens, (b) there are no extremely rare 
+tokens, and (c) we have a fixed finite number ($V$) of tokens. Once a trained 
+tokenizer is obtained (byte-pair encoding \cite{bpe} for example), any piece of 
+text can be converted to a sequence of tokens and fed to a transformer.
+
+The input embedding step (see Figure \ref{fig:transformer}) can be thought of as
+a lookup table, mapping each token $t$ to a vector $v_t \in \mathbb{R}^d$, and
+the positional embedding provides a vectorial representation of the position of 
+the token, which is added to the input embedding. There are several choices for
+the positional embedding scheme, like \emph{sinusoidal} \cite{transformer},
+\emph{learned positional embedding} \cite{vit}, or RoPE \cite{rope}.
+
+Following this step, we proceed to the first transformer encoder/decoder block, 
+and typically there are several such identical blocks stacked together to form
+the model. In each block we have the \emph{multi-head self-attention} (\bf{MHA})
+or the \emph{masked multi-head self-attention} (\bf{MMHA}) block for the encoder 
+or decoder, respectively.
+
+\begin{definition}[MHA]
+    Given $H \in \mathbb{N}$ (number of heads) and input sequence $(v_1, v_2, 
+    \ldots v_T)$, $v_j \in \mathbb{R}^d\:\forall j, 1 \leq j \leq T$:
+    \begin{align*}
+        Q^i_j, K^i_j, V^i_j &:= W_{Q^i}\cdot x_j, W_{K^i}\cdot x_j, W_{V^i}\cdot x_j\\
+        &\quad \forall i,j \text{ such that } 1 \leq i \leq H, 1 \leq j \leq T\\
+        \label{eq:selfattention}
+        A^i_j &:= \sum_{l=1}^T \text{softmax}\Big(\frac{Q^i_j \cdot K^i_l}{\sqrt{d}} \Big) \cdot V^i_l \tag{self-attention}\\
+        \hat{y}_j &:= W_O \cdot\text{concat}(A^1_j, A^2_j, \ldots A^H_j) \tag{\textbf{Output}}
+    \end{align*}
+    defines an MHA layer. $W_Q, W_K, W_V \in \mathbb{R}^{d/H \times d}$, $W_O 
+    \in \mathbb{R}^{d \times d}$ are matrices, and softmax is defined as:
+    \begin{equation*}
+        [\text{softmax}(v)]_i := \frac{\exp([v]_i)}{\sum_{j=1}^d \exp([v]_j)}
+    \end{equation*}
+\end{definition}
+
+For \textbf{MMHA} the only difference is in the \ref{eq:selfattention}:
+\begin{align*}
+    A^i_j &:= \sum_{\substack{l=1 \\ \color{red}{l \leq j}}}^T \text{softmax}\Big(\frac{Q^i_j \cdot K^i_l}{\sqrt{d}} \Big) \cdot V^i_l \tag{\textbf{MMHA} self-attention}
+\end{align*}
+This is done to ensure that information from future tokens, which would not be
+available during inference, is not used during training (\emph{causal masking}).
+
+The \bf{FFN} (see Figure \ref{fig:transformer}) consists of two \ac{FC} layers,
+mapping $v_i \in \mathbb{R}^d \rightarrow \mathbb{R}^{\alpha d} \rightarrow 
+\mathbb{R}^d$ with GeLU activation in between. The \bf{Add and Norm} consists of 
+a \emph{shortcut} connection and \emph{LayerNorm} normalization 
+\cite{transformer}.

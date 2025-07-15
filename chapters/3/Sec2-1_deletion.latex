@@ -1,0 +1,179 @@
+\begin{table}[!ht]
+    \caption{
+        \textbf{Performance of the models on the CoQA dataset.}\\
+        $unk\%$ refers to the percentage of answers predicted as unknown by the 
+        models. Since TS-R and TS-R+Aug have critical context removed, we 
+        expect EM and F1 to decrease and $unk\%$ to increase. Models trained in 
+        the regular scheme (\textbf{OT}) do not follow this, but models trained 
+        with \textbf{IBT} do.
+    }
+    \label{tab:OT-IBT}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}{l l l l l l l l }
+            \toprule
+            \multirow{2}{*}{\textbf{Model}} & \multirow{2}{*}{\textbf{Dataset}} & \multicolumn{3}{c}{\textbf{OT}} & \multicolumn{3}{c}{\textbf{IBT}}\\
+                                                                \cline{3-8}
+                                                            & & F1 & EM & $unk\%$ & F1 & EM & $unk\%$\\
+            \midrule
+            \multirow{3}{*}{BERT-base}    & OS          & 76.1 &  66.3 & 1.97  & 76.4 &  67.2 & 3.82  \\
+                                          & TS          & 77.2 &  67.1 & 2.18  & 77.7 &  68.0 & 7.93  \\
+                                          & TS-R        & 55.6 &  48.2 & 1.98  & 5.7  &  5.4  & 93.08 \\
+                                          & TS-R+Aug    & 51.5 &  44.3 & 7.10  & 42.4 &  36.3 & 45.50 \\
+            \cline{2-8}
+            \multirow{3}{*}{BERT-large}   & OS          & 80.7 &  71.1 & 2.01  & 78.8 &  69.8 & 4.20  \\
+                                          & TS          & 81.6 &  72.1 & 2.32  & 80.1 &  70.7 & 7.34  \\
+                                          & TS-R        & 63.6 &  57.8 & 3.79  & 5.4  &  5.1  & 94.25 \\
+                                          & TS-R+Aug    & 53.4 &  46.3 & 8.80  & 38.3 &  32.9 & 51.88 \\
+            \hline
+            \multirow{3}{*}{RoBERTa-base} & OS          & 80.3 &  70.8 & 1.95  & 81.2 &  71.6 & 2.86  \\
+                                          & TS          & 80.8 &  71.1 & 2.64  & 81.9 &  72.0 & 5.20  \\
+                                          & TS-R        & 55.5 &  51.1 & 16.92 & 5.5  &  5.3  & 94.25 \\
+                                          & TS-R+Aug    & 39.2 &  28.2 & 14.26 & 6.3  &  6.0  & 92.13 \\
+            \cline{2-8}
+            \multirow{3}{*}{RoBERTa-large}& OS          & 87.0 &  77.7 & 1.74  & 86.2 &  76.9 & 2.66  \\
+                                          & TS          & 86.8 &  77.3 & 2.72  & 86.3 &  76.7 & 4.01  \\
+                                          & TS-R        & 59.9 &  55.7 & 22.36 & 5.1  &  5.0  & 95.34 \\
+                                          & TS-R+Aug    & 42.9 &  32.0 & 22.18 & 6.0  &  5.7  & 93.65 \\
+            \hline
+            \multirow{3}{*}{XLNet-base}   & OS          & 82.5 &  74.8 & 1.08  & 81.3 &  74.2 & 4.63  \\
+                                          & TS          & 82.1 &  74.2 & 1.11  & 79.6 &  72.4 & 10.87 \\
+                                          & TS-R        & 53.5 &  48.0 & 14.00 & 6.6  &  6.4  & 93.86 \\
+                                          & TS-R+Aug    & 50.7 &  45.3 & 13.45 & 25.2 &  22.2 & 68.75 \\
+            \cline{2-8}
+            \multirow{3}{*}{XLNet-large}  & OS          & 86.3 &  78.9 & 0.86  & 83.1 &  75.8 & 5.10  \\
+                                          & TS          & 85.6 &  78.5 & 2.58  & 81.0 &  74.1 & 10.69 \\
+                                          & TS-R        & 48.1 &  44.3 & 31.68 & 5.6  &  5.5  & 95.42 \\
+                                          & TS-R+Aug    & 46.9 &  42.4 & 26.18 & 22.1 &  19.5 & 73.93 \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+\begin{table}[!ht]
+    \caption{
+        \textbf{Performance of the models on the HotpotQA dataset.}\\
+        $unk\%$ refers to the percentage of answers predicted as unknown by the 
+        models. Since OS-R and OS-R+Aug have critical context removed, we 
+        expect EM and F1 to decrease and $unk\%$ to increase. Models trained in the 
+        regular scheme (\textbf{OT}) do not follow this, but models trained with 
+        \textbf{IBT} do.
+    }
+    \label{tab:Hotpot-OT-IBT}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{l l l l l l l l}
+            \toprule
+            \multirow{2}{*}{\textbf{Model}} & \multirow{2}{*}{\textbf{Dataset}} & \multicolumn{3}{c}{\textbf{OT}} & \multicolumn{3}{c}{\textbf{IBT}}\\
+                                                                \cline{3-8}
+                                                            & & F1 & EM & $unk\%$ & F1 & EM & $unk\%$\\
+            \midrule
+            \multirow{3}{*}{BERT-base}      & OS            & 72.3 &  56.7 & 0.16 & 71.2 & 55.8 & 1.00  \\
+                                            & OS-R          & 59.5 &  48.5 & 4.60 & 0.4  & 0.3  & 99.05 \\
+                                            & OS-R+Aug      & 63.1 &  52.2 & 4.27 & 3.1  & 2.2  & 93.96 \\
+            \hline
+            \multirow{3}{*}{BERT-large}     & OS            & 74.8 &  59.6 & 0.21 & 73.8 & 58.5 & 1.24  \\
+                                            & OS-R          & 63.7 &  53.8 & 5.63 & 0.5  & 0.4  & 99.17 \\
+                                            & OS-R+Aug      & 64.7 &  54.2 & 5.36 & 2.63 & 2.05 & 95.46 \\
+            \hline
+            \multirow{3}{*}{RoBERTa-base}   & OS            & 72.0 &  56.7 & 0.16 & 72.7 & 57.4 & 0.73  \\
+                                            & OS-R          & 66.2 &  59.1 & 0.86 & 0.6  & 0.5  & 98.86 \\
+                                            & OS-R+Aug      & 36.9 &  15.7 & 0.94 & 0.9  & 0.6  & 97.93 \\
+            \hline
+            \multirow{3}{*}{RoBERTa-large}  & OS            & 80.0 &  64.5 & 0.18 & 79.7 & 64.4 & 0.70  \\
+                                            & OS-R          & 75.2 &  70.0 & 2.84 & 0.6  & 0.5  & 99.06 \\
+                                            & OS-R+Aug      & 40.3 &  18.4 & 3.90 & 0.9  & 0.6  & 97.86 \\
+            \hline
+            \multirow{3}{*}{XLNet-base}     & OS            & 74.2 &  60.1 & 0.07 & 73.5 & 59.4 & 1.05  \\
+                                            & OS-R          & 63.0 &  53.0 & 0.73 & 0.6  & 0.4  & 98.85 \\
+                                            & OS-R+Aug      & 63.5 &  53.9 & 1.16 & 3.1  & 2.4  & 94.30 \\
+            \hline
+            \multirow{3}{*}{XLNet-large}    & OS            & 80.0 &  66.1 & 0.23 & 77.4 & 63.5 & 1.03  \\
+                                            & OS-R          & 68.5 &  59.1 & 0.60 & 0.4  & 0.3  & 99.21 \\
+                                            & OS-R+Aug      & 62.7 &  53.7 & 9.12 & 1.6  & 1.1  & 96.81 \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+The results of our experiments are summarized in Table \ref{tab:OT-IBT} and
+Table \ref{tab:Hotpot-OT-IBT}. We first note that there is no appreciable 
+performance difference between the \textbf{OS}- and \textbf{TS}-intervened CoQA 
+datasets, which is in line with expectations. Further, our experiments indicate 
+that all tested models demonstrate poor semantic \emph{faithfulness} on both 
+the CoQA and HotpotQA datasets. 
+
+Given that \textbf{TS-R, TS-R+Aug, OS-R}, and \textbf{OS-R+Aug} do not contain 
+critical information required to answer queries, we expect that their 
+performance on these would be near zero as measured by EM and F1. Additionally,
+on these splits, we should also expect $unk\%$--which measures the percentage of
+queries with the \emph{unknown} response--to be very high. For models trained
+with the \textbf{OT} strategy, we find that this is not the case. Although there
+is some dip in performance on the \textbf{*-R} and \textbf{*-R+Aug} sets, the
+models do not \emph{change their answers despite critical information being
+deleted} in the vast majority of cases. The situation is worse on the HotpotQA
+dataset, and the RoBERTa model even manages to provide answers more accurately
+with critical information removed, as evidenced by the higher EM\% on 
+\textbf{OS-R} compared to \textbf{OS}, which is contrary to domain expectations.
+The fact that the $unk\%$ does not change significantly throughout the
+interventions lends further credence to the hypothesis that these models are not
+semantically faithful.
+
+Models trained with the \textbf{IBT} strategy buck this trend. We observe that
+although performance on the \textbf{OS} set is nearly identical to the models 
+trained with the \textbf{OT} strategy, their performance on the \textbf{*-R} and
+\textbf{*-R+Aug} sets is much worse. Since performance is measured with respect 
+to the unaltered original ground truth, i.e., ground truth corresponding to 
+\textbf{OS}, this is the desired behavior for semantically faithful models. 
+Additionally, almost all queries in these sets are marked as \emph{unknown}, 
+which is the \emph{faithful} answer.
+
+\begin{table}[!ht]
+    \caption{\textbf{Faithfulness performance of InstructGPT models.}\\
+    Deletion Intervention: EM and F1 scores for the two InstructGPT models.}
+    \label{tab:gpt3-delintnew}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{l l l c c }
+            \toprule
+            Model & \multicolumn{2}{c}{Dataset} & EM & F1 \\
+            \midrule
+            \multirow{4}{*}{text-davinci-002} & \multirow{2}{*}{CoQA}        & TS-R      & 46.4 & 58.5   \\
+                                              &                              & TS-R+Aug  & 40.4 & 53.3   \\
+                                              \cline{2-5}
+                                              & \multirow{2}{*}{HotpotQA}    & OS-R      & 14.1 & 32.2   \\
+                                              &                              & OS-R+Aug  & 11.4 & 29.5   \\
+            \hline
+            \multirow{4}{*}{text-davinci-003} & \multirow{2}{*}{CoQA}        & TS-R      & 28.0 & 45.6  \\
+                                              &                              & TS-R+Aug  & 17.3 & 34.9  \\
+                                              \cline{2-5}
+                                              & \multirow{2}{*}{HotpotQA}    & OS-R      & 25.6 & 41.7  \\
+                                              &                              & OS-R+Aug  & 18.0 & 34.1  \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+Our experiments with InstructGPT\footnote{\url{https://platform.openai.com/docs/models/gpt-3-5}} 
+\cite{gpt-3} also revealed a troubling lack of \emph{faithfulness}. We present 
+performance results of the models (see Table \ref{tab:gpt3-delintnew}) as 
+measured by EM and F1 scores for the two models on \textbf{TS-R} and 
+\textbf{TS-R+Aug} datasets for CoQA and \textbf{OS-R} and \textbf{OS-R+Aug} 
+datasets for HotpotQA. A basic prompt consisting of only the story and the 
+question was provided. For CoQA, we see that \emph{text-davinci-002} receives 
+astounding scores and correctly predicts the ground truth for nearly $\sim50\%$ 
+of samples despite the removal of relevant information. While 
+\emph{text-davinci-003}'s scores are relatively modest, it still fabricates the 
+ground truth answer for $\sim30\%$ of instances.  Unlike CoQA, for HotpotQA, 
+\emph{text-davinci-002} achieves lower scores than \emph{text-davinci-003} on 
+\textbf{OS-R}. Similar trends are also noted on the HotpotQA dataset, with 
+\emph{text-davinci-003} predicting the ground truth answer for $25.6\%$ of
+instances of \textbf{OS-R}. 
+
+Notably, the scores for both models are lower for \textbf{TS-R+Aug} and 
+\textbf{OS-R+Aug} than for \textbf{TS-R} and \textbf{OS-R} on the CoQA and
+HotpotQA datasets, respectively. This result, alongside the overall poor
+semantic faithfulness, suggests that the models rely on superficial clues to
+arrive at an answer. For example, given a query like \emph{``What color is X?"}
+the models look for any words that fall in the color category to respond with
+instead of focusing on the semantics of the context.

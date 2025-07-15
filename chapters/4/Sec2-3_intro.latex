@@ -1,0 +1,85 @@
+To judge the quality of the classifier $f_{\theta}$ over the dataset 
+$\mathcal{D}$, it is sufficient to analyze the set $\mathcal{P} = \{ (\hat{z}_i,
+y_i) | \forall i, \text{ s.t.}\:(x_i, y_i) \in \mathcal{D}\}$. The job of a
+metric, given such a set $\mathcal{P}$, is to provide a number, which is
+correlated to the performance of the classification system. We shall not be
+exploring metrics designed for the label ranking task \cite{extensiveML}
+(coverage, etc.); since they are not relevant in this context, instead we shall
+focus on \emph{bipartition}-based metrics in the ensuing discussion, which are
+designed for the task at hand.
+
+Bipartition metrics can be broadly divided into two categories: 
+\emph{label-based} (see Table \ref{subtable:lab-based}) and \emph{example-based} 
+(see Table \ref{subtable:exa-based}). The \emph{example-based} metrics assign a
+score based on averages over certain functions of the actual and predicted label
+sets. \emph{Label-based} metrics on the other hand compute the prediction
+performance of each label in isolation and then compute averages over labels.
+
+Certain other binary metrics have been proposed in an \ac{MLC} context, like the 
+Mathews Correlation Coefficient \cite{MCCBetter}, etc., and we can define 
+macro/micro averages or example-based metrics based on these; however due to 
+their limited usage in an \ac{MLC} context, we omit these. Their definitions 
+suggest that their behavior in key aspects follows the other metrics 
+\cite{manyMetricsBetter} discussed in the following section.
+
+\begin{table}[ht!]
+\setlength\tabcolsep{0pt}
+    \caption{Common example and label-based metrics in \ac{MLC}.}
+    \label{tab:exmetrics}
+    \begin{subtable}{.5\textwidth}
+    \centering
+            \begin{tabular*}{0.95\linewidth}{@{\extracolsep{0.5em}}l c}%{l|l}
+            \toprule
+            Metric & Definition \\ 
+            \midrule
+                Macro- & \multirow{2}{*}{$\frac{1}{P} \sum_{j=1}^{P} \frac{tp_j}{tp_j + fp_j}$}\\
+                precision & \\
+            \hline
+                Macro- & \multirow{2}{*}{$\frac{1}{P} \sum_{j=1}^{P} \frac{tp_j}{tp_j + fn_j}$}\\
+                recall & \\
+            \hline
+                Macro- & \multirow{2}{*}{$\frac{1}{P} \sum_{j=1}^{P} F1_j, F1_j = \frac{2p_jr_j}{p_j+r_j}$}\\
+                F1-score & \\
+            \hline
+                Micro- & \multirow{2}{*}{$\frac{\sum_{j=1}^{P} tp_j}{\sum_{j=1}^{P} tp_j + \sum_{j=1}^{P} fp_j}$}\\
+                precision & \\
+            \hline
+                Micro- & \multirow{2}{*}{$\frac{\sum_{j=1}^{P} tp_j}{\sum_{j=1}^{P} tp_j + \sum_{j=1}^{P} fn_j}$}\\
+                recall & \\
+            \hline
+                Micro- & \multirow{2}{*}{$\frac{2\cdot\text{micro-precision}\cdot\text{micro-recall}}{\text{micro-precision}+\text{micro-recall}}$}\\
+                F1-score & \\
+            \bottomrule
+        \end{tabular*}
+        \caption{Label-based metrics.}
+        \label{subtable:lab-based}
+    \end{subtable}%
+    \begin{subtable}{.5\textwidth}
+    \centering
+        \begin{tabular*}{0.95\linewidth}{@{\extracolsep{0.5em}}l c}
+            \toprule
+            Metric          & Definition \\ 
+            \midrule
+               Hamming      & \multirow{2}{*}{$\frac{1}{N} \sum_{i = 1}^{N} \frac{1}{P} |\hat{z}_i \Delta y_i|$}\\
+               Loss         & \\
+            \hline
+               \multirow{2}{*}{Accuracy} & \multirow{2}{*}{$\frac{1}{N} \sum_{i = 1}^{N} \frac{|\hat{z}_i \cap y_i|}{|\hat{z}_i \cup y_i|}$}\\
+                    & \\
+            \hline
+                Precision   & \multirow{2}{*}{$\frac{1}{N} \sum_{i = 1}^{N} \frac{|\hat{z}_i \cap y_i|}{|y_i|}$}\\
+                    & \\
+            \hline
+                Recall      & \multirow{2}{*}{$\frac{1}{N} \sum_{i = 1}^{N} \frac{|\hat{z}_i \cap y_i|}{|\hat{z}_i |}$}\\
+                    & \\
+            \hline
+                F1-score    & \multirow{2}{*}{$\frac{1}{N} \sum_{i = 1}^{N} \frac{2\times|\hat{z}_i \cap y_i|}{|\hat{z}_i| + |y_i|}$}\\
+                    & \\
+            \hline
+                Subset      & \multirow{2}{*}{$\frac{1}{N} \sum_{i = 1}^{N} I (\hat{z}_i = y_i )$}\\
+                Accuracy    & \\
+            \bottomrule
+        \end{tabular*}
+        \caption{Example-based metrics.}
+        \label{subtable:exa-based}
+    \end{subtable}
+\end{table}

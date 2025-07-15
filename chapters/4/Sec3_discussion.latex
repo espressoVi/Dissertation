@@ -1,0 +1,42 @@
+In Section \ref{sec:DOSTnoisy}, we further explore the inability of \ac{DL}
+systems to adhere to domain rules, a problem exacerbated by noisy annotations.
+To combat this, we introduce the \textbf{DOST} algorithm, which incorporates
+logical constraint information into \ac{DL} systems via self-supervision. We 
+also present empirical studies demonstrating that the \textbf{DOST} paradigm
+not only diminishes rule violations, thereby enhancing the alignment of models
+with domain rules, but also results in performance improvements. This is
+accomplished by repurposing data that might otherwise have been discarded as
+noisy. Given that all other variables remain constant across the different
+training strategies, we infer that these performance enhancements are likely
+attributable to the integration of domain knowledge into the models.
+
+In Section \ref{sec:Deep Learning Metrics}, we showed that current metrics for
+evaluating multi-label computational diagnostics often fail to capture the
+intricacies of clinical practice adequately. Specifically, commonly used
+bipartition task metrics do not effectively address the risks associated with
+missed diagnoses, over-diagnoses, and incorrect diagnoses in a clinically sound
+manner. We have also demonstrated that metric outcomes can be obscured by
+prevalence, leading to an inaccurate reflection of actual performance. When
+transplanting \ac{ML} metrics to a clinical setting, important clinical 
+features, such as the relative importance of different diagnoses and appropriate
+penalties for unrealistic predictions, have been largely overlooked.
+
+Our metric, however, addresses these key clinical requirements, aligning more 
+closely with clinical practice. It preserves the order relation between 
+different types of diagnostic errors in terms of real-world consequences. 
+Furthermore, it handles contradictions and clinical significance, rewarding 
+models in a manner consistent with diagnostic practice. This metric allows for 
+straightforward comparison of computational models tackling the same problem, 
+even when calculated over datasets with differing diagnostic distributions. 
+Even though MedTric was designed with a clinical settings in mind, it can be
+adapted to any \ac{MLC} problem where domain constraints can inform the ranking
+of the various types of errors that a system might make.
+
+Constraint-aware learning and evaluation are equally important considerations
+for the deployment of \ac{DL} systems in critical scenarios. Since models are
+often tuned to maximize performance according to a target metric, promulgation
+of constraint-obedience metrics would favor adoption of constraint-obedient
+predictive systems. Similarly, development of constraint-aware learning
+strategies such as \textbf{DOST}, necessitate investigation into
+constraint-adherence metrics for an accurate assessment of deployability. Thus,
+further research into these areas serve to complement and bolster each other.

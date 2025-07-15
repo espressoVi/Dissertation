@@ -1,0 +1,131 @@
+Transformer-based \acp{LM} have revolutionized the field of \ac{NLP} and have 
+had an outsized impact on everyday life, with powerful \acp{LLM} like
+GPT-4 \cite{gpt4}, Llama 3 \cite{llama3}, and Gemini \cite{gemini} powering 
+omnipresent services like conversational chat and internet search. In this 
+section we look at some cursory details for \acp{LM}.
+
+\begin{definition}[\acl{LM}]
+    A function $g$ is called a language model if given any string of tokens
+    $\seq{x} = (x_1, x_2, \ldots, x_t)$, we have:
+    \begin{equation*}
+        g(\seq{x}) = P(\seq{x}) = P(x_t, x_{t-1}, \ldots, x_1)
+    \end{equation*}
+    where $P(\seq{x})$ represents the probability of occurrence of the string
+    in some natural language(s).
+\end{definition}
+
+Equipped with an appropriate \ac{DL} network ($f_{\theta}$), and a dataset 
+$\mathcal{D}$ (\emph{corpus}) containing samples ($\seq{x}$) from the languages 
+being modeled, we have:
+\begin{align*}
+    & P(\seq{x}) = \prod_{i=1}^t P(x_i|\seq{x}_{<i}) \tag*{$\seq{x}_{<i} = (x_1, \ldots x_{i-1});\:P(x_1|\seq{x}_{<1}) := P(x_1)$}\\
+    & \Rightarrow -\log P(\seq{x}) = -\sum_{i=1}^t \log P(x_i|\seq{x}_{<i})
+\end{align*}
+Thus, chosing $\mathcal{L}$ such that:
+\begin{align*}
+    \mathcal{L}(\theta) &:= -\log P(\seq{x}) \tag*{\bf{Negative log-likelihood loss}}\\
+    &\approx \sum_{i=1}^t \log [f_{\theta}(\seq{x}_{<i})]_{x_i}\\
+    & \theta^* = \arg \min_{\theta} \underset{\seq{x} \sim \mathcal{D}}{\mathbb{E}}[\mathcal{L}(\theta)]
+\end{align*}
+gives us a model $f_{\theta^*}$, such that the probability of the corpus is
+maximised. $f_{\theta^*}$ is called an \emph{auto-regressive} or \emph{causal} 
+\ac{LM}, and
+\begin{equation*}
+    [f_{\theta^*}(\seq{x})]_i = \text{softmax}\big(g_{\theta}(\seq{x}_{<t})\cdot e_i\big) \approx P(x_t = i| \seq{x}_{<t})
+\end{equation*}
+where $e_i$ are learned embeddings corresponding to vocabulary token $i$ and
+$g_{\theta}$ is (typically) a decoder-only transformer model \cite{llama3, 
+mixtral, phi3}.
+
+The other common approach to language modeling \cite{xlnet} is \emph{masked} or 
+\emph{auto-encoder} \ac{LM}, with the objective:
+\begin{equation*}
+    \begin{split}
+        \mathcal{L}(\theta) = -\log p_{\theta}(\tilde{\seq{x}}|\hat{\seq{x}}) & \approx -\sum_{i=1}^t m_i \log p_{\theta}(x_i|\hat{\seq{x}})\\
+        &= -\sum_{i=1}^t m_i \log\Big( \text{softmax}\big(h_{\theta}(\seq{x}_{<t})\cdot e_{x_i}\big)\Big)
+    \end{split}
+\end{equation*}
+where $h_{\theta}$ is (typically) an encoder-only transformer model. In this
+approach, $\hat{\seq{x}}$ is a version of a sequence $\seq{x}$, corrupted by
+randomly replacing some ($\sim 10-20\%$) tokens $x_j$ with the \texttt{[MASK]} 
+token\footnote{$m_i$ is an indicator variable, $m_i = 1$ if $x_i$ is masked else
+$0$}. The model $h_{\theta}$ then tries to reconstruct $\tilde{\seq{x}}$ from 
+$\hat{\seq{x}}$. Popular models like BERT \cite{devlin-etal-2019-bert}, RoBERTa 
+\cite{roberta}, etc., follow this paradigm \cite{xlnet}.
+
+During training, a technique called \emph{teacher forcing}--where potentially
+incorrect predictions by the model are used for loss calculation but replaced
+with the ground truth when calculating representations at other token 
+positions--allows the model to be parallelized. 
+
+\subsubsection{Inference Algorithms}
+
+In order to use a trained \emph{causal} language model for generating text,
+several schemes like greedy decoding\footnote{Choose the maximum probability 
+next token.}, beam search \cite{beamsearch}, random sampling, etc. have been 
+proposed.
+
+In random sampling, at each step, given a sequence $\seq{x}$ of length $t$, we 
+sample from the distribution $P(x_{t+1}=i|\seq{x})=[f_{\theta^*}(\seq{x})]_i$ to 
+get the next token and continue this process until either some predetermined 
+stop condition is reached or $x_T = \texttt{[EOS]}$\footnote{\texttt{[EOS]} is 
+a special vocabulary token indicating \emph{end of sequence}.} is predicted.
+This approach has been found to catalyze diversity in generations, and for more
+control over diversity we can introduce a scaling parameter $T$ called 
+\emph{temperature} \cite{tempscale}:
+\begin{equation*}
+    P(x_t = i|\seq{x}_{<t}; T) = \frac{\exp(g_{\theta}(\seq{x}_{<t})\cdot e_i/T)}{\sum_{j=1}^{V} \exp(g_{\theta}(\seq{x}_{<t})\cdot e_j/T)}
+\end{equation*}
+Setting $T=1$ gives us regular random sampling, and in the $T\rightarrow0$ limit 
+this is the same as greedy decoding. With increasing temperature, diversity
+increases and yields a max-entropy distribution in the high-temperature 
+limit. Other strategies for controlling generation quality and diversity have 
+been proposed, like Top-k \cite{topk}, Top-p \cite{topp}, $\eta$-sampling 
+\cite{etasamp}, etc., which truncate the distribution following different 
+policies.
+
+\subsubsection{Prompting}
+
+One of the most fortuitous properties of \aclp{LLM} is their \emph{in-context 
+learning} (ICL) ability. Foundational \acp{LLM} can perform novel tasks based
+on provided instructions, a few solved examples, or additional context 
+\cite{incontext}. This has led to the thorough exploration of a family of 
+techniques called \emph{prompting}, which attempts to manipulate the input to 
+the \ac{LLM}, typically the prefix, to improve performance on numerous tasks.
+
+The \emph{few-shot prompting} \cite{incontext} paradigm involves prepending 
+example inputs and ground truth annotations to the query of an \ac{LLM}. 
+\citet{incontext} showed that the addition of a few examples ($\sim 5-50$) 
+improves the performance of models across various scales and tasks like translation, 
+reasoning, \ac{QA}, etc. Optionally, instructions can be added, which show 
+further promise on \emph{instruction-tuned} \acp{LLM}\footnote{Models fine-tuned 
+with instruction following-demonstration datasets.} \cite{wei2022finetuned}. 
+\emph{Zero-shot prompting} refers to the special case where only instructions or 
+contextual information are added without explicit solved examples.
+
+\emph{Chain-of-thought} prompting \cite{cot} prepends instructions to reason
+about a problem step-by-step and optionally includes illustrative solutions
+with logical steps required to arrive at the solution (see Figure 
+\ref{fig:cotexfig}). This approach has been shown to help with reasoning and 
+math tasks \cite{cot}. Many such ``thought chains'' can be sampled and ensembled 
+to improve performance further  in an approach called \emph{chain-of-thought} 
+with \emph{self-consistency} \cite{cotsc}.
+
+\begin{figure}[!ht]
+    \footnotesize{
+    \begin{tcolorbox}[colback=boxcol,colframe=black]
+        \begin{verbatim}
+Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls.
+Each can has 3 tennis balls. How many tennis balls does he have now?
+
+A: Roger started with 5 balls. 2 cans of 3 tennis balls each are 6 tennis balls.
+5+6 = 11. The answer is 11.
+
+Q: The cafeteria had 23 apples. If they used 20 to make lunch and bought 6 more,
+how many apples do they have?
+
+A: \end{verbatim}
+    \end{tcolorbox}}
+    \caption{Example of a \emph{chain-of-thought} prompt (reproduced from \citet{cot}).}
+    \label{fig:cotexfig}
+\end{figure}

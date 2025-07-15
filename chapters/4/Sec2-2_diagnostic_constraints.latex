@@ -1,0 +1,87 @@
+\Ac{ML} techniques have shown great promise in computational diagnostics 
+\cite{medML1, medML2} and have been applied to a wide set of diagnostic problems 
+\cite{diabMetric, ng}, which are often \emph{multi-label}, i.e., where several
+diagnostic features might be detected from one data sample \cite{multiLabel2}.
+For example, consider a blood sample that might be evaluated by a pathologist to
+detect the presence of several pathogens or a radiologist marking various
+anomalies in a CT scan.
+
+From an aggregated health-care cost perspective, the potential benefit from 
+algorithmic screening can be massive (see Figure 
+\ref{fig:Algorithmic Screening}), provided we can find a suitable system. 
+Therefore, comparing several competing computational diagnostic systems in 
+accordance with clinical outcomes is paramount for deployment in clinical 
+applications. This however continues to pose a challenge.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{images/4/AlgoScreen.png}
+    \caption{\textbf{Algorithmic screening cuts down on health-care costs}. \\
+    Since algorithmic screening is orders of magnitude cheaper than expert 
+    intervention, well-designed computational systems can make health care 
+    accessible to a larger population.}
+    \label{fig:Algorithmic Screening}
+\end{figure}
+
+There is currently no agreement on the optimal metric for evaluating models 
+\cite{diabMetric}, and it is generally advised to asses models using multiple 
+metrics \cite{manyMetricsBetter}. Advances in multi-label diagnostics often have
+to contend with this challenge \cite{multiNLP, diabMetric, ng}. This scattershot 
+approach, however, introduces complications, as comparing models evaluated with 
+different sets of metrics becomes problematic \cite{aucNot}. Furthermore, 
+selecting a particular metric can emphasize a model's strengths while concealing
+its weaknesses \cite{aucNot}. Different metrics often provide conflicting
+evaluations of system performance \cite{experimentalComparison}, meaning the 
+choice of an optimal diagnostic system can be dictated by the choice of the
+metric. Even when results are presented across multiple metrics, they may not
+sufficiently inform clinical decision-making. A broad array of scores, each
+reflecting various performance aspects, may not address the question,
+``\emph{Which system is more suitable for clinical use?}'' Since these metrics
+are adapted from machine learning, where priorities differ, a higher metric
+score does not necessarily signify superior diagnostic performance, and vice
+versa. Therefore, it is crucial to develop a metric that can effectively rank
+computational diagnostic models based on relevant clinical outcomes \cite{cmpaper}.
+
+In clinical practice, some facts are ubiquitous and can be treated like axioms.
+For instance, a wrong diagnosis (wrong classification) is worse than a missed
+diagnosis (missed classification), which is in turn worse than over-diagnosis
+(over-classification) up to a certain extent. The standard metrics used in an
+\ac{MLC} setting do not reflect this.
+
+Also, certain sets of diagnostics have similar treatment plans and outcomes
+\cite{cmpaper}, thus making certain types of missed diagnosis less deleterious.
+Additionally, if there are $k$ possible diagnoses, all $2^k$ might not be
+feasible or logically sound. For example, consider that a patient cannot
+simultaneously demonstrate sinus tachycardia (elevated heart rate) and sinus
+bradycardia (lowered heart rate) or hypo- and hypertension. In general, given
+$k$ classes, there may be a number of first-order logic rules that preclude or
+imply the presence of other classes under certain conditions--and a successful
+diagnostic system must adhere to them strictly.
+
+In a computational diagnostic system, the principle of risk avoidance suggests 
+that sensitivity should be linked to cost, meaning that more serious conditions 
+should be detected with higher sensitivity than less significant issues. 
+However, increasing sensitivity often reduces specificity, potentially leading 
+to alarm fatigue. Consequently, a general \ac{MLC} metric might not reflect the
+clinical principles and practices critical for evaluating such a system. It may
+fail to capture essential characteristics necessary for a diagnostic tool.
+
+With clinical considerations in mind and in consultation with domain experts, 
+we have identified the key attributes that a clinically aligned metric should 
+exhibit.
+
+\begin{spacing}{0.9}
+\begin{itemize}
+    \item Missed diagnosis is more harmful than over-diagnosis.
+    \item A wrong diagnosis is more harmful than an over-diagnosis or missed diagnosis.
+    \item Some diagnoses have more clinical significance.
+    \item Some diagnoses are contradictory and should be disqualifying.
+    \item The quality of a diagnostic tool should not depend on the relative 
+        proportions of diseases present in the population 
+        (dataset distribution independence).
+\end{itemize}
+\end{spacing}
+
+In the following sections, we will use these axioms and the rules posed in a
+diagnostic context to analyze various commonly used metrics and attempt to
+develop our own metric adhering to these principles.

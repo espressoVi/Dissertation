@@ -1,0 +1,140 @@
+After the concise look at the methodology of \ac{DL}, we turn to the 
+models, which are in this context \acfp{NN}. This terminology harkens back to
+the origins of the study of these models, which were first proposed as a 
+facsimile of the brain. These models are typically built up from a composition of
+simple \emph{building blocks}, and we explore a few popular designs in this 
+section.
+
+\subsubsection{\ac{MLP}}
+
+\begin{definition}[\ac{MLP} \cite{mlp}]
+    An \ac{MLP} is defined by the equation:
+    \begin{equation*}
+        \begin{split} h_l &= \sigma(W_l h_{l-1} + b_l)\\
+            \hat{y}_i &= f_{\theta}(x_i) := h_L ;\:h_0 = x_i
+        \end{split}
+    \end{equation*}
+    where $h_l$ is the latent output at \emph{layer} $l$, computed by 
+    multiplying the output of layer $l-1$ with a \bf{weight} $W_l$ and adding a 
+    \bf{bias} $b_l$, before applying a non-linear \bf{activation} or 
+    \bf{transfer} function $\sigma$ ($W_l$ is a linear map and $b_l$ is a 
+    vector).
+\end{definition}
+
+Without the non-linear activation function, the \ac{MLP} model reduces to a 
+linear model, and thus the former is a crucial component of building \acp{NN}.
+Although simple in construction, this model with an appropriately chosen 
+activation function has powerful properties.
+
+\begin{theorem}[Universal Function Approximation \cite{ufat1}]
+    \label{th:ufat}
+    \emph{[arbitrary width case]}
+    $\sigma \in \mathcal{C}(\mathbb{R}, \mathbb{R})$ is not a polynomial if and
+    only if for $n, m \in \mathbb{N}$, a compact subset $K \subseteq 
+    \mathbb{R}^n$, $f \in \mathcal{C}(K, \mathbb{R}^m)$ and $\epsilon > 0$ 
+    $\exists A \in \mathbb{R}^{k\times n}, b \in \mathbb{R}^k, C \in 
+    \mathbb{R}^{m \times k}$ such that
+    \begin{equation*}
+        \sup_{x \in K} || f(x) - C\cdot\sigma(Ax+b) || < \epsilon
+    \end{equation*}
+\end{theorem}
+
+Theorem \ref{th:ufat} basically states that an \ac{MLP} with a 
+single\footnote{potentially infinitely wide.} hidden layer can approximate 
+arbitrary functions if equipped with a non-polynomial activation function. 
+Variants of this theorem with a bounded width and arbitrary depth also exist 
+\cite{ufat2}, and these results demonstrate the potent expressiveness of 
+\acp{MLP}. Popular choices for activation functions include the \emph{sigmoid} 
+defined as $\sigma(x) = 1/(1+ \exp(-x))$, \emph{ReLU} defined $\text{ReLU}(x) = 
+x$ if $x \geq 0$ else $0$, $\tanh$, and GeLU \cite{gelu} 
+defined as:
+\begin{equation}
+    \text{GeLU}(x) = x\cdot\frac{1}{2}\Big[ 1 + \text{erf}(x/\sqrt{2})\Big]
+\end{equation}
+
+\emph{Deep} \acp{MLP}, also called \ac{FC} networks, have been used across a 
+wide range of applications, and they continue to play a pivotal role in \ac{SoTA}
+architectures \cite{transformer}.
+
+\subsubsection{\Ac{CNN}}
+
+\acp{CNN}, introduced by \citet{cnn}, see extensive applications in image tasks 
+\cite{alexnet} and are characterized by the convolution operation.
+
+\begin{definition}[Convolution]
+    Given an image $A \in \mathbb{R}^{H\times W\times C}$ and a kernel 
+    $K \in \mathbb{R}^{(2m+1)\times (2n+1)\times C}$, $H, W, C, m, n \in 
+    \mathbb{N}$ we have:
+    \begin{equation*}
+        [\textit{Conv}(A, K)]_{i,j} = \sum_{a=-m}^m \sum_{b=-n}^n \sum_{c=1}^C [A]_{i+a,j+b,c}\cdot[K]_{a+m+1,b+n+1,c}
+    \end{equation*}
+    for $m < i < H-m$ and $n < j < W-n$. \footnote{Borders can be set to zero, removed, etc.}
+\end{definition}
+
+A \ac{CNN} uses several such groups of convolution operations with learnable 
+parameters stacked on top of each other, with activation functions and other
+operations like pooling, etc. \cite{alexnet} in between. The final stages of 
+\acp{CNN} are typically \ac{FC} networks. \citet{vgg} introduced VGG-19, a 
+``very'' deep\footnote{19 layers of convolutions.} version of \acp{CNN} to 
+tackle the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) 
+\cite{imagenet}.
+
+Extremely deep networks face significant training difficulties owing to
+diminished gradients for initial layers, thus limiting the depth of early 
+\acp{CNN}. However, the introduction of \emph{residual} (or \emph{skip} or 
+\emph{shortcut}) connections has allowed for the instantiation of much deeper 
+\ac{CNN}-based networks \cite{resnet}. For a model $(f \circ g \circ h)(x)$, 
+adding residual connections would transform it to the form $(f \circ g \circ h 
++ f \circ h)(x)$ and allow gradient flow to $h$ despite potential adverse 
+effects of $g$. The ResNet architecture \cite{resnet} increased depth by an 
+order of magnitude and beat previous benchmarks on ILSVRC.
+
+Another notable property of \ac{DL}-based \acp{NN} is their \emph{transfer
+learning} ability. It has been observed that large-scale training on low-quality 
+supervised or unsupervised datasets \emph{(pre-training)} followed by further
+training on smaller, higher-quality datasets \emph{(fine-tuning)} yields 
+performance benefits for the downstream task and is a widely used paradigm for
+a variety of tasks \cite{transferlr}.
+
+\subsubsection{Sequence Models}
+
+When the application calls for modeling sequences $\{x_i\}, x_i \in 
+\mathbb{R}^N$ we often resort to the \ac{RNN} architecture.
+
+\begin{definition}[\ac{RNN} \cite{rnn0}]
+    Given $h_0 \in \mathbb{R}^M$, $W \in \mathbb{R}^{M \times N}$, $V \in 
+    \mathbb{R}^{M \times M}$, $U\in \mathbb{R}^{D \times M}$ and $b_h, b_y \in
+    \mathbb{R}^M, \mathbb{R}^D$ respectively, the following relations:
+    \begin{align*}
+        h_t &= \sigma(W x_t + V h_{t-1} + b_h)\\
+        y_t &= \sigma(U h_t + b_y) \tag*{$\sigma(x) = 1/(1+\exp(-x))$}
+    \end{align*}
+    define an \ac{RNN}. 
+\end{definition}
+
+This network can be used in different ways depending on the task at hand, like
+mapping a sequence to a vector, a vector to a sequence, or a sequence to another 
+sequence. The weights $W, V, U$, etc., are shared between time steps, and this 
+model is trained with the \emph{backpropagation through time} (BPTT) \cite{bptt} 
+algorithm, which involves \emph{``unrolling''} the network along a (finite) 
+sequence, followed by performing backpropagation for each time step and adding 
+their contributions. \acp{RNN} have significant limitations with regard to 
+sequence length and face the \emph{vanishing} / exploding gradients problem, 
+i.e. the gradient for time-step $t$ has a $W^t$ term. To allay this, \acp{LSTM} 
+\cite{lstm} were introduced.
+
+\begin{definition}[\ac{LSTM} \cite{lstm}]
+    Given $h_0 \in \mathbb{R}^N$ and a sequence of input vectors $(x_1, x_2, \ldots)$
+    \begin{equation}
+        \begin{split}
+            f_t &= \sigma(W_f x_t + U_f h_{t-1} + b_f)\\
+            i_t &= \sigma(W_i x_t + U_i h_{t-1} + b_i)\\
+            o_t &= \sigma(W_o x_t + U_o h_{t-1} + b_o)\\
+            \tilde{c}_t &= \tanh(W_c x_t + U_c h_{t-1} + b_c)\\
+            c_t &= f_t \odot c_{t-1} + i_t \odot \tilde{c}_t\\
+            h_t &= o_t \odot \tanh(c_t)
+        \end{split}
+    \end{equation}
+    defines an \ac{LSTM} network, where $W_*, U_*$ are matrices, $b_*$ are bias 
+    vectors, and $\odot$ represents the Hadamard product.
+\end{definition}

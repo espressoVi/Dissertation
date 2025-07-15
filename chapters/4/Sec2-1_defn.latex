@@ -1,0 +1,105 @@
+We first present some definitions that are used throughout the rest of the
+chapter. Some of these definitions are also summarized in Table 
+\ref{tab:Symbols and their meaning}.
+
+\begin{table}[ht!]
+    \caption{Common notation associated with \ac{MLC}.}
+    \centering
+    \begin{tabular}{c|p{0.8\textwidth}}
+    \toprule
+        Symbol & Meaning \\ 
+        \midrule
+        $\mathrm{A}$ & Set of all possible classes (finite) $|\mathrm{A}| = P$\\
+        $a_j$ & $j$-th element of $\mathrm{A}$. $a_j \in \mathrm{A} \: \forall j \in \{1, \ldots P\}$\\
+        $2^{\mathrm{A}}$ & The set of all possible subsets of $\mathrm{A}$.\\
+        $\mathcal{D}$ & The dataset (see Definition \ref{def:dataset}). $|\mathcal{D}| = N$\\
+        $(x_i, y_i) \in \mathcal{D}$ & The $i$-th instance from the dataset with data $x_i \in \mathcal{R}$ and label $y_i \in 2^{\mathrm{A}}$. \\
+        $f_{\theta} (.)$ & The prediction system parametrized by $\theta$.\\
+        $\hat{z}_i \in 2^{\mathrm{A}}$ & The prediction set for $(x_i, y_i)$ given by  $f_{\theta}$\\
+	$\mathcal{M}$(.,.) & 
+	    A metric; maps $\{(\hat{z_i},y_i)\}$ to a score $s \in \mathbb{R}$\\
+        \bottomrule
+    \end{tabular}
+    \label{tab:Symbols and their meaning}
+\end{table}
+
+\begin{definition}[Dataset]
+    \label{def:dataset}
+	Given a set of samples and their respective annotations 
+    $\mathcal{D} = \{(x_i, y_i) | \quad i \in 1, \cdots ,N\}$, where $x_i$ and 
+    $y_i$ are the $i^{th}$ sample and label, respectively is called the \textbf{dataset}.
+	Each $y_i$ is a set of classes (drawn from a fixed set of possible classes 
+    $\mathrm{A} = \{a_1, a_2, \ldots a_P\}$), i.e., $y_i \in 2^{\mathrm{A}}$. 
+    $x_i \in \mathbb{R}^{\chi}.$
+\end{definition}
+
+\begin{definition}[Classifier]
+	 $f_{\theta}: \mathbb{R}^{\chi} \rightarrow 2^{\mathrm{A}}$ is called a 
+     classifier. Given a sample $x_i$, it attempts to recreate the corresponding 
+     label $y_i \approx \hat{z_i} = f_{\theta}(x_i)$ for some 
+     (potentially hidden) parameters $\theta$.
+\end{definition}
+
+The results from the classification framework are often presented as scores, 
+which relate to the likelihood of a particular class being identified,
+i.e., $g_{\theta}: \mathbb{R}^{\chi} \rightarrow [0,1]^P$ and some 
+thresholding protocol must be additionally specified. Generally, such a 
+threshold $t_{\phi, \mathcal{D}}(x_i) \mapsto t_i \in [0,1]^P$. A successful 
+scheme should have:
+
+\begin{equation}
+    [g_{\theta}(x_i)]_j > [g_{\theta}(x_i)]_k \text{ if } a_j \in y_i \text{ and } a_k \notin y_i 
+\end{equation}
+
+We also define
+\begin{equation}
+    [z_{i}]_k = [h_{\theta}(x_i)]_k := 
+    \begin{cases}
+        1 \text{ if } [g_{\theta}(x_i)]_{k} > [t_{i}]_k \\
+        0 \text{, otherwise}
+    \end{cases}
+\end{equation}
+
+The prediction set $\hat{z_i}$, i.e., the set of all label classes meeting the 
+prediction threshold, is given by $\hat{z_i} = \{a_j | z_{ij} = 1,\; \forall
+j \in \{1, \ldots ,P\}\}$. The combination of the function $g_{\theta}$ and the 
+thresholding procedure results in what we refer to as a \emph{classifier}.
+
+In this chapter, we focus solely on evaluating the output set $\hat{z_i}$, in 
+order to have the most general treatment of various kinds of \ac{ML}-based 
+classification systems. The aforementioned classification system, which 
+includes the function $g_{\theta}$ and the thresholding strategy, is treated as
+a black box.
+
+Note, this excludes metrics like AUC \cite{aucNot}, etc., which, although useful 
+in certain contexts, pose the additional challenge of requiring access to the 
+implementation details of the classifier in question. For instance, a clever 
+inference algorithm might make the decision to detect a class based on some 
+accessory information in addition to the classifier outputs in a manner that 
+abides by domain rules. Thus, to analyze the efficacy of an end-to-end system 
+with regard to domain constraint adherence, it makes more sense to talk about the 
+complete system. Thus, we restrict ourselves to implementation blind metrics, 
+i.e., those that can be computed given just the output and target labels.
+
+\begin{definition} [Wrong Classification]
+	A prediction $\hat{z}_i$ is said to be a wrong classification if $\hat{z}_i 
+    \cap y_i = \phi$, i.e., prediction and ground truth are disjoint.
+\end{definition}
+
+\begin{definition} [Missed Classification]
+	A prediction $\hat{z}_i$ is said to be a missed classification if $\hat{z}_i 
+    \subsetneq y_i$, i.e., prediction is a proper subset of ground truth labels.
+	 \label{def:missed}
+\end{definition}
+
+\begin{definition} [Over-Classification]
+	A prediction $\hat{z}_i$ is said to be an over-classification, if $y_i 
+    \subsetneq  \hat{z}_i$, i.e., ground truth is a proper subset of predicted 
+    labels.
+\end{definition}
+
+\begin{definition}
+	The elements of sets $\hat{z}_i - y_i, y_i - \hat{z}_i, \text{ and } y_i 
+    \cap \hat{z}_i$ are called extra predictions, 
+    missed predictions, and correct predictions respectively.
+\end{definition}

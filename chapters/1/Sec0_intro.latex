@@ -1,0 +1,38 @@
+Historically, \ac{AI} research has followed two disparate development paths. One
+path, termed \emph{symbolic} \ac{AI}, represents knowledge in human-readable
+symbols and performs reasoning by manipulating the symbols and applying rules of
+logical inference. The other path is \emph{data-centric} \Ac{AI}, the inarguably
+more successful sibling, which has been getting the biggest share of attention 
+lately. Although there are a plethora of techniques that fall under the umbrella 
+of \emph{data-centric} \ac{AI} or \ac{ML} like support vector machines 
+\cite{svm}, nearest neighbours \cite{knn} or the humble linear regression, one 
+of the most successful techniques in \ac{ML} has been \ac{DL}.
+
+\ac{DL} techniques have been widely applied to a multitude of domains and have
+dethroned expert-driven specialized systems to become ubiquitous in many areas
+of \ac{CV}, \ac{NLP}, biotechnology, etc. The core ideas promulgating \ac{DL}
+today are not new, and prototype techniques have been proposed since the 1960s
+\cite{mlprosen, backprop}. The current boom in \ac{DL} applications can be
+largely attributed to the availability of massive amounts of data and 
+computational power. IBM introduced the 1301 disk storage unit \cite{ibmdrive}
+not long after \citet{mlprosen} conceptualized the first prototype \ac{NN}, and
+today \acp{LLM}, a product of frontier \ac{DL} research, are trained on the
+equivalent of two million such drives worth of data while using the same amount
+of power as the Republic of Vanuatu does in a month.
+
+Despite the undeniable triumph of \ac{DL} techniques, \emph{symbolic} \ac{AI}
+techniques have some appealing features, the most notable of which is their 
+ability to leverage and adhere to established domain knowledge and rules. With
+the widespread use of \ac{DL}, it has become apparent that in some situations,
+this ability is indispensable, and conventional \ac{DL} techniques demonstrate a
+dire shortcoming in this regard. This lack of domain knowledge adherence marring 
+an incredibly promising family of techniques is the focus of this dissertation.
+A hybrid approach learning from data alongside domain principles and providing
+decisions in line with problem-specific constraints would be remarkably opportune.
+
+In this chapter we first introduce the necessary background \emph{vis \`a vis} 
+\acl{DL} and associated techniques (Sections \ref{sec:deeplearning} and
+\ref{sec:language_models}), before briefly discussing some trends in attempts to
+incorporate domain knowledge adherence in \ac{DL} systems (Section 
+\ref{sec:domain_constraints}). Section \ref{sec:organ} lays out the organization
+of the rest of the dissertation.

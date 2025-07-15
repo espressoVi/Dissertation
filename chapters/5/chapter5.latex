@@ -1,0 +1,45 @@
+\chapter{Constrained Inference}
+\label{chap:Constrained Inference}
+
+    \input{chapters/5/Sec0_intro.latex}
+
+    \section{Background}
+
+        \input{chapters/5/Sec1_background.latex} % Lit review and datasets.
+
+    \section{Preliminary Experiments}
+    \label{section:prelimexp}
+
+    In this section we present some preliminary experiments involving various
+    crossword subtasks like clue-answering, constraint information
+    incorporation, counting, etc.
+
+        \subsection{Crossword Clue Solving}
+
+            \input{chapters/5/Sec2-1_qa.latex}  % QA experiments.
+
+        \subsection{Character Constraint Adherence}
+
+            \input{chapters/5/Sec2-2_pqa.latex} % Hinted QA experiments.
+
+        \subsection{Length Constraint Adherence}
+
+            \input{chapters/5/Sec2-3_counting.latex} % Counting experiments.
+
+    \section{LLM-Guided Search}
+
+            \input{chapters/5/Sec3_sweepclip.latex}
+
+    \section{Experiments}
+
+            \input{chapters/5/Sec4-0_summary.latex}
+
+        \subsection{Full Crossword Solving}
+
+            \input{chapters/5/Sec4-1_full_res.latex}
+
+        \subsection{Generalizability}
+
+            \input{chapters/5/Sec4-2_human_eval.latex}
+
+\insertdecoration

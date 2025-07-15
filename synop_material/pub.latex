@@ -1,0 +1,32 @@
+Following is a list of publications pertinent to the dissertation.
+\begin{spacing}{0.9}
+\small{
+\begin{itemize}
+    \item \emph{MedTric : A clinically applicable metric for evaluation of multi-label computational diagnostic systems}.
+        \hfill\colorbox{shadecol}{\emph{Journal}}\\
+        \textbf{Soumadeep Saha}, Utpal Garain, Arijit Ukil, Arpan Pal, Sundeep Khandelwal.\\
+        PLOS ONE, 18(8), 1--19; 2023. [\texttt{10.1371/journal.pone.0283895}] \cite{myMedtric}.
+    \item \emph{Analyzing Semantic Faithfulness of Language Models via Input Intervention on Question Answering}.
+        \hfill\colorbox{shadecol}{\emph{Journal}}\\
+        Akshay Chaturvedi, Swarnadeep Bhar, \textbf{Soumadeep Saha}, Utpal Garain, Nicholas Asher.\\
+        Computational Linguistics, 50(1), 119-155; 2024. [\texttt{10.1162/coli\_a\_00493}] \cite{myCL}.
+    \item \emph{{VALUED} - Vision and Logical Understanding Evaluation Dataset}.
+        \hfill\colorbox{shadecol}{\emph{Journal}}\\
+        \textbf{Soumadeep Saha}, Saptarshi Saha, Utpal Garain.\\
+        Journal of Data-centric Machine Learning Research (DMLR), (13):1--18; 2024. MLR press \cite{myValued}.
+    \item \emph{LADDER: Revisiting the Cosmic Distance Ladder with Deep Learning Approaches and Exploring Its Applications}.
+        \hfill\colorbox{shadecol}{\emph{Journal}}\\
+        Rahul Shah, \textbf{Soumadeep Saha}, Purba Mukherjee, Utpal Garain, Supratik Pal.\\
+        The Astrophysical Journal Supplement Series (ApJS), 273(2), 1--27; 2024. The American Astronomical Society. [\texttt{10.3847/1538-4365/ad5558}] \cite{myLadder}.
+    \item \emph{Language Models are Crossword Solvers}.
+        \hfill\colorbox{shadecol}{\emph{Conference}}\\
+        \textbf{Soumadeep Saha}, Sutanoya Chakraborty, Saptarshi Saha, Utpal Garain.\\
+        \emph{Accepted to the} 2025 Annual Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics [NAACL 2025 (main)].\\
+        Pre-print: [\texttt{https://arxiv.org/abs/2406.09043}] \cite{myCrossword}.
+    \item \emph{DOST--Domain Obedient Self-supervision for Trustworthy Multi Label Classification with Noisy Labels}.
+        \hfill\colorbox{shadecol}{\emph{Workshop}}\\
+        \textbf{Soumadeep Saha}, Utpal Garain, Arijit Ukil, Arpan Pal, Sundeep Khandelwal.\\
+        Proceedings of the 8th International Workshop in Health Intelligence, The Association for the Advancement of Artificial Intelligence (AAAI), 2024.\\
+        AI for Health Equity and Fairness: Leveraging AI to Address Social Determinants of Health, 117--127; 2024. Springer Nature Switzerland. [\texttt{10.1007/978-3-031-63592-2\_10}] \cite{myDost}.
+\end{itemize}}
+\end{spacing}

@@ -1,0 +1,27 @@
+\titleformat{\chapter}[display]
+    {\normalfont\Huge\sffamily}                            % format
+    {\filleft\fontsize{44}{44}\selectfont Appendix \fontsize{84}{84}\selectfont\thechapter}      % label
+    {-2ex}                                                 % seperator
+    {\filleft\Huge\bfseries\textsc}                        % before code
+    [\vspace{0.5ex}\titlerule]                               % after code
+\titlespacing*{\chapter}{0pt}{4.2pc}{4pc}
+
+
+\chapter[Appendix: Cosmological Constraints]{Cosmological Constraints}
+\label{chap:LADDERastro}
+
+    \input{chapters/appendix/Sec2-0_intro.latex}
+
+    \section{Background}
+
+        \input{chapters/appendix/Sec2-1_background.latex}
+
+    \section{LADDER Algorithm}
+
+        \input{chapters/appendix/Sec2-2_proposal.latex}
+
+    \section{Experiments}
+
+        \input{chapters/appendix/Sec2-3_results.latex}
+
+\insertdecoration

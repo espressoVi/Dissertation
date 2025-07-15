@@ -1,0 +1,92 @@
+Despite notable advancements in performance, \ac{SoTA} \acp{LLM} struggle with
+adherence to length constraints, which suggests a difficulty with counting 
+characters within words or phrases-—which we refer to as \emph{sub-token 
+counting}. Even the highest-performing model, GPT-4-Turbo, generates responses 
+of incorrect length on 26.2\% and 16.9\% of the \emph{Init} and the NYT
+datasets, respectively. This challenge may be attributed to the tokenization
+technique employed by LLMs, such as Byte-Pair Encoding \citep{bpe}. In the
+transformer model architecture \citep{transformer}, the first layer converts
+character tokens to embedding vectors, leading to a loss of information about
+the individual characters. This character-level detail must be recovered during 
+training. While the exact mechanism by which \acp{LLM} reacquire this 
+information remains unclear, it is plausible that they learn from training data 
+that explicitly include length specifications.
+
+There are websites\footnote{\href{https://word.tips/words-by-length/}{word.tips/words-by-length} for example.}
+that offer extensive lists of words along with their respective lengths. Often 
+replies on message boards include a count of the number of characters in a piece
+of text. Artifacts like these, which contain sufficient information to infer 
+token lengths, go on to become part of the datasets that \acp{LLM} are trained 
+on. We propose that \acp{LLM} learn to count sub-tokens based on this information 
+provided during training.
+
+To explore this hypothesis further, we developed a sub-token counting task where 
+the \ac{LLM} is provided with a sequence of lowercase characters without spaces 
+and tasked with predicting the total number of characters in the sequence. For 
+the purpose of testing our hypothesis, we selected three sets of 1,000 English 
+words each, named \emph{Common}, \emph{Medium}, and \emph{Rare}, based on the 
+word unigram frequencies assembled by \citet{unigram} from Google's Trillion 
+Words corpus. The ranks for these sets are 1 - 5,000 for \emph{Common}, 47,500 -
+52,500 for \emph{Medium}, and 95,000 - 100,000 for \emph{Rare} words.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{images/Chapter5/Count.pdf}
+    \end{center}
+    \caption{\textbf{Can \acp{LLM} count?}\\
+    \acp{LLM} ability to count the number of characters in a word declines
+    with the unigram frequency of the word, suggesting that counting is somewhat
+    familiarity-based. Figure reproduced from \citet{myCrossword}.
+    }
+    \label{fig:count_freq}
+\end{figure}
+
+If language models possess a broadly generalizable ability to perform sub-token 
+counting, we would expect their counting accuracy to remain consistent across 
+words of varying prevalence. However, our observations suggest otherwise. As 
+illustrated in Figure \ref{fig:count_freq}, the accuracy of LLMs in the 
+sub-token counting task diminishes as the frequency of the token decreases, a 
+trend evident across all tested models.
+
+To understand whether sub-token counting performance differs between words 
+included in the model's vocabulary and randomly generated gibberish with 
+identical length distributions, we conducted a further experiment.\footnote{It is 
+possible that the performance dip observed is because rare words are generally 
+longer than common words.} We first assembled a set of words by intersecting 
+the vocabulary of every open-source model under consideration with the list of 
+the top 100,000 words, ensuring that these ``words'' are extremely likely\footnote{
+This cannot be confirmed for proprietary models.} to be vocabulary tokens across
+all evaluated models and are not special tokens (like \texttt{<bos>}, for 
+example). Next, we generated a set of gibberish words by substituting each 
+character in the vocabulary set words with a randomly selected character from 
+the set \texttt{\{a-z\}}, thereby ensuring that both word sets have identical 
+length distributions.
+
+\begin{table}[!ht]
+    \caption{\Ac{LLM} counting performance for vocabulary words and gibberish.}
+    \label{tab:count_gibber}
+    \begin{center}
+        \begin{tabular}[c]{l c r}
+            \toprule
+            Model                   & Vocab. [Acc. $(\%)$]        & Gibberish [Acc. $(\%)$]\\
+            \midrule
+            Phi 3 3.8B Instruct     & $79.4$         & $61.2$ \\
+            Mistral 7B Instruct     & $47.9$         & $28.2$ \\
+            Llama 3 8B Instruct     & $92.6$         & $69.7$ \\
+            Mixtral 8x7B            & $92.6$         & $80.1$ \\
+            Llama 2 70B             & $92.8$         & $80.0$ \\
+            Llama 3 70B             & $99.6$         & $87.5$ \\
+            GPT 3.5 Turbo           & $86.0$         & $62.1$ \\
+            GPT 4 Turbo             & $99.8$         & $98.8$ \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Our findings (see Table \ref{tab:count_gibber}) indicate that counting accuracy
+not only varies with token frequency but also shows a significant disparity 
+between the accuracy for \emph{vocabulary} words vs. \emph{gibberish} words.
+Although these results do not definitively prove that \acp{LLM} depend on 
+memorized instances from their training data to execute sub-token counting, they
+provide compelling evidence suggesting \acp{LLM} may indeed learn to count from
+artifacts in the training data that contain length information.

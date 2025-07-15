@@ -1,0 +1,69 @@
+\footnote{This appendix is largely based on our paper titled \emph{``LADDER:
+Revisiting the Cosmic Distance Ladder with Deep Learning Approaches and
+Exploring Its Applications''} \cite{myLadder}.}Constraint-aware \ac{DL}
+techniques enable the application of \ac{DL} towards solving scientific
+problems. In this Appendix, we explore such a problem arising from the field of
+cosmology. In addition to constraints imposed by established laws of physics,
+this problem presents extra hurdles, such as the samples not being independently
+and identically distributed (i.i.d.) and the datasets being extremely limited in
+size. We discuss the process involved in developing a first-of-its-kind
+technique to tackle these challenges from the ground up and present empirical
+results to validate our technique.
+
+One of the core challenges in cosmology has been measuring distances. Several 
+methods to indirectly estimate distances to far-flung objects have been devised,
+each having its own region of operation. In addition, the aptly named 
+\emph{cosmic distance ladder} principle allows us to calibrate the various
+measurements using the potential regions of overlap between these disparate
+measurement techniques.
+
+In the conventional distance ladder approach \cite{Riess:2023egm}, we start with 
+geometric measurements of nearby objects as the first ``rung'' of the ladder.
+These measurements are then used to calibrate Cepheid variables
+\cite{Freedman:2023zdo} or Tip of the Red Giant Branch (TRGB) stars
+\cite{Freedman:2020dne}. Finally, using these measurements, we estimate
+distances to the Type Ia supernovae (SNIa). On the other hand, the ``inverse''
+distance ladder begins with the Cosmic Microwave Background (CMB), and through
+various intermediate steps, ultimately extends to SNIa at lower redshifts 
+\cite{Cuesta:2014asa,Camarena:2019rmj}. SNIa are favored as the final step for 
+both ladders due to their reliability across a wide range of redshifts.\footnote{
+\emph{Redshift} here refers to the frequency of the observed light being reduced 
+owing to the object moving away from the observer as a consequence of the Doppler 
+effect. Edwin Hubble first noted that there is a correlation between the distance 
+to a stellar object and the speed at which it is moving away from the Earth. 
+Given this well-established relationship, distances are often talked about in 
+terms of the amount of redshifts.}
+
+The current standard model of understanding of the evolution of the universe is 
+$\Lambda$ Cold Dark Matter ($\Lambda CDM$), which has six free parameters that 
+must be computed from observational data. However, employing this model 
+alongside observational data has led to some inconsistencies--the most notable 
+of which is the Hubble tension \cite{novosyadlyj, hazra, deg2}. This, alongside 
+a growing list of other issues has prompted the cosmological community to device 
+more complicated models or look for ``model-free'' approaches to the cosmic 
+distance ladder paradigm. 
+
+Alongside cosmography \cite{Visser:2004bf}, which utilizes a Taylor series,
+several other methods like Gaussian processes, genetic algorithms, etc., have 
+been studied in this context 
+\cite{Keeley:2020aym, Mukherjee:2021kcu, Arjona:2020axn, Li:2023gpp}. However, 
+ambiguity over polynomial degree, choice of kernels, convergence issues, 
+overfitting concerns, and overwhelming errors in data-scarce regions, have 
+hindered widespread adoption of these techniques 
+\cite{OColgain:2021pyh, Hwang:2022hla}. Owing to these shortcoming, 
+\ac{DL}-based approaches have gained prominence in this domain \citep{Wang:2019vxv, 
+EscamillaRivera:2021vyw, Olvera:2021jlq, Gomez-Vargas:2022bsm, 
+Gomez-Vargas:2021zyl, Giambagli:2023ngt, Dialektopoulos:2023dhb, 
+Dialektopoulos:2023jam, Mukherjee:2024akt, Zhang:2023xgr, Zhang:2023ucf, 
+Xie:2023ydk, Tang:2020nmw, Wang:2020hmn, Mehrabi:2023tld, Liu:2023rrr}. Despite 
+several advances, \ac{DL}-based methods have not been able to extrapolate 
+observational data to data-scarce regions in a consistent manner while taking 
+into account all the available aleatoric noise information. To this end, we 
+device a novel algorithm from first-principles called \textbf{LADDER} 
+(\textbf{L}earning \textbf{A}lgorithm for \textbf{D}eep \textbf{D}istance 
+\textbf{E}stimation and \textbf{R}econstruction) which is the first constraint 
+aware \ac{DL}-based solution to this problem.
+
+In the following sections we first formally state the problem and the associated 
+constraints, followed by a presentation of our solution and elaborate on the design 
+decisions. Finally, we present experimental results validating our approach.

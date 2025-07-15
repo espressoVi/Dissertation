@@ -1,0 +1,94 @@
+We conducted experiments using two extensive multi-label datasets: PASCAL VOC 
+\cite{Everingham15} and PhysioNet 2020/21 \cite{cmpaper}. The PhysioNet 2020/21
+dataset consists of 12-lead ECG signals pooled from several publicly available
+datasets. Each one of them is marked with a subset of diagnoses from a set of 27
+possible diagnoses. A rule set was constructed with inputs from experts in the
+field and is given in Table \ref{table:contradictions}.
+
+\begin{table}[!ht]
+    \caption{
+        \textbf{Contradictory pairs in PhysioNet dataset \cite{cmpaper}.}\\
+        Each pair (A, B) represents a pair of rules of the form $\forall x, A(x)
+        \Rightarrow \neg B(x)$ and $B(x) \Rightarrow \neg A(x)$. The set of all
+        these rules is $\mathrm{R}$.
+    }
+    \label{table:contradictions}
+    \centering
+    \begin{tabular}{p{0.22\textwidth} p{0.22\textwidth} p{0.22\textwidth} p{0.22\textwidth}}
+		\toprule
+		(AF , IAVB)     & (PR , AF)     & (PR , AFL)        & (PR , CRBBB)  \\
+		(PR , IRBBB)    & (PR , LAnFB)  & (PAC , AF)        & (PAC , AFL)   \\
+		(LPR , AF)      & (LPR , AFL)   & (SA , AF)         & (SA , AFL)    \\
+		(SA , PR)       & (SB , AF)     & (SB , AFL)        & (SB , PR)     \\
+		(NSR , IAVB)    & (NSR , AF)    & (NSR , AFL)       & (NSR , Brady) \\
+		(NSR , CRBBB)   & (NSR , IRBBB) & (NSR , LAnFB)     & (NSR , LAD)   \\
+		(NSR , NSIVCB)  & (NSR , PAC)   & (NSR , PVC)       & (NSR , LPR)   \\
+		(NSR , LQT)     & (NSR , QAb)   & (NSR , RAD)       & (NSR , SA)    \\
+		(STach , AF)    & (STach , AFL) & (STach , Brady)   & (STach , PR)  \\
+		(STach , SB)    & (STach , NSR) & (TAb , NSR)       & (TInv , NSR)  \\
+		(NSR , LBBB)    & (NSR , SB)    &                   &               \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+PASCAL VOC serves as a widely recognized benchmark in computer vision for 
+\ac{MLC}, where the task is to identify a subset of classes present in an image
+from a possible 20 classes. Although PASCAL VOC does not inherently include
+rules prohibiting specific class combinations, we devised a rule set for
+demonstration purposes based on classes that do not co-occur in the training
+data (see Table \ref{tab:PASCALrule}).
+
+\begin{table}[!ht]
+    \caption{Rule set $\mathrm{R}$ used with the PASCAL-VOC dataset 
+    \cite{Everingham15}}
+    \label{tab:PASCALrule}
+    \begin{center}
+        \scriptsize{
+        \begin{tabular}{p{0.15\textwidth} p{0.85\textwidth}}
+            \toprule
+
+            \multicolumn{2}{c}{\normalsize{$\forall$ image $x \in \mathcal{D}$, we have }}  \\
+            \midrule
+            \texttt{chair}$(x) \rightarrow$       & $\neg( \texttt{bus}(x) \vee \texttt{dog}(x) \vee \texttt{train}(x)  \vee \texttt{pottedplant}(x) \vee \texttt{sofa}(x) \vee \texttt{bird}(x) \vee \texttt{cat}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{motorbike}(x) \vee \texttt{person}(x) \vee \texttt{sheep}(x) \vee \texttt{bottle}(x) \vee \texttt{bicycle}(x) \vee \texttt{aeroplane}(x) \vee \texttt{horse}(x) \vee \texttt{diningtable}(x) \vee \texttt{car}(x) \vee \texttt{boat}(x) \vee \texttt{cow}(x))$ \\
+            \texttt{bus}$(x) \rightarrow$         & $\neg( \texttt{chair}(x) \vee \texttt{sofa}(x) \vee \texttt{bird}(x)  \vee \texttt{cat}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{horse}(x) \vee \texttt{diningtable}(x) \vee \texttt{cow}(x)) $ \\
+            \texttt{dog}$(x) \rightarrow$         & $\neg( \texttt{chair}(x) \vee \texttt{train}(x) \vee \texttt{aeroplane}(x) )$ \\
+            \texttt{train}$(x) \rightarrow$       & $\neg(\texttt{chair}(x) \vee \texttt{dog}(x) \vee \texttt{bird}(x) \vee \texttt{cat}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{motorbike}(x) \vee \texttt{sheep}(x) \vee \texttt{bottle}(x) \vee \texttt{aeroplane}(x) \vee \texttt{diningtable}(x) \vee \texttt{cow}(x))$ \\
+            \texttt{pottedplant}$(x) \rightarrow$ & $\neg( \texttt{chair}(x) \vee \texttt{sheep}(x) \vee \texttt{cow}(x) )$ \\
+            \texttt{sofa}$(x) \rightarrow$        & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{bird}(x) \vee \texttt{sheep}(x) \vee \texttt{aeroplane}(x) \vee \texttt{horse}(x) \vee \texttt{cow}(x))$\\
+            \texttt{bird}$(x) \rightarrow$        & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{train}(x) \vee \texttt{sofa}(x) \vee \texttt{motorbike}(x))$\\
+            \texttt{cat}$(x) \rightarrow$         & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{train}(x) \vee \texttt{motorbike}(x) \vee \texttt{aeroplane}(x) \vee \texttt{horse}(x) \vee \texttt{boat}(x))$\\
+            \texttt{tvmonitor}$(x) \rightarrow$   & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{train}(x) \vee \texttt{motorbike}(x) \vee \texttt{sheep}(x) \vee \texttt{aeroplane}(x) \vee \texttt{cow}(x))$\\
+            \texttt{motorbike}$(x) \rightarrow$   & $\neg(\texttt{chair}(x) \vee \texttt{train}(x) \vee \texttt{bird}(x) \vee \texttt{cat}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{diningtable}(x))$\\
+            \texttt{person}$(x) \rightarrow$      & $\neg(\texttt{chair}(x))$\\
+            \texttt{sheep}$(x) \rightarrow$       & $\neg(\texttt{chair}(x) \vee \texttt{train}(x) \vee \texttt{pottedplant}(x) \vee \texttt{sofa}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{bicycle}(x) \vee \texttt{aeroplane}(x) \vee \texttt{diningtable}(x) \vee \texttt{boat}(x))$\\
+            \texttt{bottle}$(x) \rightarrow$      & $\neg(\texttt{chair}(x) \vee \texttt{train}(x) \vee \texttt{aeroplane}(x) \vee \texttt{cow}(x))$\\
+            \texttt{bicycle}$(x) \rightarrow$     & $\neg(\texttt{chair}(x) \vee \texttt{sheep}(x) \vee \texttt{aeroplane}(x) \vee \texttt{horse}(x))$\\
+            \texttt{aeroplane}$(x) \rightarrow$   & $\neg(\texttt{chair}(x) \vee \texttt{dog}(x) \vee \texttt{train}(x) \vee \texttt{sofa}(x) \vee \texttt{cat}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{sheep}(x) \vee \texttt{bottle}(x) \vee \texttt{bicycle}(x) \vee \texttt{horse}(x) \vee \texttt{diningtable}(x) \vee \texttt{cow}(x))$\\
+            \texttt{horse}$(x) \rightarrow$       & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{sofa}(x) \vee \texttt{cat}(x) \vee \texttt{bicycle}(x) \vee \texttt{aeroplane}(x) \vee \texttt{diningtable}(x) \vee \texttt{boat}(x))$\\
+            \texttt{diningtable}$(x) \rightarrow$ & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{train}(x) \vee \texttt{motorbike}(x) \vee \texttt{sheep}(x) \vee \texttt{aeroplane}(x) \vee \texttt{horse}(x) \vee \texttt{cow}(x))$\\
+            \texttt{car}$(x) \rightarrow$         & $\neg(\texttt{chair}(x))$\\
+            \texttt{boat}$(x) \rightarrow$        & $\neg(\texttt{chair}(x) \vee \texttt{cat}(x) \vee \texttt{sheep}(x) \vee \texttt{horse}(x))$\\
+            \texttt{cow}$(x) \rightarrow$         & $\neg(\texttt{chair}(x) \vee \texttt{bus}(x) \vee \texttt{train}(x) \vee \texttt{pottedplant}(x) \vee \texttt{sofa}(x) \vee \texttt{tvmonitor}(x) \vee \texttt{bottle}(x) \vee \texttt{aeroplane}(x) \vee \texttt{diningtable}(x))$\\
+            \bottomrule
+        \end{tabular}
+    }
+    \end{center}
+\end{table}
+
+By constructing the rule set based on the class co-occurrences within the 
+datasets, we obviously find that PASCAL VOC annotations do not contradict the 
+rule set. In contrast, about 20\% of the annotations in the PhysioNet dataset 
+conflicted with the established rule set. To assess the impact of noise on model 
+performance, we introduced additional noise in both datasets.
+
+Noisy instances were introduced with a probability $p_C$, either 
+by selecting from a pool of pre-defined noisy instances or by injecting noise 
+according to a geometric distribution. Consequently, from the dataset 
+$\mathcal{D}$ and the rule set $\mathrm{R}$, we generated the datasets 
+$\hat{\mathcal{D}}$ and $\mathcal{D}_C$ such that 
+$p_C = \frac{|\mathcal{D}_C|}{|\mathcal{D}|}$. These datasets were then used to 
+evaluate the influence of noise and the efficacy of various noise mitigation 
+strategies.
+
+The experiments were executed on a single NVIDIA RTX A6000 48GB GPU, and results 
+are reported using 10-fold cross-validation across all scenarios.

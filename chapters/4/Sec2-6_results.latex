@@ -1,0 +1,179 @@
+In the previous section, we demonstrated that our metric ensures compliance 
+with \ref{eq:order} (i.e., ensuring the scoring aligns with the clinical 
+severity monotonic order) under certain conditions. We also asserted that 
+MedTric maintains this property in most practical scenarios. Our analysis 
+suggests that other relevant metrics fail to adhere to \ref{eq:order}, often in 
+common situations. To facilitate a fair comparison, in this section, we will 
+evaluate each metric against a consistent set of diagnostic scenarios to assess 
+their suitability in a clinical context.
+
+Metric scores often rely on the frequency of various classes within the 
+evaluation dataset, potentially obscuring performance deficiencies in specific 
+classes due to their rarity. Conversely, our metric is designed to ensure score 
+invariance with changes in the prevalence of diagnostic conditions. We aim to 
+investigate how often these conditions are violated (if at all) by the various 
+metrics under consideration. As computational diagnostic systems, particularly 
+those employing machine learning methods, are tuned to particular metrics, 
+inconsistencies between these metrics and clinical practice can lead to model 
+behaviors that are similarly misaligned.
+
+\subsubsection{Datasets and implementation details}
+\label{sec:physionetexpl}
+
+In order to measure these, we use three publicly available multi-label diagnostic 
+datasets from different diagnostic disciplines and modalities. The first is 
+the PhysioNet dataset, which is described in Section \ref{sec:experimentalDetailsDOST}.
+The weight matrix used for computation of CM and $M_{med}$ is borrowed from the
+work by Alday et al. \cite{cmpaper}, and the contradiction matrix $[C]_{ij}$
+equals $1$ when the pair $a_i,a_j$ cannot occur simultaneously, and is $0$
+otherwise (see Table \ref{table:contradictions}). The significance values were
+determined by breaking down the possible diagnoses into three groups, namely
+supercritical, critical, and noncritical. A weight of 1 was assigned to
+supercritical, 0.8 to critical and 0.6 for noncritical conditions. Their
+constituents are given in Table \ref{table:significance}.
+
+\begin{table}[!ht]
+    \caption{\textbf{Significance weights for different diagnoses.}\\ 
+    1 is assigned to super critical group, 0.8 to critical group and 0.6 to 
+    non-critical group.}
+    \label{table:significance}
+    \begin{center}
+    \begin{tabular}{l|l|l l}
+        \toprule
+        \textbf{Supercritical} & \textbf{Critical} & \multicolumn{2}{c}{\textbf{Non-critical}} \\
+        \midrule
+        LQRSV   & SA    & STach     & NSIVCB    \\
+        TAb     & Brady & PR        & IRBBB     \\
+        AF      & LQT   & PVC       & PAC       \\
+        AFL     & IAVB  & SVPB      & RBBB      \\
+        LBBB    & SB    & LPR       & LAD       \\
+        CRBBB   & QAb   & VPB       & NSR       \\
+                & LAnFB & RAD       &           \\
+        \bottomrule
+    \end{tabular}
+    \end{center}
+\end{table}
+
+The second is the CheXpert \cite{CheXpert} dataset, which contains 224,316 chest 
+radiographs of 65,240 patients, labeled with 14 classes of findings from frontal
+and lateral X-rays. They have uncertainty labels, along with positive and 
+negative labels for all 14 classes.\footnote{All uncertain labels were assumed to
+be false as per the zeros strategy in \citet{CheXpert}.} Finally, we employed a
+multi-label free text classification dataset\cite{medicalNLP} consisting of 978
+samples labeled with 45 ICD-9 codes. For both these datasets, we used
+$[s]_i = 1 \:\forall i$, $[w]_{ij} = \frac{2}{3} \: \forall i,j, i \neq j$, and 
+$[w]_{ii} = 1 \:\forall i$. $[C]_{ij}$ was taken to be 0.
+
+\subsection{Experiments and results}
+
+\subsubsection{Clinical Order}
+
+In order to check violations of monotonicity (\ref{eq:order}), we first sample a 
+data point $(x_i, y_i)$ from the dataset $\mathcal{D}$ in question. Following 
+this, we generate $\Gamma$ candidate predictions $\hat{z}_{i\gamma}$ such that:
+\begin{equation}
+\begin{split}
+	f_{\text{random}}(y_i) = \hat{z}_{i\gamma} = \{ a_m | P(a_m \in \hat{z}_{i\gamma} | a_m \in y_i) &= p , \text{ and,}\\
+	P(a_n \in \hat{z}_{i\gamma} | a_n \notin y_i) &= 1-q \}
+\end{split}
+\end{equation}
+This simple model $f_{\text{random}}$ emulates a classifier that has a 
+sensitivity of $p$ and specificity of $q$ in each class. Next we group the 
+predictions into several buckets, each with a particular type of diagnosis 
+(wrong, missed, over, or perfect) and the degree (count) of the same.
+\begin{equation}
+\begin{split}
+	\overbrace{\hat{z}_{i(0)}, \hat{z}_{i(1)}, \ldots,}^{t_w\text{ wrong}} \overbrace{\hat{z}_{i({c_1})},\ldots,}^{t_w-1\text{ wrong}}\overbrace{\hat{z}_{i({c_2})}, \ldots,}^{\ldots}  \overbrace{\hat{z}_{i({c_3})}, \ldots, \hat{z}_{i({c_4})}}^{\text{1 wrong}},\\
+	\overbrace{\hat{z}_{i(c_4+1)}, \ldots,}^{t_m\text{ missed}} \overbrace{\hat{z}_{i({c_5})},\ldots,}^{t_m-1\text{ missed}}\overbrace{\hat{z}_{i({c_6})}, \ldots,}^{\ldots}  \overbrace{\hat{z}_{i({c_6})}, \ldots, \hat{z}_{i({c_7})}}^{\text{1 missed}},\\
+	\overbrace{\hat{z}_{i(c_6+1)}, \ldots,}^{t_o\text{ over}} \overbrace{\hat{z}_{i({c_7})},\ldots,}^{t_o-1\text{ over}}\overbrace{\hat{z}_{i({c_8})}, \ldots,}^{\ldots}  \overbrace{\hat{z}_{i({c_9})}, \ldots, \hat{z}_{i({c_{10}})}}^{\text{1 over}}, \overbrace{\ldots, \hat{z}_{i(k)}}^{\text{perfect}} \\
+\end{split}
+\end{equation}
+Then, we compute the metric score $\mathcal{M}\big(\{y_i\}, \{ f_{\text{random}}
+(y_i) \}\big)$ for each candidate group, and check if monotonicity is followed,
+i.e.,
+\begin{equation}
+\begin{split}
+	\mathcal{M}(y_i, W_i^{t_w}) < \mathcal{M}(y_i, W_i^{t_w-1}) <& \ldots < W_i^{1})  \\
+	< \mathcal{M}(y_i, M_i^{t_m}) &< \mathcal{M}(y_i, M_i^{t_m-1}) < \ldots < M_i^{1})  \\
+	< \mathcal{M}(y_i, O_i^{t_o}) &< \mathcal{M}(y_i, O_i^{t_o-1}) < \ldots < \mathcal{M}(y_i,O_i^{1}) <  \mathcal{M}(y_i, P)\\
+\end{split}
+\end{equation}
+Where $W_i^t = \{\hat{z}_{i(\gamma)} | \hat{z}_{i(\gamma)} \text{ has t wrong
+diagnosis} \}$ (and similarly for $O$, $M$). Then we repeat this with several
+($\rho$) samples (x,y) from the dataset to estimate the probability ($\tau$)
+that metric $\mathcal{M}$ follows clinically applicable monotonic order.
+
+We used $\rho=100$ samples from the datasets to probe each metric for 
+monotonicity with 4 pairs of $(p, q)$ and repeated the experiment $n=10$ times
+to gather statistics. Unsurprisingly, only MedTric obeys monotonicity $100\%$ of 
+the time (see Figure \ref{fig:monotonic}). Note that subset accuracy and Hamming 
+loss never obey expected clinical ordering, thus making them least suited for 
+evaluation of diagnostic systems.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=\textwidth]{images/4/Fig3.png}
+	\caption{\textbf{MedTric is the only metric maintaining clinically applicable order $100\%$ of the time.}\\
+	The X-axis displays the metric under evaluation, and the Y-axis shows the 
+    percentage of times monotonicity is followed by a particular metric. The 
+    experiment is carried out with 4 sensitivity and specificity settings 
+    $A- (80\%,95\%)$,$B- (80\%,90\%)$, $C- (60\%,95\%)$, $D- (60\%,90\%)$ over 
+    the three datasets. Hamming loss and subset accuracy never follow 
+    monotonicity. CM was only computed on PhysioNet dataset. Figure is reproduced
+    from \citet{myMedtric}.}
+    \label{fig:monotonic}
+\end{figure}
+
+\subsubsection{Prevalence Invariance}
+
+Promising computational techniques often depend heavily on large amounts of
+data, yet handling long-tailed datasets remains a considerable challenge.
+Consequently, if a diagnostic system excels in one class but underperforms in
+another-—particularly when instances from the poorly performing class are
+rare-—certain metrics might not effectively highlight this weakness (see Table
+\ref{tab:csm-indepEx}). Given that imbalanced datasets are a common reality in
+diagnostics, it is crucial for metrics to detect these potential blind spots
+accurately.
+
+To test for this property, we select two classes from the dataset $a_M$ and 
+$a_m$ which are the most and least frequently occurring classes, respectively. 
+Then we create a subset $\mathcal{D}_\alpha \subset \mathcal{D}$ of such that
+\begin{equation}
+	\mathcal{D}_\alpha = \{\hat{z}_i| P(a_M \in \hat{z}_i) = \alpha, \text{ and, } P(a_m \in \hat{z}_{i}) = 1-\alpha \:\forall i \in \{1,\ldots,l\}\}
+\end{equation}
+Thus the dataset contains roughly $l\alpha$ instances of class $a_M$ and 
+$l(1-\alpha)$ instances of $a_m$. Next, we generate predictions 
+$g_{\text{random}}(\mathcal{D}_\alpha)$ based on $\mathcal{D}_\alpha$ following
+the protocol outlined in the previous section with sensitivity $p_M, p_m$ 
+for $a_M, a_m$ respectively (and specificity $q$). The quantity we are
+interested in estimating is the standard deviation of the metric, i.e.,
+$\sigma(\mathcal{M})$, which will measure the amount of variation it has when
+subjected to variations in the dataset. This is given as:
+\begin{equation}
+	\sigma(\mathcal{M}) = \Bigg(\mathop{\mathbb{E}}_{\alpha \sim U(0,1)}\Big[\mathcal{M}\big(\mathcal{D}_\alpha,g(\mathcal{D}_\alpha)\big)^2\Big]-\mathop{\mathbb{E}}_{\alpha \sim U(0,1)}\Big[\mathcal{M}\big(\mathcal{D}_\alpha,g(\mathcal{D}_\alpha)\big)\Big]^2\Bigg)^{\frac{1}{2}}
+\end{equation}
+We estimate this quantity with a Monte-Carlo simulation by drawing $\eta$ 
+samples from $U(0,1)$. For our experiments, we set $p_M = 0.9$ (``good'' 
+performance for the abundant class), and $p_m=0.5$ (``poor'' performance for 
+the rare class). $\eta = 50$ samples were drawn for $\alpha \sim U(0,1)$, and 
+for each $\alpha$, $l=100$ samples for $a_M$ and $a_m$ were drawn to create 
+$\mathcal{D}_\alpha$. The experiment was repeated $n=10$ times each, for 
+$q=99\%, 95\%$, and over all three datasets (see Figure \ref{fig:dset-inindep}).
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/4/Fig4A.png}
+	\caption{\textbf{Dispersion ($\sigma$) of various metrics with change in dataset prevalence}\\
+	A - $q=95\%$ and B - $q=99\%$. Metric scores are often dictated by the 
+    frequency of occurrence of certain diagnostic conditions in the evaluation 
+    dataset and are not indicative of the actual performance of the computational 
+    diagnostic system. High dispersion scores indicate that a metric is likely 
+    to obscure weaknesses of diagnostic systems due to relative prevalence of 
+    classes. MedTric outperforms other metrics in this regard. Figure is 
+    reproduced from \citet{myMedtric}.}
+    \label{fig:dset-inindep}
+\end{figure}
+
+We consistently observe (see Figure \ref{fig:dset-inindep}) that our metric has
+the least dispersion and therefore is most likely to capture weaknesses of
+diagnostic systems that would otherwise be obfuscated by rarity.

@@ -1,0 +1,21 @@
+\chapter[Do vision systems learn rules?]{Do vision systems learn rules?}
+\label{chap:VALUED}
+
+\input{chapters/2/Sec0_intro.latex}
+
+\section{Background}
+\label{sec:background}
+    
+    \input{chapters/2/Sec1_background.latex}
+
+\section{VALUE dataset}
+\label{sec:Valued}
+
+    \input{chapters/2/Sec2_valued.latex}
+
+\section{Are Rules Learnt?}
+\label{sec:Are Rules Learnt}
+
+    \input{chapters/2/Sec3_rules.latex}
+
+\insertdecoration

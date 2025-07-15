@@ -1,0 +1,23 @@
+\Acf{DL} refers to a powerful and diverse family of techniques that leverage 
+data to model complex real world phenomena. What sets apart \ac{DL} from the
+majority of other techniques in this regime is its unparalleled versatility.
+\Ac{DL} has been successfully applied to, and attained \ac{SoTA} results 
+in, domains like \ac{CV}, \ac{NLP}, reinforcement learning, biotechnology 
+\cite{alphafold}, medicine \cite{ng}, and hundreds more.
+
+Although \ac{DL} features multifarious techniques, architectures, training 
+paradigms, and methodologies, there are a few unifying factors. First and most
+important of which is \emph{data}, and lots of it. This data can be un-annotated
+\emph{(unsupervised)} or annotated by crowdsourcing or appointing experts 
+\emph{(supervised)}. Also, available data is often cleverly repurposed by making 
+assumptions or employing additional techniques \emph{(weakly supervised)}. 
+Secondly, \ac{DL}-based techniques feature at least one parametrized non-linear 
+almost-everywhere differentiable function (\emph{model}), which is meant to
+imitate the underlying relationship we wish to explore. Finally, they feature an
+objective or \emph{loss} function, quantifying desired outcomes for the model
+when applied to the dataset in question. With just these three ingredients, a
+large array of problems in varied areas can be tackled.
+
+In this section, we go over some of the background necessary for the rest of the 
+presentation. We do not provide a thorough overview of \ac{DL}, and we recommend
+the work by \citet{goodfellowDL} for an expansive treatment.

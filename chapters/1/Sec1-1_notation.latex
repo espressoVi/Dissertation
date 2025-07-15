@@ -1,0 +1,41 @@
+A dataset ($\mathcal{D}$) is typically a set of ordered $k$-tuples, with $k \in 
+\{1, 2\}$. The $k=1$ case refers to the unsupervised setting, and we can simply 
+write $\mathcal{D} = \{x_i\:|\forall i \in \{1, \ldots, n\} \}$, where $n$ is 
+the size of the dataset ($|\mathcal{D}|=n$), and the $x_i$s are sampled from the 
+underlying distribution we wish to study. Although not strictly necessary, 
+typically $x_i \in \mathbb{R}^d$ for some $d \in \mathbb{N}$, and is called the 
+\emph{input}. The $k=2$ case refers to the supervised setting, and we have 
+$\mathcal{D} = \{(x_i, y_i)\:|\:\forall i \in \{1, \ldots, n\} \}$. The $y_i$s 
+are called the \emph{ground truths}, \emph{labels}, or \emph{annotations} and 
+can refer to several objects like finite sets, \emph{one-hot} vectors, real 
+numbers, real-valued vectors, etc., and serve as the desired association 
+corresponding to the input $x_i$.
+
+The model is represented with $f, g, h \ldots$ and typically appears with a
+subscript - $f_{\theta}$. $f_{\theta}$ is a function, and we have:
+\begin{equation}
+    f_{\theta} : \Lambda \rightarrow \mathbb{R}^D \text{ for some }D \in \mathbb{N}
+\end{equation}
+where $\Lambda$ is the space from which the input samples are drawn 
+($x_i \in \Lambda$). The vector $\hat{y}_i = f_{\theta}(x_i)$ is termed the 
+\emph{output} of the model corresponding to input $x_i$. $\theta$ is the set of 
+all parameters required for the computation of the function, and typically:
+\begin{equation}
+    \begin{split}
+        &\theta = \{W_1, W_2, \ldots, b_1, b_2, \ldots, \text{etc.}\}\\
+        & W_i \in \mathbb{R}^{M\times N} \text{ are matrices}.\: b_i \in \mathbb{R}^{K}\\
+    \end{split}
+\end{equation}
+If $\theta$ is subject to evolution, we denote the set of parameters at time $t$
+with $\theta_t$, and if the ``optimal'' value is attained by all parameters 
+in $\theta$, we refer to the set as $\theta^*$. The \emph{model} $f_{\theta}$ is 
+continuous and at least piecewise differentiable with respect to the parameters 
+in $\theta$. The objective or \emph{loss function} is denoted with $\mathcal{L}$ 
+or $\ell$.
+
+We often need to talk about a particular index of a vector or matrix, and we 
+refer to the $i^{\text{th}}$ index of a vector $v$ and the $i,j^{\text{th}}$
+index of matrix $M$ as $[v]_i$ and $[M]_{ij}$, respectively. For a real-valued
+function $g:\mathbb{R}\rightarrow\mathbb{R}$, we often use the shorthand 
+notation $g(v), \: v \in \mathbb{R}^{\alpha}$, to represent the vector whose
+$i^{\text{th}}$ component is $g([v]_i)$.

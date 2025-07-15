@@ -1,0 +1,27 @@
+\footnote{This chapter is largely based on our paper titled \emph{``Analyzing 
+Semantic Faithfulness of Language Models via Input Intervention on Question 
+Answering''} \cite{myCL}. \citet{myCL} is much wider in scope and establishes
+a formal notion of semantic faithfulness; we restrict ourselves to discussions
+of adherence of domain constraints \emph{vis \`a vis} QA.}Despite transformer-based 
+\acp{LM} showing remarkable performance at a multitude of \ac{NLP} tasks, their 
+internal consistency leaves a lot to be desired. In this chapter we 
+analyze a set of popular transformer-based \acp{LM} to gauge their ability to 
+adhere to the semantics of the provided context. In particular, we explore 
+contextual \ac{QA} tasks, wherein some contextual information \emph{(story)} is
+provided to the \ac{LM}, and a question is posed whose answer is present in the
+supplied context. We argue that domain-aligned \acp{LM} should be robust to
+manipulations of the provided contextual information, and their responses should
+change if key pieces of provided context are altered. This notion is termed
+\emph{faithfulness}.
+
+We develop a simple and cost-effective intervention strategy called 
+\emph{deletion intervention} that can manipulate key information in the provided
+context and apply it to a range of \acp{LM}. Our findings show that these 
+models are unable to maintain consistency in this scenario. We further propose
+an intervention-based training (IBT) technique that can mitigate this issue and
+better align models to domain expectations.
+
+In the following sections we outline some necessary background, followed by our
+experimental results demonstrating a lack of semantic faithfulness. We also
+present results of further analyses, analyzing the efficacy of the IBT scheme
+with regard to imbuing semantic faithfulness in \acp{LM}.

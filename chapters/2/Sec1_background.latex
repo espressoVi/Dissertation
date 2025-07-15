@@ -1,0 +1,144 @@
+Incorporating domain knowledge has been highlighted as one of the ``3 Grand 
+Challenges in developing AI systems'' by a recent report on AI for Science 
+\cite{ai4sc} and has been studied with zeal across several domains.
+Incorporating domain-specific constraints into \ac{DL} systems would 
+significantly enhance their application in critical fields, such as robotics, 
+healthcare, law, and material science. Furthermore, the development of these 
+methodologies is expected to diminish the dependency on extensive datasets, 
+which are particularly challenging to annotate in these domains 
+\cite{datadifficult}. As \ac{DL}-based vision systems are increasingly 
+adopted, there is a crucial necessity to assess their logical comprehension 
+and explore methods for integrating such understanding into existing models. 
+A common obstacle identified in the literature is the scarcity of large, 
+high-quality, annotated datasets accompanied by associated rules 
+\cite{medicalDataLack, snakeoil, datadifficult}.
+
+To examine the capabilities of vision systems within this scope, it is 
+essential to create a task that ideally possesses the following features:
+
+\begin{enumerate}
+    \item Poses a challenge for \ac{SoTA} vision foundation models.
+	\item Contains non-trivial first-order logic rules that can be inferred from data.
+	\item Presents semantic constraints on localization to test visual reasoning and numerical constraints to test arithmetic reasoning.
+\end{enumerate}
+
+\begin{figure*}[t]
+\begin{center}
+    \includegraphics[width=\textwidth]{images/Chapter2/VALUEDexamples.png}
+\end{center}
+    \caption{\textbf{Example images from the VALUE Dataset}\\
+    The \emph{top row} shows samples from the dataset, and the \emph{bottom row}
+    demonstrates corresponding expected outputs. Figure is reproduced from 
+    \citet{myValued}.
+    }
+    \label{fig:VALUEDexamples}
+\end{figure*}
+
+Considering these features, we focus on the challenge of recognizing the state 
+of a chessboard from an image of an ongoing game (see Figure 
+\ref{fig:VALUEDexamples}). The objective is to reconstruct the arrangement of 
+pieces on the board. It is important to clarify that our main goal is \emph{not
+the precise identification of chess game states} \cite{chessP1, chessP2}.
+Instead, we aim to \emph{analyze the limitations of current vision systems} in
+terms of logical comprehension.
+
+\subsubsection{Brief primer on chess}
+
+Chess is a centuries-old two-player board game played on an 8$\times$8 grid, 
+where each player commands 16 pieces of six distinct types. Each type has 
+specific movement rules (legal moves) \cite{chessrules} within the grid. 
+Players alternate turns, moving one piece at a time, aiming to place their 
+opponent in a situation where the king's capture is inevitable, known as 
+checkmate.
+
+The pieces are differentiated by color—black or white—and are represented by 
+acronyms: \texttt{k, q, r, b, n, p} for black king, queen, rook, bishop, knight,
+and pawn, respectively, and the uppercase equivalents for the white pieces. 
+The chessboard's columns, known as files, are labeled from A to H from left to 
+right, while the rows, or ranks, are numbered 1 to 8 starting from the white 
+side (the bottom leftmost dark square is A1, as depicted in Figure 
+\ref{fig:VALUEDexamples}). The board's entire configuration, or board state, 
+is frequently represented using a shorthand notation known as Forsyth-Edwards 
+Notation (FEN). This format lists the pieces in each rank, separated by slashes 
+(``/''), with numbers indicating consecutive empty squares.
+For example, in Figure \ref{fig:VALUEDexamples} the FEN for the leftmost and 
+rightmost boards are \texttt{r1bqk2r/\allowbreak ppppbN1p/\allowbreak
+2n2np1/\allowbreak 4p3/\allowbreak 2B1P3/\allowbreak 3P4/\allowbreak
+PPP2PPP/\allowbreak RNBQK2R} and \texttt{8/\allowbreak 8/\allowbreak
+2k3P1/\allowbreak 8/\allowbreak 5K2/\allowbreak 6R1/\allowbreak 5r2/8},
+respectively.\footnote{\texttt{r1bqk2r/}\dots represents a row with a black rook,
+followed by an empty square, followed by a black bishop, queen, and king,
+followed by two empty squares and a black rook arranged from left to right.
+This is similarly repeated for all ranks (rows).} The game starts from the
+state \texttt{rnbqkbnr/\allowbreak pppppppp/\allowbreak 8/\allowbreak
+8/\allowbreak 8/\allowbreak 8/\allowbreak PPPPPPPP/\allowbreak RNBQKBNR}. We
+also use $\ctt{L}$ to denote the number of pieces of type \texttt{L} on a board
+(e.g., ${\ctt{K}=1}$).
+
+\subsection{Related Works}
+
+Domain-specific knowledge in the form of discrete logical or numerical 
+constraints is a common element across a variety of problems. Techniques to 
+address this issue often involve modifying the input data \cite{cilp}, adjusting 
+the loss function \cite{logicloss}, altering the model architecture 
+\cite{tmodelcomplain}, or a combination of these strategies \cite{combi}. 
+Nonetheless, further research is necessary to establish a standardized framework 
+for embedding domain knowledge constraints into \ac{DL} systems \cite{goodNature}.
+
+A recurrent issue noted in the literature is the scarcity of datasets 
+\cite{datadifficult, tmodelcomplain, medicalDataLack}. Specifically, there is 
+a need for annotated datasets that feature domain-specific constraints to 
+facilitate the evaluation and refinement of constraint obedience methodologies. 
+Often, researchers must rely on toy datasets \cite{ltn, lnn} or those comprising 
+of only a limited number of examples ($\sim10^3$) \cite{pami}.
+
+Domain knowledge is often presented as a solution to the challenge of working 
+with sparse datasets, leading to reported results on such datasets 
+\cite{datadifficult, snakeoil}. However, when the evaluation of methods is 
+limited to these datasets, the meaningfulness of improvements attributed to 
+domain knowledge remains ambiguous. While, in theory, domain knowledge should 
+help mitigate performance limitations in data-scarce scenarios, this is not an 
+unequivocally resolved issue, and the influence of dataset size on the 
+integration of domain knowledge requires further investigation.
+
+Recently, some advancements have been realized in the \ac{NLP} domain with the 
+introduction of the BIG-bench (Beyond the Imitation Game benchmark) 
+\cite{bigbench} benchmark, which presents a wide array of logically constrained
+tasks. However, due to the immense complexity of natural language, constructing 
+a comprehensive set of logical constraints that cover a substantial portion of 
+the domain is challenging. As such, it does not fulfill the requirement for a 
+vast dataset with a comprehensive set of rules that apply to a large portion of
+domain instances. There are some efforts aimed at evaluating the visual
+reasoning capabilities of \ac{DL} systems \cite{clevr, shapes, raven}. However, 
+these datasets focus on the models' proficiency in abstract visual reasoning, 
+and to our knowledge, no high-quality datasets exist for analyzing deductive 
+reasoning based on an extensive set of domain-specific axioms.
+
+Another area where this issue has been extensively explored is in \ac{MLC} with 
+logical constraints \cite{hmcnet, pami, graphbased}. In these problems, a 
+knowledge graph imposes entailment constraints that predictions must comply 
+with, but typically the set of permissible rules is limited in scope. For 
+instance, datasets like Blurb-genre \cite{bd1}, Uniprot \cite{bd2}, and other
+works \citep{bd3, bd4, myDost}, primarily feature rules of the form $\forall x,
+A(x) \Rightarrow B(x)$. There is a need to explore richer rule sets that
+incorporate constraints based on factors such as localization and counting,
+along with basic first-order logic rules. Some large-scale datasets
+\cite{cmpaper, bd2} suffer from issues like a long-tailed class distribution and
+sparse classes, complicating the evaluation of domain-knowledge integration
+methods. To further research in this domain, it is vital to develop large
+datasets with a variety of domain-specific rules, free from extraneous issues
+like sparsity and class imbalance.
+
+Previous efforts to develop datasets of chess game images \cite{chessP2, 
+chessP1} were primarily aimed at establishing systems for accurate
+reconstruction of game states, rather than focusing on the examination of
+logical understanding. As a result, these datasets do not include a
+comprehensive rule set or associated metrics necessary for such analysis.
+Despite containing a comparatively smaller number of images ($\sim10^4$), these
+datasets can be subsumed into our framework to enhance diversity and further
+assist in investigating logical comprehension within vision systems.
+
+In Section \ref{sec:Valued} we discuss the details of our proposed dataset.
+Finally (Section \ref{sec:Are Rules Learnt}), we attempt to analyze the
+question: \emph{``Given enough data, can deep learning systems trained with
+standard approaches learn to abide by underlying logic rules?''}

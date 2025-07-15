@@ -1,0 +1,25 @@
+In this chapter\footnote{
+    This chapter is largely based on our paper titled \emph{``VALUED - Vision and 
+    Logical Understanding Evaluation Dataset''} \cite{myValued}.
+}, we explore whether \ac{DL} systems learn to pick up on domain rules when 
+trained on a vast dataset. When analyzing various \ac{DL} techniques through the
+lens of domain obedience, it is crucial to have large, high-quality datasets
+with annotations and constraining rules. Having noticed a gap in this area in
+the literature, we put forth \textbf{VALUED}, or \emph{Vision and Logical
+Understanding Evaluation Dataset} (Section \ref{sec:Valued}). This dataset
+features 200,000 annotated images of chess games in progress and an associated
+rule set with the aim of understanding constraint obedience characteristics of 
+\ac{SoTA} \ac{DL} techniques. This dataset allows us to explore the compelling
+question, ``\emph{Do models learn rules from data alone?}'' (Section 
+\ref{sec:Are Rules Learnt}).
+
+We explore the problem of constraint adherence in a \emph{classification}
+setting, as the vast majority of problems in \ac{DL} are posed as versions of
+classification. In addition to regular classification problems, a wide array of
+tasks like language modeling, semantic segmentation, sentiment analysis, etc.,
+are commonly viewed through the lens of classification. However, \ac{MCC}, where
+each sample of data is mapped to exactly one class, does not feature inter-class
+domain constraints. Thus, we look to a \ac{MLC}-like problem, where many classes
+may potentially be predicted from a single data instance. This problem poses
+more complex kinds of errors since the predicted set and ground-truth sets can
+overlap in diverse ways.

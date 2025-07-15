@@ -1,0 +1,37 @@
+In this chapter\footnote{
+    This chapter is largely based on our papers titled \emph{``DOST--Domain 
+    Obedient Self-supervision for Trustworthy Multi Label Classification with 
+    Noisy Labels''} \cite{myDost} and \emph{``MedTric : A clinically applicable
+    metric for evaluation of multi-label computational diagnostic systems''}
+    \cite{myMedtric}. 
+}, we tackle the problem of incorporating logic rules into the \ac{DL} framework.
+As discussed in Chapter \ref{chap:VALUED}, this is a pressing challenge in
+several critical domains like healthcare, robotics, law, etc. Notably, these
+vital expert-dominated areas are also likely to present significant challenges
+from the data annotation perspective since expansive resources must be devoted
+to this endeavor. Since the deployment of successful \ac{DL} models requires
+copious amounts of training data, the annotations in these settings are likely
+to contain significant quantities of label noise. This is the problem we tackle
+in Section \ref{sec:DOSTnoisy}. In particular, we explore how the presence of
+annotation noise affects domain knowledge adherence and propose a novel
+technique to exploit these noisy annotations to not only improve logical
+coherence but also improve learning performance.
+
+This chapter (Section \ref{sec:Deep Learning Metrics}) also explores
+evaluating models and specifically looks at problems with common metrics used in
+\ac{DL} with the goal of analyzing their efficacy from the perspective of domain
+knowledge obedience. Although standard metrics provide adequate signals in the
+vast majority of cases, each of them often has its own pitfalls \cite{dkrev1}.
+Thus, to avoid arriving at a misleading perception of performance, the accepted
+best practice is to report results on a multitude of metrics
+\cite{manyMetricsBetter}, which also presents challenges.
+
+In Section \ref{sec:diagconst}, we set out a few basic ground rules a ``\emph{
+domain obedience}'' metric must follow in a clinical setting, followed by an
+exploration of some common \ac{ML} metrics and their potential issues. We then
+illustrate how to construct a metric from the ground up with the domain
+constraints in mind (Section \ref{sec:Domain Obedience Metric}). This is
+followed by a validation of the proposed metric in some key areas (Section
+\ref{sec:MedTric}). Although the designed metric targets a clinical use case,
+the process of arriving at the metric is generalizable to any target domain
+presenting similar demands.

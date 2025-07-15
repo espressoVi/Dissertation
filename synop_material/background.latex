@@ -1,0 +1,90 @@
+\ac{DL}-based predictive systems outperform other techniques in several areas
+and also offer unique advantages like being able to handle myriad data types and
+not being reliant on expert-crafted features. However, a key hindrance to
+wider adoption is their \emph{unreliability} in certain contexts. In many
+critical applications, automated decision-making systems \emph{must} exhibit an
+ability to operate within preset boundaries or \emph{constraints} to be
+considered for deployment. 
+
+It has been demonstrated that conventional \ac{DL} techniques learning from data 
+alone \emph{do not learn} to operate within the bounds of these requisite 
+constraints \cite{myValued, snakeoil}. \citet{snakeoil} showed that \acp{NN}
+trained with regular approaches disobey monotonicity and boundary constraints,
+and \citet{myValued} presented similar findings for logical constraints. The 
+problem is more severe than occasional constraint violation, and \citet{overfit} 
+have noted that \ac{DL} systems can fit ``a random labeling of training 
+data''--thus indicating that \ac{DL}-based approaches are somewhat oblivious to 
+underlying domain principles. This lack of domain awareness is a major deterrent 
+to wider acceptance of \ac{DL} methods in key domains.
+
+A naive approach to dealing with this issue is to augment \ac{DL} models with
+a rule-checking system to suppress offending predictions. Such an approach
+mitigates this issue somewhat, potentially at the cost of performance, but 
+completely underutilizes the opportunity presented by the constraint 
+information. A constraint-aware system could potentially learn from constraints 
+to make improved predictions, infer missing details, or display enhanced 
+robustness \cite{dkrev1, pami}. Further, augmenting such a constraint-aware 
+system (\emph{soft constraint adherence}) with a rule-checker can result in 
+\emph{hard constraint adherence} with minimal performance disruption.
+
+There are two pertinent areas of exploration in this regard: \emph{learning 
+from} and \emph{abiding by} specified domain constraints, which is the focus of 
+this dissertation. A \textbf{domain-obedient deep learning} system aims to 
+leverage pre-existing domain constraints in addition to training data to improve 
+prediction performance and better align models to domain expectations. 
+
+A related interesting area of study is rule learning or reasoning with 
+\ac{DL}-based systems \cite{ltn, lnn, dilp}, where the expected output is novel 
+rules discovered from potentially noisy data. The constraint adherence problem,
+although more straightforward, has significant practical ramifications for wider 
+applicability and is the focus of the dissertation. Awareness of domain 
+constraints could also potentially mitigate effects of data sparsity 
+\cite{goodNature, snakeoil}.
+
+Constraints can take many forms, like numerical or logical relationships, graphs,
+probability distributions, or other problem-specific prior knowledge. The
+primary focus of this dissertation is on logical constraints. Since graph-based
+constraints are also typically decomposable as a set of logical constraints, a
+general framework for incorporating \emph{first-order logic} (FOL) rules into
+\ac{DL} systems would address the challenges posed by the former.
+\citet{goodNature} point out that ``Logic is not differentiable'', and
+addressing logical coherence poses a challenge when working in the standard
+\ac{DL} framework, which is reliant on gradient-based optimization.
+
+Previous studies in this area have explored techniques like modifying losses, 
+architectures, or transforming datasets \cite{goodNature, dkrev1}. The \ac{NN}
+\emph{architecture} employed to address a problem has a strong influence on 
+constraint adherence. For example, consider \acp{CNN}, which respect translation 
+equivariance and locality constraints (spatially close pixels are semantically 
+related), or \emph{graph neural networks} (GNNs), which explicitly model node 
+relationships. There have been more explicit capitalizations of this general 
+idea, like the KBANN approach \cite{kbann}, which derives the structure of the 
+\ac{NN} from domain knowledge expressed as a set of propositional rules. The 
+work by \citet{eskidn} advances a system to incorporate symbolic knowledge 
+expressed as graphs in a GNN to improve generated embeddings. \citet{annwfol} 
+proffer adding connections to the \ac{NN} based on domain knowledge expressed as 
+FOL rules.
+
+The classical approach to \emph{modifying losses} is to introduce auxiliary 
+objectives penalizing incoherent predictions \cite{snakeoil, bs22, logicloss, bs29}. 
+\citet{bs8} put forth a system to translate FOL rules to fuzzy constraints, 
+which are then employed as penalty terms. \citet{pami} rephrased domain 
+constraints as polynomials employing continuous logics and transformed the 
+adherence problem into an optimization problem with the polynomials serving as 
+auxiliary losses. \citet{pami} and \citet{pamibaap} demonstrated improved adversarial 
+robustness with their techniques. \citet{combi} suggested an iterative 
+distillation \cite{distil} technique to incorporate logical constraints.
+
+\emph{Dataset transformations} involve including background knowledge-based 
+relational or logical features extracted from the data alongside the data
+\cite{bs40, cilp, bs43}; however, when considering constraint adherence, the 
+customary approach is to augment the dataset with examples following criteria
+established by domain rules. As an example, \citet{smiles} proposes a 
+methodology where they augment the training dataset with synthetic samples that
+are filtered based on domain constraints to reinforce learning of these 
+constraints. To imbue constraints on input features, data augmentation with 
+constraint-invariant perturbations has also been explored \cite{pert1, pert2}.
+
+Despite several promising forays towards logical constraint adherence, a general
+framework for incorporating logical constraints into \ac{DL} systems remains
+elusive.

@@ -1,0 +1,70 @@
+Following in the paradigm of \citet{curriculum, llmcryptic, dacross}, and 
+\citet{cryptonite}, we first analyze this problem through the lens of crossword 
+clue answering. Typically, the first step in crossword solving is generating
+candidate answers based on clues, in a \ac{QA} fashion, where the clue and the
+associated length serve as the question, and we expect the \ac{LLM} to come up
+with the answer. We test several \acp{LLM} with the prompt in Figure 
+\ref{fig:fspcs}.
+
+\begin{figure}[!ht]
+    \footnotesize{
+    \begin{tcolorbox}[colback=boxcol,colframe=black]
+        \begin{verbatim}
+[{ "role":"system",
+    "content": "You are an expert crossword solver. Given a clue 
+        please provide the best possible answer succinctly. Do 
+        not produce extra text.\n The number of characters in the 
+        answer is given in brackets and must be strictly adhered 
+        to. e.g. Clue: Daily update (4)// means the answer should 
+        have 4 characters."}{
+   "role":"user", 
+    "content": "Clue: <1st in-context example> (length) // <answer>\n
+                Clue: < ...  > (length) // answer 2\n
+                Clue: < ...  > (length) // answer k\n
+                Clue: <query clue> (length) // "
+}]\end{verbatim}
+    \end{tcolorbox}}
+    \caption{Few-shot prompt for crossword clue solving.}
+    \label{fig:fspcs}
+\end{figure}
+We used 5 and 10 in-context examples\footnote{Further increases (25-shot) did 
+not yield performance benefits.} and reported results with Phi 3 3.8B Instruct 
+\cite{phi3}, Mistral 7B Instruct \cite{mistral}, Llama 2 70B \cite{llama2}, 
+Llama 3 8B Instruct, Llama 3 70B \cite{llama3}, Mixtral 8x7B \cite{mixtral}, 
+Claude 3 Sonnet \cite{claude}, GPT 3.5 Turbo, and GPT 4 Turbo \cite{gpt4} to 
+cover a wide range of parameter scales and a mix of open-weights and 
+proprietary models. The results are summarized in Figure \ref{fig:semantic_context}.
+
+\begin{figure*}[!ht]
+    \begin{center}
+        \includegraphics[width=0.32\textwidth]{images/Chapter5/NYT.pdf}
+        \includegraphics[width=0.32\textwidth]{images/Chapter5/Cryp.pdf}
+        \includegraphics[width=0.32\textwidth]{images/Chapter5/Init.pdf}
+    \end{center}
+    \caption{
+        \textbf{Analyzing LLMs' ability to generate answers from crossword clues.}\\
+        We test LLMs at different scales on the NYT, Cryptonite, and \emph{Init}
+        datasets with 5-shot and 10-shot prompts. All results are with 
+        \texttt{T=0.5}, and the figure is reproduced from \citet{myCrossword}.
+    }
+    \label{fig:semantic_context}
+\end{figure*}
+
+Notably, 5- and 10-shot prompts\footnote{We did not perform experiments with 
+10-shot prompts on Claude and GPT-4-Turbo due to budget limitations.}
+yielded similar performance results, and there is a significant performance
+difference (up to 5\%) in all models between \emph{Cryptonite} and \emph{Init}, 
+with \acp{LLM} showing diminished performance on the \emph{Init} dataset.
+
+The analysis of model performance across a range of datasets reveals improved 
+outcomes with increased model scale. On the NYT dataset, we register accuracies 
+(exact match) of 27.2\% for Llama 3 70B, 26.05\% for GPT 3.5 Turbo, 37.7\% for 
+Claude 3 Sonnet, and \textbf{41.2\%} for GPT-4-Turbo. While large language 
+models underperform on \emph{cryptic} crosswords compared to \emph{straight}
+crosswords, Claude 3 Sonnet and GPT-4-Turbo manage to surpass previous \ac{SoTA}
+results in \emph{cryptic} crossword datasets. Their accuracies are recorded at 
+12.9\% and \textbf{23.5\%} on Cryptonite, and 10.8\% and \textbf{18.7\%} on 
+\emph{Init}, respectively. Notably, GPT-4-Turbo achieves a significant 
+\textbf{1.97}$\times$ improvement over the previous \ac{SoTA} result, which 
+reported an accuracy of 9.5\% as reported by \citet{llmcryptic} 
+(see Figure \ref{fig:semantic_context}).

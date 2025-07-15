@@ -1,0 +1,42 @@
+Label noise is a significant challenge in \ac{DL} systems, prompting 
+researchers to develop various solutions \cite{noiseSurvey, noisyMedical}. Among 
+these solutions are techniques such as label cleaning and pre-processing 
+\cite{Vo2015EffectiveTO}, network architecture modifications 
+\cite{NIPS2017_e6af401c}, and the implementation of robust loss functions and 
+regularization strategies \cite{Ghosh_Kumar_Sastry_2017, NEURIPS2018_ad554d8c}. 
+While there is a substantial body of work addressing noise in the single-label 
+(\ac{MCC}) context, explorations in the multi-label context are less prevalent. 
+The traditional approach in \ac{MLC} involves decomposing the problem into a 
+series of independent binary classification tasks. Interestingly, recent 
+advancements in \ac{MLC} have been reliant on leveraging label correlations 
+\cite{Wang_He_Li_Long_Zhou_Ma_Wen_2020, 8953276}, which exacerbates the domain
+coherence issue in the presence of noise. To address this, Zhao and Gomez 
+\cite{Zhao2021EvaluatingMC} introduced a loss function for learning robust 
+embeddings.
+
+This issue is often approached through the lens of disambiguation, i.e., given a 
+dataset with noisy annotations, the goal is to first recover the ground-truth 
+labels from candidate labels before applying learning algorithms. For instance, 
+\citet{Xie_Huang_2018}, and \citet{Fang_Zhang_2019} explored the introduction 
+of labeling confidences, whereas \citet{Sun_Feng_Wang_Lang_Jin_2019} applied a 
+low-rank and sparse decomposition technique. \citet{GARCIA201614} suggested a 
+meta-learning system that predicts the performance of noise filters in noisy 
+data identification tasks. Furthermore, \citet{9354590} proposed a framework for 
+\ac{MLC} that concurrently identifies noisy labels.
+
+Our research ventures into domain knowledge augmentation, particularly focusing 
+on logical constraints derived from domain information. Logically constrained 
+\ac{MLC} is a well-explored area and has been shown to outperform conventional 
+\ac{MLC} systems in certain tasks. \citet{NEURIPS2020_6dd4e10e} developed a 
+method for hierarchical \ac{MLC} problems by adding a constraint layer to their 
+models, which uses hierarchies in the annotations to improve performance. This 
+method demonstrated superior results compared to standard post-processing 
+techniques, which do not incorporate constraint information into the model. 
+\citet{pami} trained \acp{MLC} using an augmented loss function that encodes 
+logic constraints as a polynomial of predicate probabilities, showing that this 
+approach helps mitigate adversarial attacks.
+
+To our knowledge, logically constrained \ac{MLC} has not been investigated in a
+noisy label context, where such constraint violations are frequent. The method
+we propose, \textbf{DOST}, capitalizes on these logical constraints to detect
+noisy labels and concurrently enhance both performance and domain coherence.

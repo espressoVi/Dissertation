@@ -1,0 +1,196 @@
+\subsubsection{Datasets and Task Description}
+
+Our experiments are performed on the \emph{CoQA} \cite{coqadataset} and the
+\emph{HotpotQA} \cite{hotpotqadataset} datasets. CoQA stands for Conversational 
+Question Answering and features story passages \emph{(context)} from several
+domains like children's stories, news, etc., alongside multi-turn conversational
+questions. Additionally, a span of the paragraph containing key information
+required to answer (\emph{rationale}) the question is annotated. The answers
+are typically also a span of the story or are one of \texttt{\{yes, no, 0$\sim$9,
+unknown\}}. The various questions associated with each story might be correlated,
+i.e., a follow-up question based on previous questions or answers is featured.
+An example instance of the CoQA dataset can be found in Table \ref{tab:coqa-ex}.
+
+\begin{table}[!ht]
+    \caption{\textbf{Example question from the CoQA dataset.}\\
+        The text marked in \textbf{bold} is the associated annotated rationale 
+        required to answer the question.
+    }
+    \label{tab:coqa-ex}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{p{0.29\textwidth}|p{0.63\textwidth}}
+            \toprule
+            \multirow{1}{*}{\textbf{Story}}                 & Once upon a time, in a barn near a farmhouse, there lived a little white kitten named Cotton. Cotton lived high up $\ldots$ farmer's horses slept. \textbf{But Cotton wasn't alone in her little home above the barn, oh no.} \\
+            \hline
+            \multirow{2}{*}{\textbf{Conversation History}}  & What color was Cotton? white \\
+                                                            & Where did she live? in a barn \\
+            \hline
+            \multirow{1}{*}{\textbf{Question}}              & Did she live alone? \\
+            \hline
+            \multirow{1}{*}{\textbf{Answer}}                & no \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+HotpotQA is a single-turn \ac{QA} dataset, and corresponding to each question
+there are 2 gold and 8 distractor context paragraphs sourced from 
+\emph{Wikipedia}, with only the gold paragraphs containing information relevant 
+to answering the query. This dataset also contains \emph{rationale} annotations, 
+and for parity with the CoQA dataset, we use the two concatenated gold 
+paragraphs as the provided context \emph{(story)}.\footnote{For the purposes
+of this study, the distractor paragraphs were discarded.} An example instance
+of the HotpotQA dataset can be found in Table \ref{tab:hotpot-ex}. The dataset
+statistics are provided in Table \ref{tab:data_statsqa}, and results are
+reported on the \emph{dev} sets of these datasets.
+
+\begin{table}[!ht]
+    \caption{\textbf{Example question from the HotpotQA dataset.}\\
+        The text marked in \textbf{bold} is the associated annotated rationale 
+        required to answer the question.
+    }
+    \label{tab:hotpot-ex}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{p{0.12\textwidth}|p{0.83\textwidth}}
+            \toprule
+            \multirow{2}{*}{\textbf{Story}}                 & \textbf{Chumbawamba were a British rock band that formed in 1982 and had major success until their final performances in 2012.} The band constantly shifted in musical style, drawing on $\ldots$  \\
+                                                            & \textbf{Spin Doctors is a rock band from USA, formed in New York City}, best known for their early 1990s hits, "Two Princes" and "Little Miss Can't Be Wrong", $\ldots$ \\
+            \hline
+            \multirow{1}{*}{\textbf{Question}}              & Are Chumbawamba and Spin Doctors from the same country? \\
+            \hline
+            \multirow{1}{*}{\textbf{Answer}}                & no \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+\begin{table}[!ht]
+    \caption{Data Statistics for CoQA and HotpotQA along with the percentage of \emph{unknown} questions.}
+    \label{tab:data_statsqa}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}{l c c c c }
+            \toprule
+            \textbf{Dataset} & \textbf{Split} & \textbf{Story} & \textbf{Questions} & \textbf{unk\%}\\
+            \midrule
+            \multirow{2}{*}{CoQA}       & train & 7,199 & 108,647 & 1.26\\
+                                        & dev   & 500   & 7983    & 0.83 \\
+            \midrule
+            \multirow{2}{*}{HotpotQA}   & train & 84579 & 90447   & - \\
+                                        & dev   & 7350  & 7405    & - \\ 
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+\subsubsection{Models and Experimental Details}
+
+We employed widespread \acp{LM} like BERT \cite{devlin-etal-2019-bert}, RoBERTa 
+\cite{roberta}, and XLNet \cite{xlnet} in their \emph{base} and \emph{large}
+variants. Additionally, InstructGPT \cite{gpt-3}, i.e., \texttt{text-davinci-002}
+and \texttt{text-davinci-003}, were used for this study. The architectures were
+unchanged between the two datasets. The input was provided in the following
+format:
+\begin{equation*}
+    \Big[ [Q^{i-2}_{1\ldots k_1}], [A^{i-2}_{1\ldots k_2}], [Q^{i-1}_{1\ldots k_3}], [A^{i-1}_{1\ldots k_4}], [\mathbf{Q^i}_{1\ldots k}], [SEP], [S_{1\ldots n}] \Big]
+\end{equation*}
+where $[Q^{m}_{1\ldots k}], [A^{m}_{1\ldots k}], [S_{1\ldots k}]$ refer to the 
+$k$ tokens of the $m^{\text{th}}$ turn question, answer,\footnote{Omitted for HotpotQA.}
+and the story, respectively.\footnote{Context is placed before question for XLNet.}
+Additional tokens like $[CLS]$, etc., were added as needed. The publicly
+available XLNet implementation for CoQA\footnote{\href{https://github.com/stevezheng23/mrc_tf}{github.com/stevezheng23/mrc\_tf}} 
+was used, and BERT and RoBERTa were implemented according to the work by
+\citet{roberta:19}. We implemented the local \acp{LM} in PyTorch \cite{pytorch}
+using the Huggingface library \cite{huggingface}. The code and other necessary
+materials to reproduce our results have been
+open-sourced.\footnote{\href{https://github.com/akshay107/sem-faithfulness}{github.com/akshay107/sem-faithfulness}}
+
+Our proposed method for analysis, called \emph{deletion intervention}, removes
+the \emph{rationale}, i.e., necessary information from the context required to 
+answer a query. In some instances of the CoQA dataset, there is some information
+redundancy in the form of repetitions of necessary information; however, in all
+such instances the first occurrence of the information is annotated as the
+\emph{rationale} (see Table \ref{tab:redunex} for an example). Armed with this 
+information, we perform the following interventions and create corresponding 
+datasets:
+\begin{spacing}{0.9}
+\begin{itemize}
+    \item \textbf{OS} (\emph{Original Story}) - The original dataset without any changes.
+    \item \textbf{TS} (\emph{Truncated Story}) - Dataset with the stories truncated after, but including, the rationale.
+    \item \textbf{TS-R} (\emph{Truncated Story - Rationale}) - Dataset with the stories truncated just before the rationale, with the ground truth answer appended to the end.
+    \item \textbf{TS-R+Aug} (\emph{Truncated Story - Rationale + Augmentation}) - Same as \textbf{TS-R}, but instead of the ground truth answer, a synthetic sentence containing the ground truth is appended.
+\end{itemize}
+\end{spacing}
+
+\begin{table}
+    \caption{
+        \textbf{Example of information repetition in the CoQA dataset.}\\
+        Just removing the \emph{rationale} from the story is often not enough
+        to remove critical information. However, since the first instance of
+        the critical information is always annotated, upon truncation, it
+        should not be possible for \acp{LM} to respond to the query. The
+        annotated \emph{rationale} is marked in \textbf{bold}, and repetitions 
+        are \colorbox{shadecol}{shaded}.
+    }
+    \label{tab:redunex}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{p{0.1\textwidth}|p{0.85\textwidth}}
+            \toprule
+            \multirow{5}{*}{\textbf{Story}}    & Characters: Sandy, Rose, Jane, Justin, Mrs. Lin $\ldots$ \\
+                                               & Jane: Sandy, I called you yesterday. Your mother told me $\ldots$ This year is very important to us. \\
+                                               & \textbf{Sandy: (crying) My father has lost his job}, and we have no money to pay all the $\ldots$ \\
+                                               & $\ldots$ \\
+                                               & Jane: Eh... I hear that \colorbox{shadecol}{Sandy's father has lost his job} $\ldots$ \\
+            \hline
+            \multirow{1}{*}{\textbf{Question}} & Who was unemployed? \\
+            \hline
+            \multirow{1}{*}{\textbf{Answer}}   & Sandy's father \\
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+The \textbf{OS} and \textbf{TS} interventions contain enough information to 
+successfully respond to the query. The \textbf{TS-R} intervention, however, 
+removes this requisite information, only retaining the ground truth. For 
+example, consider the query, \textit{``Where does David go after work?''} and 
+the story--\textit{``David works in an office. He goes to the gym after work.''
+}. The \textbf{TS-R} intervention would result in the story--``David works in 
+an office. gym''. To study if superficial cues, introduced by the intervention 
+process \textbf{TS-R}, are relied upon by the models, we create
+\textbf{TS-R+Aug}, which has the ground truth information phrased in the form of
+a sentence with the help of \texttt{gpt-3.5-turbo}. Under \textbf{TS-R+Aug}, the
+previous exemplar story would be, \textit{``David works in an office. Going to 
+the gym helps you stay fit.''}. Since the \textbf{TS-R} and \textbf{TS-R+Aug} 
+datasets do not contain enough information to answer the question, a 
+\emph{faithful} \ac{LM} should answer queries from these datasets with 
+\emph{unknown}. 
+
+The HotpotQA dataset does not feature \emph{rationale} repetition, and thus we 
+do not perform truncation on it. The three intervention schemes on this dataset 
+are \textbf{OS}, which maintains the original story; \textbf{OS-R}, which has 
+the rationale removed and the ground truth appended; and \textbf{OS-R+Aug}, 
+which has the rationale removed and the ground truth appended in the form of a 
+synthetic sentence.
+
+\subsubsection{Intervention-Based Training}
+
+For evaluating the open-source \acp{LM}, we performed fine-tuning. Following
+conventional practice, the models were fine-tuned on the unmodified dataset, 
+\textbf{OS},\footnote{For $1$ epoch.} and this strategy is referred to as 
+\textbf{OT} for \emph{original training}. They were then evaluated under the 
+various interventions outlined in the preceding section. Additionally, we 
+propose a new \emph{intervention-based training} \textbf{(IBT)} strategy. This 
+training strategy involves sampling from the combined \textbf{OS, TS}, and 
+\textbf{TS-R} (\textbf{OS}, and \textbf{OS-R} for HotpotQA) intervened CoQA 
+datasets and changing the ground truth answers to reflect faithfulness. This 
+entails preserving the ground truth answers for the \textbf{OS} and \textbf{TS} 
+splits and modifying the ground-truth answers to \emph{``unknown''} for the 
+\textbf{TS-R} and \textbf{OS-R} splits on the CoQA and HotpotQA datasets, 
+respectively.\footnote{The augmented datasets \textbf{TS-R+Aug} and 
+\textbf{OS-R+Aug} are only used for evaluation.} In the following section we 
+present empirical evidence demonstrating that \textbf{IBT} can mitigate the
+unfaithfulness demonstrated by \acp{LM}'.

@@ -1,0 +1,42 @@
+In Section \ref{section:prelimexp}, we performed some preliminary experiments
+to analyze the capabilities of \acp{LLM} in the \ac{QA} clue answering task and 
+sub-token counting. Although the \ac{QA} results are promising, it is possible
+to further improve performance with prompting techniques like 
+\emph{chain-of-thought} \cite{cot} and \emph{self-consistency} \cite{cotsc}. 
+Our results are summarized in Table \ref{tab:comp_sota} alongside previously 
+reported \ac{SoTA} results. Our best result on the \emph{word-init-disjoint} 
+split is \textbf{20.85\%}, which \emph{improves over the previous \ac{SoTA} 
+(9.5\%) by a factor of} \textbf{2.2$\times$} \emph{without any fine-tuning}. 
+
+\begin{table}[!ht]
+    \caption{
+        \textbf{Comparison of our results with previously reported SoTA results.}\\
+        Results are on the \emph{Init} dataset with crossword clue deciphering 
+        treated as QA. SFT refers to supervised fine-tuning and CoT(1)@3SC
+        refers to \emph{Chain-of-thought} \citep{cot} prompting (1 shot) with 
+        self-consistency \cite{cotsc} (3 samples).
+    }
+    \label{tab:comp_sota}
+    \begin{center}
+        \begin{tabular}[c]{l l r}
+            \toprule
+            \multirow{2}{*}{\textbf{Model}}       & \multirow{2}{*}{\textbf{Method}}      & \textbf{Accuracy} \\
+                                 &                      & EM $(\%)$        \\
+            \midrule
+            Rule-based \cite{deits}         & CFG+WordNet       & 7.3   \\
+            T5 \citep{cryptonite}           & SFT               & 1.1   \\
+            T5 \cite{curriculum}            & Curriculum Learning   & 6.5   \\
+            Mistral 7B \cite{llmcryptic}    & SFT               & 1.2   \\
+            Mistral 7B \cite{llmcryptic}    & 10 shot           & 4.6   \\
+            Chat GPT \cite{llmcryptic}      & 3 shot            & 9.5   \\
+            \hline
+            GPT-4-Turbo \textbf{(ours)}     & 5 shot            & 18.70 \\
+            GPT-4-Turbo \textbf{(ours)} $\qquad$    & CoT(1)@3SC        & \textbf{20.85} \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+In the following sections we present performance validation results of our
+\emph{SweepClip} algorithm and further experiments testing generalizability and
+reasoning abilities of \ac{SoTA} \acp{LLM}.

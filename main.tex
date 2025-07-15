@@ -1,0 +1,33 @@
+\input{frontbackmatter/preamble.latex}
+\begin{document}
+% -------------------------- Front Matter -------------------------------------
+\frontmatter
+\onehalfspacing
+\input{frontbackmatter/titlepage.latex}             % TITLE PAGE
+\input{frontbackmatter/dedication.latex}            % Dedication
+\input{frontbackmatter/declaration.latex}           % Declaration
+\input{frontbackmatter/abstract.latex}              % ABSTRACT
+\input{frontbackmatter/acknowledgement.latex}       % Acknowledgements
+\input{frontbackmatter/maintitlestyle.latex}        % Style for chapter header.
+\input{frontbackmatter/requisitelists.latex}        % ToC, list of figure, table.
+\input{frontbackmatter/abbreviations.latex}         % List of Abbreviations.
+\input{frontbackmatter/start.latex}                 % Quote by Turing.
+
+% -------------------------- Main Matter --------------------------------------
+\mainmatter
+\onehalfspacing
+\input{chapters/1/chapter1.latex}                   % [UNCHANGED] Chapter: Introduction.
+\input{chapters/2/chapter2.latex}                   % Chapter: Rule learning.
+\input{chapters/3/chapter3.latex}                   % [UNCHANGED] Chapter: Faithful LM.
+\input{chapters/4/chapter4.latex}                   % Chapter: Constraint learning.
+\input{chapters/5/chapter5.latex}                   % [UNCHANGED] Chapter: Constrained inference.
+\input{chapters/6/chapter6.latex}                   % Chapter: Conclusion.
+
+% -------------------------- Back Matter --------------------------------------
+\input{frontbackmatter/publications.latex}                 % Publications for thesis.
+\input{frontbackmatter/bibliography.latex}                 % References.
+
+\appendix
+\input{chapters/appendix/chapter_appendix.latex}           % Appendix - LADDER.
+
+\end{document}

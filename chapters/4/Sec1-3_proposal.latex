@@ -1,0 +1,82 @@
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/4/algo.png}
+	\caption{\textbf{Schematic diagram of DOST algorithm}\\
+    The dataset is partitioned based on rules in $\mathrm{R}$, and the
+    resulting noisy samples are passed on to an older copy of the model. The 
+    predictions from the older copy ($f'_{\nu}$) are then used to compute 
+    potential conflicts, which are then used as negative samples.
+    Figure is reproduced from \citet{myDost}.}
+	\label{fig:dost}
+\end{figure}
+
+In this section we outline \textbf{DOST}, the \textbf{D}omain \textbf{O}bedient 
+\textbf{S}elf-supervised \textbf{T}raining algorithm, in order to find 
+$g_{\nu,\mu}$ such that $P(C(g_{\nu,\mu}))$ is minimized alongside accurate
+identification of the classification targets. Given $\mathcal{D}$ and
+$\mathrm{R}$ we construct $\hat{\mathcal{D}}, \mathcal{D}_C$ and we define 
+a rule matrix $\rho \in \mathbb{R}^{p\times p}$, as follows:
+\begin{equation}
+    [\rho]_{ij} = 
+        \begin{cases}
+            1 & \text{if } \exists\; r \in \mathrm{R}, \text{ s.t. } r \Rightarrow \;\forall \;x\in\Lambda,\; a_i(x) \Rightarrow \neg a_j(x) \\
+            0 & \text{ otherwise.}
+        \end{cases}
+\end{equation}
+
+With $\hat{\mathcal{D}}$, $\mathcal{D}_C$, and $\rho$, we train a deep neural 
+network (with sigmoid outputs) on $\hat{\mathcal{D}}$ as usual (with \ac{BCE} 
+loss); and for samples in $\mathcal{D}_C$ we use the target
+\begin{equation}
+    \delta_C(x_i) = \rho \Big[ \arg\max \big( f'_{\mu}(x_i) \big) \Big]
+	\label{eq:DOSTloss2}
+\end{equation}
+\begin{equation}
+    \mathcal{L}_C (x_i) = -\zeta \cdot \sum_{j=1}^p \Big[[\delta_C(x_i)]_j\cdot \log\big(1 - [f_{\mu}(x_i)]_j\big) \Big]
+	\label{eq:DOSTloss}
+\end{equation}
+where $\zeta$ is a constant (hyper-parameter), and $f_{\mu}$ represents the 
+deep network with parameters $\mu$. $f'_{\mu}$ is a slightly older copy of the 
+network (e.g., from the preceding epoch) with parameters ($\mu'$) treated as 
+constants. Thus, in effect, we find potential classes that result in rule 
+violations based on the old model's best guess, and we use those as negative 
+examples while training. Since $\delta_C(x_i)$ is not a function of $\mu$,
+$\mathcal{L}_C$ is differentiable and can be used with any standard gradient
+based training method. The algorithm is outlined in Algorithm \ref{alg:dost},
+and a schematic diagram is given in Figure \ref{fig:dost}.
+
+\begin{algorithm}[!ht]
+\caption{\textbf{: DOST}}
+\label{alg:dost}
+\begin{algorithmic}[1]
+\While{not StopCondition}
+	\State Get a batch of samples from $\mathcal{D}$
+	\State $l \leftarrow 0$
+	\For{$(x_i,\hat{y}_i)$ in batch}
+		\If{$(x_i,y_i) \in \hat{\mathcal{D}}$}
+			\State $l \mathrel{+}= \mathcal{L}\Big(\hat{y}_i, f_{\mu}(x_i)\Big)$ \Comment{Classification loss}
+		\Else
+			\State $l \mathrel{+}= \mathcal{L}_C (x_i)$ \Comment{Eq. \ref{eq:DOSTloss}}
+		\EndIf
+	\EndFor
+	\State $\text{Back-propagate}(l)$
+	\State Update model $\mu$
+	\State Every k steps $f' \leftarrow f$
+	\If{$\ldots$} \Comment{Check if model converged}
+		\State StopCondition $\leftarrow$ True
+	\EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+Although we discuss rules of the form $\forall x,\: a_i(x) \Rightarrow \neg 
+\big(a_{\beta_1}(x) \vee a_{\beta_2}(x) \vee \ldots a_{\beta_t} (x)\big)$, the
+\textbf{DOST} framework is more general. For example, consider a rule of the
+form $\forall x,\: a_{i_1}(x) \wedge a_{i_2}(x) \wedge \ldots \wedge a_{i_k}(x) 
+\Rightarrow a_{\beta}(x)$. Here we can modify Equation \ref{eq:DOSTloss2} to be
+$\mathrm{top}_k( f'_{\mu}(x_i))$ and construct an appropriate tensor $\rho$. All
+such terms can then be added to Equation \ref{eq:DOSTloss} (with appropriate
+signs) to incorporate rules of this nature. $\mathcal{L}_C$ is not necessarily 
+limited to application on $\mathcal{D}_C$, and with an appropriately chosen
+$\zeta$, can serve as an auxiliary loss to the standard \ac{BCE} loss in order
+to mitigate rule violations.

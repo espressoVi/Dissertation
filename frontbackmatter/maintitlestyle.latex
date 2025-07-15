@@ -1,0 +1,32 @@
+\newgeometry{left=40mm,right=30mm,top=40mm,bottom=30mm,heightrounded=true}
+\onehalfspacing
+
+
+\titleformat{\chapter}[display]
+    {\normalfont\Huge\sffamily}                            % format
+    {\filleft\fontsize{84}{84}\selectfont\thechapter}      % label
+    {-2ex}                                                 % seperator
+    {\filleft\fontsize{24}{24}\selectfont\bfseries\textsc}                        % before code
+    [\vspace{0.5ex}\titlerule]                               % after code
+\titlespacing*{\chapter}{0pt}{4.2pc}{4pc}
+
+
+\titleformat{\section}[block]
+    {\normalfont\LARGE\sffamily}
+    {\thesection}
+    {.5em}
+    {\titlerule\newline\vspace{-0.5em}\bfseries\textsc}
+\titlespacing{\section}
+    {0pt}{0.4ex}{1.5pc}
+
+\titleformat{\subsection}
+    {\normalfont\Large\sffamily\selectfont\filright}
+    {\thesubsection.}{.5em}{\bfseries\textsc}
+\titlespacing{\subsection}
+    {0pt}{1.0ex}{0.5pc}
+
+\titleformat{\subsubsection}
+    {\normalfont\large\sffamily\selectfont\filright}
+    {\thesubsubsection.}{.5em}{\textsc}
+\titlespacing{\subsubsection}
+    {0pt}{1.0ex}{0.5pc}

@@ -1,0 +1,66 @@
+Given a dataset $\mathcal{D}$, a model $f_{\theta}$, and a loss function 
+$\mathcal{L}$, such that
+\begin{equation}
+    \begin{split}
+        \mathcal{L} : & \mathbb{R}^{D}\times \ldots \rightarrow \mathbb{R}^+ \cup \{0\}\\
+                      & \mathcal{L}(f_{\theta}(x_i), \ldots) \mapsto s_i
+    \end{split}
+\end{equation}
+where $x_i$ is an instance in $\mathcal{D}$, and $s_i$ can be interpreted as the
+\emph{``undesirability''} of $x_i$ taking on the value $\hat{y}_i = 
+f_{\theta}(x_i)$; \ac{DL} lays out a framework for finding values of the
+parameters in $\theta$:
+\begin{equation}
+    \theta^* = \arg \min_{\theta} \mathbb{E}_{x \sim \mathcal{D}}\Big[\mathcal{L}\big(f_{\theta}(x), \ldots \big)\Big]
+\end{equation}
+such that they are optimal (\emph{local minima}). \footnote{The exact form and 
+inputs of the function $\mathcal{L}$ are dependent on the task, and we outline a 
+few examples in the upcoming section.} This hinges on two key 
+ideas--\emph{gradient descent} and \emph{backpropagation} \cite{bpalgo}. 
+
+\emph{Gradient descent} exploits the following fact:
+\begin{align*}
+    &\nabla_W \mathcal{L}\cdot h = \mathcal{L}(W + h) - \mathcal{L}(W) + \mathcal{O}(h^2) \tag*{by definition.}\\
+    &\text{Setting } h = -\eta \nabla_W \mathcal{L},\:\nabla_W \mathcal{L}\cdot h = -\eta || \nabla_W \mathcal{L} ||^2 \leq 0 \\
+    &\Rightarrow \mathcal{L}(W -\eta \nabla_W \mathcal{L}) - \mathcal{L}(W) + \mathcal{O}(h^2) \leq 0 \\
+    &\Rightarrow \mathcal{L}(W -\eta \nabla_W \mathcal{L}) \leq \mathcal{L}(W) \tag*{for some appropriately small $\eta>0$.}\\
+\end{align*}
+i.e., around the value of a parameter $W \in \theta$, there exists a direction 
+($-\nabla_W \mathcal{L}$) along which we can perturb $W$ by a small amount 
+($\eta$), such that the loss (undesirability) reduces. The step size $\eta$ is 
+called the \emph{learning rate} and is a \emph{hyperparameter} that must be 
+externally set. This fact can be used to devise an iterative optimization
+algorithm with the update rule:
+\begin{equation}
+    W^i_t = W^i_{t-1} - \eta \frac{1}{B}\sum_{i=1}^B \nabla_{W^i_{t-1}} \mathcal{L}(f_{\theta_{t-1}}(x_i), \ldots) \qquad \forall\; W^i \in \theta
+\end{equation}
+This algorithm is commonly referred to as \emph{mini-batch gradient descent} or
+\emph{stochastic gradient descent} (SGD) \cite{sgdopt}. The value $B$, called 
+the \emph{batch size} is another hyper-parameter, and $B$ samples from the 
+dataset are randomly drawn to estimate $\mathbb{E} [\mathcal{L}]$. The update 
+stops at stationary points, i.e., where $\nabla_W \mathcal{L} = 0$, and we use 
+the final set of parameters found as our predictive model $f_{\theta^*}$. 
+\emph{Adam} \cite{adam}, a refinement of SGD, employing adaptive learning rate 
+scaling and momentum, is more versatile and is in widespread use today.
+
+\emph{Backpropagation} \cite{bpalgo, backprop} is a technique to efficiently
+calculate the required gradients $\nabla_{W} \mathcal{L}(f_{\theta}(x), \ldots)$.
+The gradients are calculated by evaluating the closed-form partial derivatives
+of the functions using their explicit formulas and the chain rule. The model 
+$f_{\theta}$ is expressed as a directed (acyclic) graph where each vertex is an 
+input, parameter, or a function, and there is an edge from node $m$ to node $n$ 
+if $m$ is an input to the function represented by node $n$. Along a path $a_1 
+\rightarrow a_2 \rightarrow \ldots \rightarrow a_n$ in the graph, to calculate 
+$\frac{\partial a_n}{\partial a_k}$ we can compute 
+$\frac{\partial a_n}{\partial a_{k+1}}$ and 
+$\frac{\partial a_{k+1}}{\partial a_k}$, and combine using the chain rule. The 
+backpropagation algorithm avoids repeated gradient computations by performing
+them in reverse topologically sorted order.
+
+Thus, to summarize, given $f_\theta$, $\mathcal{D}$, and $\mathcal{L}$, we 
+sample a batch ($B$) of inputs from $\mathcal{D}$, compute $L = \sum_{i=1}^B 
+\mathcal{L}(f_{\theta}(x_i), \ldots)$ followed by $\nabla_W L$ for every $W\in
+\theta$ using the backpropagation algorithm. We then update the parameters in
+$\theta$ with the SGD (or Adam, etc.) update rule and repeat this process until 
+some convergence criteria is met. This is a common approach to finding a suitable
+model across a wide range of applications in \ac{DL}.

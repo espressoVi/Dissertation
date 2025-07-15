@@ -1,0 +1,52 @@
+\thispagestyle{plain}
+\newgeometry{left=30mm,right=30mm,top=0mm,bottom=30mm,heightrounded=true}
+\onehalfspacing
+\chapter*{Acknowledgements} % (fold)
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\label{chap:Acknowledgements}
+
+
+Embarking on this doctoral journey, I truly felt like a fish out of water, but
+over time I discovered a fascinating world full of remarkable possibilities that
+captured my imagination and fueled my passion for inquiry. Completing this 
+journey has been profoundly rewarding, a milestone made possible by the 
+unwavering support and encouragement of many remarkable individuals. 
+
+First and foremost, I would like to extend my heartfelt gratitude to 
+my advisor, Prof. Utpal Garain. Your invaluable guidance, expertise, and 
+patience have been instrumental in every facet of my research. Your belief in 
+my capabilities has been a profound source of motivation. I am incredibly 
+fortunate to have had a mentor of your caliber.
+
+I am forever indebted to my parents, whose unconditional love and steadfast
+encouragement have been a bedrock of support throughout my academic endeavors. 
+Your sacrifices and faith in my potential have been the driving force behind my 
+pursuit of this academic milestone. Thank you for always believing in me.
+
+I extend a special thanks to Akshay Chaturvedi for showing me the 
+ropes. I am also grateful to my colleagues and friends - Joy Mahapatra,
+Saptarshi Saha, and Aditya Shankar Pal who have offered their support and 
+encouragement throughout this process. I have been immensely blessed with the 
+opportunity to collaborate with exceptional individuals, and I extend my sincere
+thanks to Nicholas Asher, Supratik Pal, Rahul Shah, Purba Mukherjee, Arijit 
+Ukil, Arpan Pal, Claudia Stern, Scott Ritter, and Aude Benk-Fortin for being a 
+part of this journey and for their valuable insights.
+
+I am deeply grateful to my institute for providing this opportunity to pursue my
+doctoral studies, and for fostering a community of nurturing individuals who
+have played a crucial and supportive role in my academic journey. I cherish the
+memories and experiences gained within this esteemed institution.
+
+Lastly to my partner, Sutanoya, your understanding, affection, and unwavering 
+support have been my anchor during the highs and lows of this journey. Having 
+an in-house world-class mathematician and newspaper-worthy copy editor is an 
+incredibly valuable resource, especially when it only comes at the cost of an 
+equal share of my caloric intake. Jokes aside, your presence has been a source 
+of strength and comfort, making this journey all the more meaningful.
+
+\hfill\LARGE{$\blacksquare$}\normalsize
+
+\newpage
+\null\thispagestyle{empty}
+\newpage
+% chapter Acknowledgements (end)

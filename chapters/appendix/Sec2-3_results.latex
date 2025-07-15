@@ -1,0 +1,104 @@
+Our network of choice for training with the objective in Equation 
+\ref{eq:LADDERloss} is an \ac{LSTM} \cite{lstm}, and we employed a 2-layer 
+\ac{LSTM}, with a further \ac{FC} layer projecting the final hidden state to 
+$\mathbb{R}^2$. At the outset, we perform some validation experiments with a
+$80\%-20\%$ held-out split of the \emph{Pantheon} dataset. In addition to
+performing ablation tests of our algorithm, we check performance in three key
+metrics of importance:
+\begin{enumerate}
+    \item \ac{MSE} on the held-out validation set.
+    \item \emph{Monotonicity}--given by Spearman correlation.
+    \item \emph{Smoothness} defined as $\mathrm{Smoothness}[f_{\theta}] := \frac{1}{n}\sum_{i=1}^{n}|f_{\theta}''(z_i)|$.
+\end{enumerate}
+Additionally, we also tested \acp{MLP} and other \ac{ML} techniques like 
+$k$-nearest neighbors ($k$NN) and support vector regression (SVR) to serve as 
+baselines.
+
+\begin{figure}[!ht]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/Appendix/LADDERres.png}
+    \end{center}
+    \caption{\textbf{Results of ablation and validation experiments with various models.}\\
+    \emph{Panels i, ii, and iii} show variation of error, smoothness, and 
+    monotonicity performance with a changing value of $K$, respectively. 
+    \Ac{MLP} models do not produce smooth, monotonic results (except K=1), and 
+    the $K = 1$ MLP is outperformed by the \ac{LSTM} model at roughly the same 
+    smoothness and monotonicity. \emph{Panel iv} shows the variation in the prediction as
+    measured by \ac{MSE} between models trained with $\Sigma_{\lambda}$ and
+    $\Sigma_0$. When the covariance matrix is progressively corrupted with
+    noise, the predictions change, thus demonstrating our approach's ability to
+    model correlations. Figure is reproduced from {\citet{myLadder}}.}
+    \label{fig:kDependence}
+\end{figure}
+
+\begin{table}[!h]
+	\centering
+    \caption{\textbf{Performance of various \ac{ML} models.}\\
+        In addition to \ac{MSE} on the held-out set, we study constraint adherence
+        \textit{vis-\`a-vis} smoothness and monotonicity. $[\downarrow]$ indicates 
+        lower is better, $[\uparrow]$ indicates higher is better.
+    }
+    \label{tab:perf}
+    \begin{tabular}{l r r r r}
+        \toprule    
+            \textbf{Model}              & \textbf{\ac{MSE}} $[\downarrow]$    & \textbf{Monotonicity} $[\uparrow]$ & \textbf{Smoothness} $[\downarrow]$ \\    
+            \midrule    
+            kNN (k=5)                    & 0.022116              & 0.99999                   & 90.67500                  \\    
+            SVR                          & 0.019358              & $\mathbf{1.0}$            & 3.10633                   \\    
+            MLP (K=1)                    & 0.022202              & $\mathbf{1.0}$            & $\mathbf{2.21691}$        \\    
+            MLP (K=32)                   & 0.020484              & 0.99997                   & 88.99974                  \\    
+            \textbf{LADDER}              & $\mathbf{0.018495}$   & $\mathbf{1.0}$            & 2.30022                   \\ 
+            \bottomrule    
+    \end{tabular}
+\end{table}
+
+
+We start by examining the effect of the parameter $K$ (see Figure 
+\ref{fig:kDependence}, Table \ref{tab:perf}), i.e., \emph{support} size,
+on the performance of tested models and found that the \ac{LSTM} with $K=32$
+performs best in terms of error on the validation set. The $K=1$ \ac{MLP}, i.e.,
+standard regression without \emph{LADDER}, was the smoothest, followed closely
+by the \ac{LSTM} trained with \emph{LADDER}. Although monotonicity violations
+are rare, the \ac{MLP} and $k$NN approaches underperform in this regard. We
+conclude that the \ac{LSTM} network with $K=32$ trained with the \emph{LADDER}
+approach is the best performer overall.
+
+To ablate the effect of the covariance matrix, i.e., to investigate whether 
+\emph{LADDER} can effectively model the correlation information, we construct:
+\begin{equation}
+	\Sigma_{\lambda} = \lambda \mathbf{N}+(1-\lambda)\mathbf{C}_{\text{sys}}+\mathbb{I}_{N\times{}N}\cdot\Big((\Delta{}m_1)^2,(\Delta{}m_2)^2,\ldots(\Delta{}m_N)^2)\Big)
+\end{equation}
+where $\mathbf{N} := A\times A^T$ is by construction a symmetric positive
+semi-definite matrix, such that $A_{ij}\sim\mathcal{N}(0,1)$ is Gaussian noise.
+Note, $\lambda = 0$ corresponds to the no-noise case and is equivalent to 
+$\Sigma_m$ as defined in Equation \ref{eq:sigma}. We then train \acp{LSTM} 
+following the \emph{LADDER} algorithm with varying $\lambda$, i.e., varying 
+levels of noise added to the non-diagonal elements of the covariance matrix, and 
+measure the effect of noise on the final network predictions. We find (see 
+Figure \ref{fig:kDependence}) that predictions vary consistently with increased 
+amounts of noise, thus suggesting that the \emph{LADDER} algorithm imbues this 
+correlation information into the network.
+
+Finally, we compare the performance of the \ac{LSTM} network trained with the 
+\emph{LADDER} approach on the unseen \emph{Pantheon+} dataset (see Figure 
+\ref{fig:ladderperf}). Our algorithm accurately models the distribution of 
+apparent magnitude data over a wide range of redshifts with consistency and
+constraint adherence while taking into account sample correlations.
+
+\begin{figure}[!ht]
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{images/Appendix/LADDERpred.png}
+    \end{center}
+    \caption{
+        \emph{LADDER} predictions compared to the \emph{Pantheon+} dataset
+        (unseen). Figure is reproduced from \citet{myLadder}.
+    }
+    \label{fig:ladderperf}
+\end{figure}
+
+Successfully modeling the distribution of $m(z)$ over a wide range of redshifts
+has various cosmological implications, such as being useful to calibrate other 
+datasets following the \emph{cosmic distance ladder} paradigm, or serving as a 
+mock data generator \cite{myLadder, myLF}. A detailed discussion on further 
+cosmological implications is outside the scope of this dissertation and can be 
+found in \citet{myLadder}.

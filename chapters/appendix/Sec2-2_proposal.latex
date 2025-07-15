@@ -1,0 +1,120 @@
+We first make a simplifying assumption to deal with the empirical loss given in
+Equation \ref{eq:intractable}. We assume that at most $K$ samples from the
+dataset are correlated and rewrite the empirical risk as:
+\begin{equation}
+    \begin{split}
+        \mathcal{E}^{\text{emp}} \approx \quad & 
+        \frac{1}{\binom{N}{K}} \sum_{\substack{\text{all~combinations}\\j_1,\ldots j_K}}
+        \ell\Big(\mathcal{N}\big((m_{j_1},\ldots m_{j_K}),\Sigma_m^K\big),\\
+        & \qquad \qquad \qquad \qquad \mathcal{N}\big(([f(z_{j_1})]_1,\ldots [f(z_{j_K})]_1),\Sigma_f^K\big)\Big)
+    \end{split}
+\end{equation}
+where $\Sigma_m^K$ is the $K\times K$ sub-matrix of covariances, and 
+$[\Sigma_m^K]_{u,v} = [\Sigma_m]_{j_u,j_v} $. Note that this approach does not
+ignore other correlations, since we minimize risk over every possible combination
+of samples from the dataset. This motivates our choice of the modeling function
+to be of the form:
+\begin{equation}
+	\begin{split}
+		&f_{\theta}:\mathbb{R}^{2\cdot K-1}\rightarrow\mathbb{R}\times\mathbb{R}^+\:,\\
+		&f_{\theta}(z;z_{j_1},z_{j_2},\ldots z_{j_{K-1}},m_{j_1},m_{j_2},\ldots m_{j_{K-1}})\mapsto(\mu_z,\sigma_z),\\
+		&\mathcal{N}(\mu_z,\sigma_z)\approx\mathcal{P}(m|z;z_{j_1},z_{j_2},\ldots z_{j_{K-1}},m_{j_1},m_{j_2},\ldots m_{j_{K-1}}).
+	\end{split}
+	\label{eq:obj}
+\end{equation}
+Our objective then is to minimize:
+\begin{align}
+    &\mathcal{E}^{\text{emp}}[f_{\theta}] \approx \frac{1}{\binom{N}{K}} \sum_{\substack{\text{all~combinations}\\j_1,\ldots j_K}}\sum_{k=1}^N
+    \ell\Big(\mathcal{N}\big(m_k,\Delta m_k\big),\\
+    & \qquad \qquad \qquad \qquad \qquad \mathcal{N}\big(f_{\theta}(z_k;z_{j_1},z_{j_2},\ldots m_{j_{K-1}}\big)\Big),\tag*{} \\
+    &\ell(P,Q)=D_{KL}(P||Q)=\sum_{x\in\mathcal{X}}P(x)\log\frac{P(x)}{Q(x)} \tag{KL divergence}
+\end{align}
+This simplified problem can now be addressed with standard \ac{DL} techniques.
+
+\begin{algorithm}[!ht]
+    \caption{\textbf{: LADDER}}
+\label{algo:ladder}
+    \begin{algorithmic}
+    \State Given $\mathcal{D},\mathbf{C}_{\text{sys}}$, and batch size $B$.
+    \State Initialize $\theta_0$.
+    \While{not StopCondition}
+    	\State $l\leftarrow0$
+    	\For{$i=1,2,\ldots B$}
+    		\State $\text{Get }K\text{ samples from }\mathcal{D} \rightarrow \{(z_1,m_1,\Delta m_1),\ldots(z_{K},m_{K},\Delta m_{K})\}$
+            \State $\text{Sample } \quad\hat{m}_{j_2},\hat{m}_{j_3},\ldots\hat{m}_{j_{K}}$ 
+            \State $\qquad \qquad \qquad \sim \mathcal{N}(m_{j_2},m_{j_3},\ldots m_{j_{K}},\Sigma_m^K)$ \Comment{see Equation \ref{eq:sigma}}
+            \State $X_i = ((z_{j_2}, \hat{m}_{j_2}), (z_{j_3}, \hat{m}_{j_3}), \ldots, (z_{j_{K}},\hat{m}_{j_{K}}); z_{j_1})$
+    		\State $Y_i=(m_{j_1},\Delta m_{j_1})$
+            \State $\mu \leftarrow [f_{\theta_t}(X_i)]_1, \sigma \leftarrow [f_{\theta_t}(X_i)]_2$ \Comment{Forward pass.}
+    		\State $l\mathrel{+}=D_{KL}\Big(\mathcal{N}(m_{j_1},\Delta m_{j_1}),\mathcal{N}(\mu,\sigma)\Big)$
+    	\EndFor
+    	\State Compute $\nabla_{\theta_t}l\quad\forall\theta_t$
+        \State $\theta_{t+1} \leftarrow \text{Adam}(\nabla_{\theta_t}, \theta_t, \epsilon, \beta_1, \ldots)$ \Comment{Gradient update.}
+    	\If{$\ldots$}\Comment{Check for convergence.}
+    		\State StopCondition $\leftarrow$ True
+    	\EndIf
+    \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+
+The training algorithm is outlined in Algorithm \ref{algo:ladder}. During 
+training, we choose $K$ samples from $\mathcal{D}$ and randomly designate $K-1$ 
+of them as \emph{``support''} and the remaining sample as \emph{query}. To 
+take the covariances into account, instead of directly using these data points, 
+we sample from the joint distribution 
+$\mathcal{N}(m_{j_2},m_{j_3},\ldots m_{j_{K}},\Sigma_m^K)$ to obtain 
+$\hat{m}_{j_2},\hat{m}_{j_3},\ldots\hat{m}_{j_{K}}$, where $\Sigma_m^K$ is given 
+by:
+\begin{equation}
+	\begin{split}
+        &[\Sigma_m]_{\alpha,\beta} = 
+        \begin{cases}
+            [\mathbf{C}_{\text{sys}}]_{\alpha,\beta} \text{ if } \alpha \neq \beta \\
+            (\Delta m_{\alpha})^2 \text{ if } \alpha = \beta
+        \end{cases}\\
+		&[\Sigma_m^K]_{u,v}=[\Sigma_m]_{j_{u},j_{v}}\quad\forall u,v \in\{1,\ldots,K-1\}
+	\end{split}
+	\label{eq:sigma}
+\end{equation}
+Following this, we reorder the samples to be in sorted order, i.e., $z_{j_a} 
+\leq z_{j_b}$ whenever $j_a < j_b$, as this was found to aid adherence to the 
+\emph{monotonicity constraint}. \footnote{The function $f_{\theta}$ is always
+at least once differentiable almost everywhere in \ac{DL}.} Finally, we 
+construct a training instance 
+$X = ((z_{j_2}, \hat{m}_{j_2}), (z_{j_3}, \hat{m}_{j_3}), \ldots, (z_{j_{K}}, 
+\hat{m}_{j_{K}}); z_{j_1})$ and $Y=(m_{j_1},\Delta m_{j_1})$ and use the Adam 
+optimizer \cite{adam} to train a \ac{NN} with the following objective:
+\begin{align}
+    \ell_{\text{instance}}(X, Y) &= D_{KL}\Big( \mathcal{N}(m_{j_1}, \Delta m_{j_1}) \: \Big|\Big| \: \mathcal{N}([f_{\theta}(X)]_1, [f_{\theta}(X)]_2)\Big)\\
+    \hat{\theta} &= \arg \min_{\theta} \mathbb{E}[\ell_{\text{instance}}]
+    \label{eq:LADDERloss}
+\end{align}
+
+During inference, given $z$, we sample S sets of $K-1$ points from $\mathcal{D}$
+and consider the joint distributions $\mathcal{N}((m_{j_2}^{(i)}, \ldots, 
+m_{j_{K-1}}^{(i)}), \Sigma_m^K) \: \forall i \in \{1, \ldots, S\}$. From each 
+joint distribution, we sample $(\hat{m}_{j_2}^{(i)},\ldots,\hat{m}_{j_{K-1}}^{(i)})$ to create
+\begin{equation}
+    X_{\text{unseen}}^{(i)} = ((z_{j_1}^{(i)},\hat{m}_{j_1}^{(i)}), \ldots, (z_{j_{K-1}}^{(i)},\hat{m}_{j_{K-1}}^{(i)}); z_{\text{unseen}})
+\end{equation}
+We then use the trained \ac{NN} $f_{\hat{\theta}}$, to compute $\mu^{(i)},
+\sigma^{(i)}$. We wish to model $\mathcal{P}(m|z) = \int_{z_1, \ldots, z_K} 
+\mathcal{P}(m|z;z_{j_1}, \ldots z_{j_{K-1}}, m_{j_1}, \ldots m_{j_{K-1}}) d\mu$, 
+which can be approximated by the Monte Carlo method using the definition in 
+Equation \ref{eq:obj} as follows:
+\begin{equation}
+	\begin{split}
+        \mu \leftarrow \frac{1}{S}\sum_{i=1}^{S} [f_{\hat{\theta}}(X_{\text{unseen}}^{(i)})]_1, &\quad
+        \sigma \leftarrow \frac{1}{S}\sum_{i=1}^{S} [f_{\hat{\theta}}(X_{\text{unseen}}^{(i)})]_2\\
+		\mathcal{P}(m|z)&\approx\mathcal{N}(\mu,\sigma)
+	\end{split}
+\end{equation}
+
+This proxy objective asks--based on $K-1$ (support) points from the dataset--to
+predict $(m, \Delta m)$ corresponding to the point of interest (query). This
+approach is robust to perturbations because we not only sample from the joint
+normal distribution to generate inputs, but also randomly vary the support
+points corresponding to each query point. Another consideration is
+\emph{consistency}, i.e., if we re-instantiate the algorithm with different 
+random seeds, our predictions should not change considerably, and this approach 
+was found to satisfy this criterion.

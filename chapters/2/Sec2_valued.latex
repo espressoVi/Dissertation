@@ -1,0 +1,247 @@
+\subsubsection{Implementation Details}
+
+To compile the dataset,\footnote{Dataset - \href{https://doi.org/10.5281/zenodo.10607059}{doi.org/10.5281/zenodo.10607059}}
+we initially obtained a massive collection of chess moves from online
+multiplayer games hosted on Lichess \cite{lichess}, which were then transformed
+into corresponding intermediate board states by application of the moves to the
+start position. While this database includes duplicate states, such as those
+common in opening sequences, we chose to retain them to maintain the original
+distribution of frequently encountered states.
+
+
+A 3D model of an environment was created using the open-source modeling software 
+Blender \cite{blender}. This environment features a large plane with a table,
+two chairs, a chessboard, and pieces set in their initial position (see Figure
+\ref{fig:demo}). Using the board state database, pieces were placed on their
+designated squares with a small position jitter added to their positions. The
+scene is rendered from the point of view of a camera aimed at the center of the
+chessboard and at a fixed distance. Random pans and tilts of the camera were
+introduced; however, its movement was restricted to ensure that the A1 square
+remains nearest to it, preventing ambiguity in board orientation.
+
+We rendered 200,000 images at a resolution of $(512 \times 512 \times 3)$ pixels 
+for the training/validation set and an additional 19,967 images for the test 
+set. Besides the board state labels (provided in both array format and FEN), 
+bounding box information for each piece is included to support other methods 
+like object detection, although this data is not used in model evaluation. 
+A concise rule set was established to balance the enforcement of meaningful 
+constraints with computational efficiency. This rule set also facilitates an 
+analysis of the types of errors made by the prediction system, providing 
+insights into how \ac{SoTA} vision systems operate.
+
+All associated code (database creation, rule checking, etc.), materials 
+(dataset, 3D models, textures, images, etc.), rendering details (camera sensor, 
+rendering settings, etc.), and relevant information have been made available 
+through the github repository.\footnote{Code repository 
+\href{https://github.com/espressoVi/VALUE-Dataset}{github.com/espressoVi/VALUE-Dataset}}
+
+\subsubsection{Task Description}
+
+If this were a standard classification task, we would seek to learn a function 
+$f_{\theta}:\mathcal{D} \allowbreak\rightarrow [0,1)^{(\text{\# pieces + 1})
+\times 8 \times 8}$ (prediction for piece type or empty for all 64 positions) that 
+models the probability of each piece at every board position given an image of 
+the board state. However, when in use, this function must be paired with an 
+inference algorithm with discrete outputs to recreate the board state, which 
+can itself introduce logical inconsistencies. Thus, in order to analyze 
+performance with regard to logical coherence, the predictive model with soft 
+outputs and the inference algorithm are treated together as a black box, and 
+performance is evaluated with respect to the complete board state prediction.
+Keeping this in mind, we define a classifier as follows:
+\begin{equation}
+	\begin{split}
+		F_{\theta}:\mathcal{D} &\rightarrow \mathrm{P}^{8 \times 8}\\
+			 F_{\theta}(x) &\mapsto \text{board state of } x\\
+	\end{split}
+	\label{eq:classifier}
+\end{equation}
+
+\noindent where $\mathcal{D} \subset \mathbb{R}^{512\times 512\times 3}$ is the 
+space of input images, $\mathrm{P} = \{$\texttt{x, p, P, n, N, b, B, r, R, q, Q,
+k, K}$\}$ is the set of all pieces (\texttt{x} represents the empty grid 
+location), and $F_{\theta}$ represents the model we seek, parametrized by 
+$\theta$. The images pose several difficulties from a computer vision 
+perspective, like camera position variability, occlusion (often severe), and 
+dense clusters of similar-looking small objects (see Figure \ref{fig:demo}).
+
+It is important to recognize that this problem could be reformulated as a 
+semantic segmentation problem, a captioning task, or potentially within a 
+completely new machine learning framework, which we do not explore here. This 
+choice is based on the premise that our \ac{DL} model is envisioned as 
+part of a larger pipeline that performs tasks in real-world applications, where 
+the model's outputs are fed into an automated system. In such applications, 
+demonstrating logical understanding is crucial.
+
+In our example task, if model-generated annotations with minor errors were 
+given to a human, they could easily correct them. However, the impact of logical 
+errors becomes significantly amplified if the model is part of an automated 
+chess-playing robot that also incorporates a chess engine to devise moves and 
+software to manipulate linkages. For this reason, we approach this as a 
+classification problem, recognizing that alternative paradigms would necessitate 
+converting outputs to a standardized format identical to the one specified in 
+Equation \ref{eq:classifier} for subsequent processing.
+
+\begin{figure}[ht!]
+    \begin{center}
+       \includegraphics[width=\textwidth]{images/Chapter2/demo.png}
+    \end{center}
+    \caption{\textbf{3D environment for synthetic image generation}\\
+    The base 3D scene (\emph{left}) and dataset examples demonstrating 
+    occlusion (\emph{marked in red}) and object density (\emph{right}).
+    Figure is reproduced from \citet{myValued}.
+    }
+    \label{fig:demo}
+\end{figure}
+
+\subsubsection{Rule Set}
+
+An arrangement of pieces on the chessboard is called \textbf{valid} if there 
+exists a sequence of legal moves \cite{chessrules} from the starting position 
+that results in the arrangement and the set of all valid states is denoted 
+$\mathcal{V}$. Given the state of a chessboard, it is computationally 
+prohibitive to determine if the state is valid; however, some simple 
+\emph{sanity checks} can be utilized to rule out the vast majority of invalid 
+states. We curated such a set of computationally cheap ($\mathcal{O}(n d^2)$ 
+for $n$ chessboards of side $d$, i.e., $\mathcal{O}(n)$) first-order logic rules 
+that hold true for all valid chessboard states, to measure domain coherence. The 
+proposed rule set is given in Table \ref{tab:ValuedRule} (equivalent rules for
+white pieces are also included).
+
+\begin{table}[h!]
+    \caption{\textbf{Rule set associated with VALUE Dataset.}\\
+    A valid chess state must obey all rules (i-viii) given below. These rules
+    are further divided into two categories--\textbf{counting} ($\mathrm{i, iii,
+    iv, vi, vii}$), and \textbf{localizing} ($\mathrm{ii, v, viii}$), to analyze
+    specific semantic abilities. 
+    }
+    \label{tab:ValuedRule}
+    \begin{center}
+        \footnotesize{
+        \begin{tabular}[c]{p{0.02\textwidth} p{0.38\textwidth} p{0.6\textwidth}}
+            \toprule
+            \multicolumn{3}{c}{$\forall y \in \mathcal{V}$ (valid states), we have:}\\
+            \midrule
+            $\mathrm{i}$    & $\ctt{k} = 1$         & Exactly one king. \\[2pt]
+            $\mathrm{ii}$   & \texttt{k}, \texttt{K} are not on adjacent squares.   & \\[2pt]
+            $\mathrm{iii}$  & $\ctt{p} + \ctt{q} + \ctt{n} + \ctt{b} + \ctt{r} \leq 15$ & Total number of pieces, including king cannot exceed 16.\\[2pt]
+            $\mathrm{iv}$   & $\ctt{p} \leq 8$  & Total number of pawns not exceeding 8.\\[2pt]
+            $\mathrm{v}$    & $\forall \texttt{p}, 2 \leq rank(\texttt{p}) \leq 7$  & No pawn on first or last rank. \\[2pt]
+            $\mathrm{vi}$   & $(\ctt{p}=8) \Rightarrow (\ctt{q} \leq 1) \wedge (\ctt{b} \leq 2) \wedge (\ctt{n} \leq 2) \wedge (\ctt{r}\leq 2)$ & If no pawn is promoted, there cannot be more than two bishops, knights, rooks or more than one queen.\\[2pt]
+            $\mathrm{vii}$  & $(\ctt{p}<8) \Rightarrow \max(0,\ctt{q}-1) + \max(0,\ctt{b}-2) + \max(0,\ctt{n}-2) +\max(0,\ctt{r}-2) \leq 8 - \ctt{p}$ & If pawns might have been promoted, the number of excess pieces cannot exceed the number of missing pawns.\\[2pt]
+            $\mathrm{viii}$ & $(\ctt{p}=8) \wedge (\ctt{b} = 2) \Rightarrow \texttt{b}_1, \texttt{b}_2$  don't occupy squares of the same color.  & If no pawn has been promoted and there are two bishops, they must be on opposite color squares.\\[2pt]
+            \bottomrule
+        \end{tabular}}
+    \end{center}
+\end{table}
+
+If a prediction $y$ \emph{satisfies all the rules} (Table \ref{tab:ValuedRule}),
+we call it \textbf{sane}, and we have the \emph{set of sane states}
+$\mathcal{S}$ following $\mathcal{V} \subsetneq \mathcal{S} \subsetneq
+\mathrm{P}^{64}$. These rules (Table \ref{tab:ValuedRule}) are further divided
+into two categories--\textbf{counting} ($\mathrm{i, iii, iv, vi, vii}$), and
+\textbf{localizing} ($\mathrm{ii, v, viii}$), to analyze specific semantic
+abilities. Counting rules apply constraints on the number of objects that can
+be present in the scene, whereas localizing rules apply constraints on their
+position in the scene.
+
+This is not an exhaustive list, and more such rules can be found. Consider the 
+following examples:
+
+\begin{spacing}{0.9}
+\begin{itemize}
+    \item \texttt{b} can't be trapped in the last rank behind 3 adjacent \texttt{P}.
+    \item If all pawns are in their starting position, only the knights can occupy a rank greater than 2.
+    \item Both kings cannot simultaneously be in check.
+    \item If there are multiple pawns on the same file, the total number of 
+        these excess pawns per file cannot exceed the number of the opponent's 
+        missing pieces (as pawns can only change files through capture).
+\end{itemize}
+\end{spacing}
+
+To the best of our knowledge, we have included all rules that are:
+\begin{itemize}
+    \item Generalizable to real-world scenarios, such as counting and relative position constraints.
+    \item Computationally cheap to verify.
+    \item Not reliant on infrequent game states, i.e., they occur frequently enough in the training set for vision models to potentially learn them.
+\end{itemize}
+
+Adding more niche rules could make the analysis overly specific to chess, which 
+would detract from our broader goal of examining the general capability of 
+vision models to learn logical constraints. Note that the general problem, i.e.,
+determining whether a sequence of legal chess moves can lead to a particular 
+board state, is computationally intractable. Moreover, we do not expect vision 
+models trained solely on images of board states to acquire this information. 
+For instance, consider the following rule: If \texttt{k} or \texttt{K} is in
+check (can be captured in the next move), then there must have existed at least
+one legal move for the piece threatening capture that results in the current
+state. To learn such rules, the model would need to understand legal piece
+movements and the rules for check, which cannot be inferred from state images
+alone.
+
+These rules are nonetheless effective at eliminating a large fraction of invalid 
+states. Note that the total number of distinct predictions we would have 
+following standard \ac{DL} approaches (64 independent classification 
+problems) is $|\mathrm{P}^{64}| = 13^{8\times 8} \sim 10^{72}$, but with the 
+addition of just the constraint on the number of pieces, it reduces to $< 10^{55}$.
+
+If these simple rules can be incorporated into the learning algorithm, in 
+addition to being more applicable to the domain, it could in principle improve 
+performance drastically. For example, if \texttt{q} was misclassified as 
+\texttt{k}, or \texttt{b} was misclassified as \texttt{p}, resulting in 
+$|\texttt{p}|=9$, the rule set would identify and seek to disincentivize it.
+
+\subsubsection{Evaluation Metrics}
+
+We employ several standard metrics to assess both raw performance and alignment 
+with domain constraints. Given that the logical constraints are applied to the 
+discretized, complete board state prediction, and in accordance with our 
+definition in Equation \ref{eq:classifier}, techniques such as ``threshold
+tuning'' or similar inference methods are integrated as part of the model
+evaluation process. Hence, commonly used metrics like Area Under the
+Precision-Recall Curve (AUPRC), Area Under the Receiver Operating Characteristic
+Curve (AUROC), or macro-averaged metrics such as mean Average Precision (mAP)
+are not included in our analysis. Given a prediction set $\hat{Y} = \{\hat{y}_i|
+i \in \{1, \ldots, n\}\}$ and the corresponding ground truth set $Y = \{y_i\}$,
+where $y_i, \hat{y}_i \in \mathrm{P}^{64}$, we define exact match (EM) and F1 as 
+follows:
+\begin{align}
+    EM(Y, \hat{Y}) &= \frac{1}{n} \sum_{i=1}^n \mathbb{I}([y_{i}]_k = [\hat{y}_{i}]_k), \: \forall k, 1 \leq k \leq 64)\\
+    \begin{split}
+        F1(Y, \hat{Y}) &= \frac{2}{n} \sum_{i=1}^n f_1(y_i, \hat{y}_i), \text{ where}\\
+        \label{eq:f1}
+        f_1(y_i, \hat{y}_i) &= \frac{\sum_{j=1}^{64} \mathbb{I}([y_{i}]_j = [\hat{y}_{i}]_j \neq \texttt{x})}{|y_i| + |\hat{y}_i|}
+    \end{split}
+\end{align}
+Where $|y| = \sum_j \mathbb{I}([y]_j \neq \texttt{x})$ denotes the number of 
+non-empty squares in the grid, and $\mathbb{I}$ is the indicator function that 
+takes the value 1 if its argument condition is true, and 0 otherwise.
+
+Additionally, we define two measures of domain coherence--\textbf{contradiction 
+\%} $(C)$ and \textbf{sane F1} $(sF1)$--as follows:
+\begin{align}
+    C(Y) &= \frac{100}{n} \sum_{i=1}^n \mathbb{I}(\hat{y}_{i} \not\in \mathcal{S})\\
+    sF1(Y, \hat{Y}) &= \frac{2}{n} \sum_{i=1}^n \Big( \mathbb{I}(\hat{y}_{i} \in \mathcal{S})\cdot f_1(y_i, \hat{y}_i) \Big)
+\end{align}
+$C$ reflects the frequency of logical constraint violations, i.e., what fraction 
+of predictions are unusable, and the $sF1$ score measures the $F_1$ score after 
+eliminating predictions that are not sane. We also report results on $\mu_C$, the mean 
+number of rule violations per instance in $\hat{Y}$.
+\begin{equation}
+	\mu_C(\hat{Y}) = \frac{1}{n} \sum_{i=1}^n \Big( \text{\# of rule violations in } \hat{y}_i \Big)
+\end{equation}
+
+When integrating the model into an automated system with downstream tasks 
+requiring strict compliance with domain rules, it is crucial to suppress 
+predictions that violate these guidelines by implementing consistency checks 
+against the established rule set. The $sF1$ measure is introduced to account for 
+this counterfactual scenario, where predictions that breach the rules are 
+substituted with a null prediction set. The gap between the traditional $F1$ 
+score and the $sF1$ score indicates the potential for improvement available to 
+algorithms that aim to incorporate logical constraints effectively. This 
+distinction highlights the impact of domain-specific knowledge on enhancing the 
+model's reliability in practical applications.
+
+To summarize, in this task, we seek an $F_{\theta}$, such that given a set of 
+images $x \in \mathcal{D}$, it can faithfully recreate corresponding ground 
+truth labels $y \in \mathrm{P}^{64}$ while minimizing violations of domain 
+rules, i.e., $sF1\Big(\{F_{\theta}(x_i)\}, \{y_i\}\Big)$ is maximized.

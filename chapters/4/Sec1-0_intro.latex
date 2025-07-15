@@ -1,0 +1,54 @@
+Supervised \ac{DL} algorithms have achieved significant success in 
+addressing challenges across various domains. Despite this, they face a critical 
+drawback: the vast amounts of annotated data required. This necessity often 
+leads to annotation methods that can be unreliable and introduce \textbf{label 
+noise}\footnote{In this context, we use the terms annotation and label 
+interchangeably.}. The issue becomes more problematic when applications demand 
+specialized domain knowledge, as data labeling becomes an exceedingly 
+resource-intensive task \cite{Esteva2017}. Consequently, datasets tend to be 
+smaller \cite{notEnoughData} and may still contain substantial amounts of noise.
+Disagreements among experts over labels (inter-observer variability) and
+uncertainties that arise (annotator errors) are frequently overlooked.
+Annotations are often either automatically generated using algorithms or
+crowdsourced with the assistance of non-experts, resulting in quality
+degradation \cite{Kuznetsova2020, dataBad}. Given that \ac{DL} models are
+susceptible to overfitting and can even adapt to randomly assigned labels
+\cite{overfit}, label noise poses a significant challenge
+\cite{noisyFace, Kuznetsova2020} in creating dependable \ac{DL} systems.
+
+Despite \ac{MLC} being a widespread problem across several domains \cite{mlCV, 
+mlCV2, mlNLP, mlMED}, this has not been widely studied in a noisy setting. As
+discussed in Chapter \ref{chap:VALUED}, this is also a significantly harder
+problem. Since an arbitrary number of classes must be predicted, the number of
+distinct annotations increases from $|A|$ to $\sim 2^{|A|}$ for target classes
+in $A$, making errors more likely. Moreover, in contrast to the single-label
+setting (\ac{MCC}), where a mislabeled instance results in exactly two classes
+being flipped, the multi-label setting allows for more complex errors. For
+example, a subset or superset of the target classes may have been annotated,
+which still retains valuable information. Therefore, it is not ideal to treat
+these instances in the same manner as completely erroneous entries.
+
+In this chapter, we focus on annotation errors that \textbf{contradict domain 
+rules}. In Chapter \ref{chap:VALUED}, we saw that \ac{DL} systems do not
+natively abide by domain rules, and this phenomenon is exacerbated by noisy
+annotations, resulting in models that frequently generate incoherent predictions
+during inference. Such errors are more damaging than simple mislabeling, as they
+appear ``\emph{absurd}'' from the perspective of domain experts, thus posing a
+significant barrier to widespread adoption.
+
+A naive solution would be to simply eliminate these contradictory instances from 
+the dataset following the available domain rules. However, since high-quality 
+data is often limited, this should be the last resort. The question we aim to 
+address in this chapter is: \emph{can we do better?} Specifically, can we 
+leverage domain rules to develop models that align more closely with those rules
+(avoiding inferences that contradict them) and perform as well as, or better
+than, models trained on a reduced dataset?
+
+Our investigations start by assessing the impact of annotation noise on model 
+performance, considering both standard metrics and compliance with domain rules.
+We then introduce a novel \emph{domain-obedient self-supervised training} (DOST) 
+paradigm that yields predictions that are more aligned with the rule set and 
+surpasses the performance of models trained on the reduced dataset. This 
+approach is more data-efficient and utilizes instances that violate domain rules 
+to significantly mitigate the effects of label noise. Additionally, it imbues the 
+model with semantic information from the domain, leading to enhanced performance.

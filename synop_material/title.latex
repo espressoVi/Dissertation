@@ -1,0 +1,29 @@
+\begin{titlepage}
+\thispagestyle{empty}
+    \begin{center}
+        \vspace{1cm}
+        \huge{\textsc{Synopsis}}\\
+        \Huge{\textbf{Domain Obedient Deep Learning}}
+        \vspace{3.2cm}\\
+        \includegraphics[width=0.3\textwidth]{images/formals/ISIlogo.png}
+        \vspace{1cm}\\
+        \Large{\textbf{Soumadeep Saha}}\\
+
+        \vspace{1cm}
+        \normalsize
+        A synopsis submitted in partial fulfillment of the requirements for 
+        the degree of \\
+        \textit{Doctor of Philosophy} in Computer Science.
+        \vspace{1cm}
+
+
+        \large\textbf{Supervisor: } Prof. Utpal Garain\\
+        \vspace{0.5cm}
+        \normalsize
+        Computer Vision and Pattern Recognition Unit\\
+        \textbf{Indian Statistical Institute, Kolkata}\\
+
+        \vfill
+        February, 2025
+    \end{center}
+\end{titlepage}

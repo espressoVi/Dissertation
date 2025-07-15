@@ -1,0 +1,55 @@
+\chapter{Conclusion}
+\label{chap:Conclusion}
+
+There have been undeniably massive strides in the capabilities of modern deep
+learning-based systems, as evidenced by their widespread adoption across several
+fields. However, their inability to leverage established domain-specific 
+principles is inexpedient. Furthermore, their tendency to violate these 
+principles is a major hindrance to their adoption in critical fields like 
+medicine, law, industrial automation, robotics, avionics, etc., where 
+data-driven decision models must operate within domain-specific constraints. An 
+approach to learning that acts within the framework of laid-out rules and 
+leverages these rules alongside data to improve predictive performance is a key
+objective of deep learning research.
+
+This dissertation first analyzes deep learning-based systems with regard to
+their ability to adhere to domain constraints when learning from data alone. A
+persistent sentiment echoed by many researchers probing this area is the dearth
+of large-scale rule-supported datasets; to address this issue, we put forth a
+large-scale logical understanding evaluation dataset with rule annotations. This
+dataset helps us demonstrate that large-scale training with an abundance of data
+does not guarantee domain obedience. Similarly, intervention-based approaches
+allow us to show that language models are not semantically faithful, i.e., they
+do not behave in accordance with domain expectations. Following this, a new
+technique to improve constraint adherence is presented, and issues with the
+current paradigm of domain-blind evaluation of models are highlighted. Finally,
+we explore domain coherence in the frontier of deep learning-based natural
+language research--large language models--and propose techniques to improve
+their domain obedience.
+
+Domain knowledge-aware deep learning promises to be a major milestone towards
+scientific applications of deep learning. In this vein, we undertook a
+preliminary study attempting to address a problem arising from cosmology, where
+the known laws of physics serve as constraining information. Results from this
+study are presented in Appendix \ref{chap:LADDERastro}.
+
+The findings in this dissertation are a step towards a general framework for
+data-driven learning systems that operate within and learn from domain-specific
+requirements, and they pave the way for encouraging future research
+opportunities. In particular, agentic systems that reason toward achieving goals
+could greatly benefit from domain-knowledge guidance, and further work addressing
+this challenge would be compelling. Additionally, a natural extension of this
+work is to couple constraint-aware models with contemporary explainability
+techniques. Such integration would allow us to assess whether the model-generated
+rationales align with the underlying domain rules and could facilitate the
+creation of a transparent and consistent audit trail.
+
+While the focus of this dissertation has been on advancing the applicability of 
+deep learning-based systems in domain-specific contexts, it is also vital to 
+consider the broader societal implications of these technological advancements. 
+Although widespread use of automation technologies holds significant promise, it 
+also threatens the economic futures of large swathes of the population in the 
+current societal landscape. Policy shifts prioritizing strong social safety 
+nets are crucial for mitigating these effects.
+
+\insertdecoration

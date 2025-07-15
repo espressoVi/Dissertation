@@ -1,0 +1,7 @@
+\bibliographystyle{./frontbackmatter/acl_style.bst}
+\begin{spacing}{0.9}
+    \phantomsection
+    \addcontentsline{toc}{chapter}{Bibliography}
+    \bibliography{chapters/references}
+    \insertdecoration
+\end{spacing}

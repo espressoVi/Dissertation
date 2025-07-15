@@ -1,0 +1,46 @@
+\chapter{Introduction}
+\label{chap:Introduction}
+
+    \input{chapters/1/Sec0_intro.latex}
+
+\section{Deep Learning}
+\label{sec:deeplearning}
+
+    \input{chapters/1/Sec1_intro.latex}
+
+    \subsection{Basic Formalism}
+
+        \subsubsection{Notation}
+
+            \input{chapters/1/Sec1-1_notation.latex}
+
+        \subsubsection{Foundational Techniques}
+
+            \input{chapters/1/Sec1-1_technique.latex}
+
+        \input{chapters/1/Sec1-1_examples.latex}
+
+    \subsection{Popular Models}
+
+            \input{chapters/1/Sec1-2_architecture.latex}
+
+        \subsubsection{Transformers}
+
+            \input{chapters/1/Sec1-2_transformers.latex}
+
+\section{Language Models}
+\label{sec:language_models}
+
+        \input{chapters/1/Sec2.latex}
+
+\section{Domain Constraints}
+\label{sec:domain_constraints}
+
+        \input{chapters/1/Sec3.latex}
+
+\section{Organization}
+\label{sec:organ}
+
+        \input{chapters/1/Sec4.latex}
+
+\insertdecoration

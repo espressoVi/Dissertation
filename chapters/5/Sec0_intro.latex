@@ -1,0 +1,60 @@
+\footnote{This chapter is largely based on our paper titled \emph{``Language
+Models are Crossword Solvers''} \cite{myCrossword}.}Modern \acp{LLM} demonstrate
+remarkable skills in a plethora of language tasks like reasoning, coding,
+wordplay, \ac{QA}, etc. \cite{wei2022emergent, survey}. However, their ability
+to generate language in a constrained setting is somewhat under-explored. The
+ability to control or direct the generation process in order to meet certain
+criteria is extremely desirable in several realms of \ac{NLP}, but it remains a
+challenge \cite{poemgeneration}.
+
+These constraints can take several forms, like length limitations, character
+limitations, rhyming/meter-based constraints, and restriction to formal 
+languages. As a simple example, consider the task of poem generation
+\cite{poemgeneration}, where in addition to thematic aptness, we must contend 
+with a rhyming scheme. Further, for certain kinds of poems, like sonnets or 
+haikus, we have extended impediments on the number of syllables or characters. 
+Similar constraints arise for generation of lyrics where a certain pattern of 
+stressed and unstressed syllables might be desirable based on the beats of 
+music.
+
+Constraints also frequently arise when dealing with formal languages like those 
+defined by a finite automaton or a context-free grammar (CFG) \cite{automatabased}. 
+These problems have become imperative in the current \ac{LLM} zeitgeist, since 
+in addition to coding, \acp{LLM} have to interact with databases, application 
+programming interfaces (APIs), tools, interpreters, etc. In such use cases,
+generations must follow strictly laid-out guidelines to be useful. There is also
+a growing body of literature studying \emph{\acp{LLM} as agents} \cite{mineagent} 
+or \emph{embodied \acp{LLM}} \cite{embagent}, and in these use cases, language
+generation must follow physical and environmental constraints as well.
+
+In this chapter, we study \emph{crossword puzzles}, which are a form of word game 
+typically played using a square grid of black and white squares. The goal of the
+puzzle is to fill in the white squares with letters based on provided clues (see
+Figure \ref{fig:crosswordFig}). In addition to strict limitations on the number
+of admissible letters for each answer, crossword puzzles feature further
+constraints in the form of letter interactions of various clues.
+
+\begin{figure}[ht!]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/Chapter5/example.png}
+    \end{center}
+    \caption{\textbf{Example of a crossword puzzle (left) and cryptic clues (right).}\\
+        (\emph{left}) The grid must be filled up with answers from the semantic 
+        clues provided. The gray highlighted squares produce additional 
+        constraints, e.g., first character of the answer to clue 1 (across) and 
+        clue 4 (down) must be the same. Example by Fred Piscop.\\ 
+        (\emph{right}) In cryptic crosswords, the clues involve some form of 
+        wordplay and synonyms and often involve world knowledge. Examples are 
+        taken from the cryptonite \cite{cryptonite} dataset. Figure is 
+        reproduced from \citet{myCrossword}.
+    }
+    \label{fig:crosswordFig}
+\end{figure}
+
+In this chapter, we first discuss necessary background for crosswords and some
+previous attempts at automated crossword solving. We then analyze \ac{LLM}'s
+abilities at this task and present an algorithm that can solve crosswords with 
+the aid of \acp{LLM}. We finally present experimental results validating the
+performance of our algorithm and further studies exploring different aspects of 
+\ac{LLM} performance with regard to generalizability, reasoning, and abilities 
+at different linguistic tasks.

@@ -1,0 +1,24 @@
+This dissertation is roughly split into two parts, the \emph{first} of which
+focuses on an exploration of \ac{DL} systems' ability to adhere to domain rules.
+Chapter \ref{chap:VALUED} introduces a new dataset to combat the lack of
+large-scale rule-annotated datasets and, with its assistance, demonstrates the
+lack of constraint adherence displayed by \ac{SoTA} \ac{DL}-based \ac{CV}
+techniques. Chapter \ref{chap:Faithful Language Modeling} analyzes \acp{LM} and
+points out critical deficiencies they exhibit in adhering to domain expectations
+with the aid of interventions during training and inference. Further, an
+intervention-based training strategy is proposed that alleviates this effect.
+
+The \emph{second} part of this dissertation introduces new techniques for
+incorporating domain constraints into \ac{DL}-based systems. Chapter
+\ref{chap:Modifying Models} puts forth a technique to incorporate logical
+constraint information into \ac{DL} systems. This technique leverages domain
+rules alongside data to disincentivize incoherent predictions and improve
+predictive performance. Additionally, chapter \ref{chap:Modifying Models}
+tackles model evaluation and points out issues with a domain-blind approach to
+evaluation. A framework for constructing a metric that takes domain knowledge
+into account is proposed and exemplified with a real-life medical use case.
+Chapter \ref{chap:Constrained Inference} explores inference with \acp{LLM} in a
+constrained setting. Although significant strides are required in this area,
+this chapter illustrates how in-context learning paired with a search strategy
+can enable the application of these models in a constrained setting. This is
+followed by a few concluding remarks.

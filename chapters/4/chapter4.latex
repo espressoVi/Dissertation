@@ -1,0 +1,75 @@
+\chapter[Domain-aware Learning and Evaluation]{Domain-aware Learning \& Evaluation}
+\label{chap:Modifying Models}
+
+    \input{chapters/4/Sec0_intro.latex}
+
+\section{Domain Knowledge Augmentation}
+\label{sec:DOSTnoisy}
+
+    \input{chapters/4/Sec1-0_intro.latex}
+
+    \subsection{Related Works}
+
+        \input{chapters/4/Sec1-1_background.latex}
+
+    \subsection{Definitions and Notation}
+
+        \input{chapters/4/Sec1-2_notation.latex}
+
+    \subsection{DOST Algorithm}
+
+        \input{chapters/4/Sec1-3_proposal.latex}
+
+    \subsection{Experiments}
+
+        \subsubsection{Experimental Details}
+        \label{sec:experimentalDetailsDOST}
+
+            \input{chapters/4/Sec1-4_experiments.latex}
+
+        \subsubsection{Results}
+
+            \input{chapters/4/Sec1-4_results.latex}
+
+\clearpage
+\section{Evaluating Models}
+\label{sec:Deep Learning Metrics}
+
+
+    In this section, we look at some commonly used \ac{MLC} metrics and the 
+    potential issues they present.
+
+    \subsection{Definitions}
+
+        \input{chapters/4/Sec2-1_defn.latex}
+
+    \subsection{Diagnostic Constraints}
+    \label{sec:diagconst}
+
+        \input{chapters/4/Sec2-2_diagnostic_constraints.latex}
+
+    \subsection{Metrics}
+
+        \input{chapters/4/Sec2-3_intro.latex}
+        \input{chapters/4/Sec2-3_metrics.latex}
+
+    \subsection{Are \ac{ML} metrics clinically applicable? }
+    \label{sec:flaws}
+        \input{chapters/4/Sec2-4_clinical_appl.latex}
+
+    \subsection{MedTric -- A Domain Obedience Metric}
+    \label{sec:Domain Obedience Metric}
+
+        \input{chapters/4/Sec2-5_medtric.latex}
+
+    \subsection{MedTric in Practice}
+    \label{sec:MedTric}
+
+        \input{chapters/4/Sec2-6_results.latex}
+
+\section{Discussions}
+\label{sec:DOSTdiscuss}
+
+        \input{chapters/4/Sec3_discussion.latex}
+
+\insertdecoration

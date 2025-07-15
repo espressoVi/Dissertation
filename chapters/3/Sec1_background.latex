@@ -1,0 +1,48 @@
+A considerable body of research has explored how language models perform across
+various \ac{NLP} tasks \cite{rogers-etal-2020-primer}. One such prevalent method
+is \emph{probing}. This technique is employed to uncover linguistic structures
+present in the contextual vector embeddings of these models
+\cite{pimentel-etal-2020-information, hewitt-liang-2019-designing,
+hewitt-manning-2019-structural, chi:etal:2020}. The process of probing involves
+training a supplementary model called the \emph{probe}, which utilizes the 
+representations obtained from an \ac{LM} for a downstream linguistic task. Since
+the \ac{LM} representations are fixed, the performance of the probe model 
+indicates how well these representations embed information necessary for the 
+downstream task. The simplest example of this technique is \emph{linear probing}
+\cite{linprob}, which tests the linear separability of \ac{LM}-generated 
+features with an \ac{FC} layer.
+
+A significant limitation of probing methods is their inability to elucidate how 
+the embedded information is utilized during the inference process 
+\cite{tenney-etal-2019-bert, rogers-etal-2020-primer}. Probing only examines the 
+presence of sufficient information within the representation but tells us 
+nothing about whether the model actually employs this implicit information when 
+reasoning about textual content. The focus of our experiments is squarely on 
+this aspect, i.e., how the model makes use of the embedded information in its 
+reasoning process.
+
+Methods that study \ac{LM} behavior at inference time can offer better insights
+into the inner machinations of \acp{LM}. One such work by \citet{amnesic} 
+explores an intervention-based strategy called \emph{amnesic probing}. This 
+method involves making alterations to the hidden representations of the model to 
+selectively erode certain morphological information. Our work, in contrast,
+focuses on performing interventions on the input linguistic content and form. In 
+related research, \citet{balasubramanian-etal-2020-whats} demonstrated that BERT 
+can be \emph{surprisingly brittle} when swapping one named entity for another. 
+Furthermore, \citet{DBLP:journals/corr/abs-2003-04985} highlighted BERT's 
+lack of robustness to common typographical errors. 
+
+\citet{schuff-etal-2020-f1} explored \ac{QA} models that provide explanations
+alongside answers. Their manual inspection revealed that the explanations often
+failed to justify the predicted answers. Studies investigating the effect of 
+manipulated input texts \cite{balasubramanian-etal-2020-whats, 
+DBLP:journals/corr/abs-2003-04985, jia-liang-2017-adversarial, 
+song-etal-2021-universal, belinkov2018synthetic, zhang:etal:2020} typically do
+so through the lens of \emph{adversarial} scenarios, employing attack algorithms
+or intricate heuristics to alter outputs, even when they shouldn't change.
+Interventions serve as a crucial tool in crafting counterfactual models 
+\cite{kaushik:etal:2019}, and they provide insights into understanding causal 
+structure \cite{scholkopf2019causality, kusner2017counterfactual, 
+barocas-hardt-narayanan}. \citet{elazar-etal-2021-measuring} introduced a notion
+of consistency, which is subsumed by the notion of semantic \emph{faithfulness}
+in our work \cite{myCL}.

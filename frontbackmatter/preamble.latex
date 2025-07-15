@@ -1,0 +1,86 @@
+\documentclass[a4paper, 12pt]{book}
+\usepackage[square, sort, numbers]{natbib}
+\usepackage{xcolor}
+\usepackage[a4paper,left=40mm,right=30mm,top=40mm,bottom=30mm,heightrounded=true]{geometry}
+\usepackage{fancyhdr}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{calc}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{enumitem}
+\usepackage{setspace}   % Double spacing
+\usepackage{titlesec}
+\usepackage{tikz}
+\usepackage{afterpage}
+\usepackage[parfill]{parskip}
+\usepackage[most]{tcolorbox}
+\usetikzlibrary{decorations.pathreplacing, calc}
+\usepackage[labelsep=colon,tableposition=top]{caption}
+\usepackage[printonlyused]{acronym}
+
+\newcommand{\tikzmark}[1]{\tikz[remember picture,overlay]\node[yshift=2pt](#1){};}
+
+\newcommand{\ctt}[1]{|\texttt{#1}|}
+\renewcommand{\bf}[1]{\textbf{#1}}
+\newcommand{\seq}[1]{\mathrm{\mathbf{#1}}}
+
+
+% Colors for links, etc.
+\definecolor{linkcol}{RGB}{40, 52, 102}
+\definecolor{urlcol}{RGB}{18, 55, 77}
+\definecolor{citecol}{RGB}{96, 32, 64}
+\definecolor{shadecol}{RGB}{230, 230, 240}
+\definecolor{boxcol}{RGB}{207, 238, 255}
+\hypersetup{
+    colorlinks = true,
+    linkcolor = linkcol,
+    urlcolor = urlcol,
+    citecolor = citecol,
+}
+
+
+\setcounter{secnumdepth}{2}         % For numbering sections up to a.b.c.
+\setcounter{tocdepth}{1}            % For table of contents up to a.b.
+\interfootnotelinepenalty=10000     % Make sure footnotes don't break page.
+\frenchspacing
+
+\fancypagestyle{PP}{
+  \renewcommand{\chaptermark}[1]{\markboth{##1}{}}
+  \renewcommand{\sectionmark}[1]{\markright{\thesection\ ##1\ }}
+  \fancyhf{}
+  \fancyhead[RO]{\sffamily \textsc \rightmark \hspace{0.25em} | \hspace{0.25em} \sffamily{\thepage}}
+  \fancyhead[LE]{ {\sffamily\thepage} \hspace{0.25em} | \hspace{0.25em} \sffamily \textsc \leftmark}
+}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+\pagestyle{PP}
+
+\renewcommand{\bibname}{Bibliography}
+\renewcommand{\figurename}{\bf \sffamily\textsc{Figure}}            % Figure caption style.
+\renewcommand{\tablename}{\bf\sffamily\textsc{Table}}               % Table caption style.
+\newtheorem{definition}{\sffamily \textsc{Definition}}[chapter]     % Theorem, defn, etc.
+\newtheorem{theorem}{\sffamily \textsc{Theorem}}[chapter]
+\newtheorem{claim}{\sffamily \textsc{Claim}}[chapter]
+
+\newcommand{\insertdecoration}{\vspace{2pc}\hfill\LARGE{$\blacksquare$}\normalsize}     % Chapter end decoration.
+
+% Hyperlinks to acronyms
+\let\oac\ac
+\renewcommand{\ac}[1]{\protect\hyperlink{abbrev}{\oac{#1}}}
+\let\oacp\acp
+\renewcommand{\acp}[1]{\protect\hyperlink{abbrev}{\oacp{#1}}}
+\let\oAc\Ac
+\renewcommand{\Ac}[1]{\protect\hyperlink{abbrev}{\oAc{#1}}}

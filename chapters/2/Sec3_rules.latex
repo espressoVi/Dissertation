@@ -1,0 +1,144 @@
+Given our dataset of 200,000+ annotated chess games, we can test the
+capabilities of various vision models with regard to their performance and
+domain constraint adherence.
+
+To establish baseline results, we selected a range of popular ImageNet 
+\cite{imagenet} pre-trained vision models like ResNets \citep{resnet}, ViT 
+\citep{vit}, etc., covering a large range of scales and training techniques. 
+These pre-trained models were fine-tuned \footnote{Full fine-tune updating all
+weights.} for 2 epochs after replacing the final \ac{FC} layer with one of
+appropriate size $(\texttt{in\_features} \rightarrow 8 \times 8 \times
+\texttt{class\_number})$ and adding dropouts (10\%) in between. The models were
+implemented in pytorch, and trained with the AdamW optimizer (learning rate of
+$10^{-4}$) and \ac{CE} loss. The images were normalized, and if necessary
+resized. We trained the models on a single NVIDIA A6000 48GB GPU.
+
+\subsection{Results}
+
+The performance analysis of various vision models on our dataset is presented in 
+Table \ref{tab:VALUEDres}. Although these pre-trained models differ in terms of 
+training techniques and scale, they demonstrate proficiency in recognizing 
+visual features necessary for identifying chess pieces, as evidenced by their 
+high $F1$ and EM scores (see Table \ref{tab:VALUEDres}). Interestingly, the Swin
+Transformer \cite{swin} surpasses models that are significantly larger,
+potentially due to its unique hierarchical architecture that allows for
+effective feature capture at varying scales.
+
+However, these models show considerable room for improvement in terms of domain 
+consistency, as indicated by the high percentage of predictions containing rule 
+violations. In critical applications, such inconsistent predictions are 
+untenable and would require elimination, which is reflected in the notably lower 
+$sF1$ scores. To underscore this issue, we draw attention to the $\mu_C$ metric 
+in Table \ref{tab:VALUEDres}, which records the average number of rule violations 
+per prediction. In the best-case scenario, a rule violation occurs every 15 
+predictions, while in the worst case, it occurs every 2.3 predictions.
+
+Although the results discussed pertain to off-the-shelf vision systems, it is 
+worth noting that the performance of systems specifically designed for the 
+chess board state recognition task is comparable, with EM scores of 
+approximately 15\% and 7\% for end-to-end and piece-wise classification systems,
+respectively \cite{chessP1}. This highlights the ongoing challenge of reducing 
+logical inconsistencies in model predictions.
+
+\begin{table}[!ht]
+    \caption{\textbf{Performance of popular vision models on the VALUE dataset.}\\
+	($[\uparrow]$ - higher is better, $[\downarrow]$ lower is better).}
+\begin{center}
+{\scriptsize{
+	\label{tab:VALUEDres}
+	\begin{tabular}{p{7.5em}|rr|rrrrrr}
+	\toprule
+		Model 		& \# param. & Image Size & EM (\%)$[\uparrow]$ & C (\%) $[\downarrow]$ & F1 $[\uparrow]$& sF1 $[\uparrow]$& F1-sF1 $[\downarrow]$ & $\mu_c [\downarrow]$\\
+	\midrule
+        VGG-16 \cite{vgg}    	& 134M 	& $224^2$ & 26.3\% & 28.7\% & 0.880 & 0.656 & \textbf{0.224} & 0.426 \\
+        ResNet50 \cite{resnet} 	&  24M 	& $512^2$ & 56.3\% & 12.8\% & 0.959 & 0.849 & \textbf{0.110} & 0.172 \\
+		ResNet101             	&  43M 	& $512^2$ & 60.4\% & 11.1\% & 0.966 & 0.869 & \textbf{0.097} & 0.147 \\
+        ViT-B/16 \cite{vit} 	&  86M 	& $224^2$ & 25.9\% & 30.8\% & 0.875 & 0.635 & \textbf{0.240} & 0.432 \\
+		ViT-L/32             	& 307M 	& $384^2$ & 32.2\% & 24.0\% & 0.907 & 0.711 & \textbf{0.196} & 0.337 \\
+        SWIN-tiny/4 \cite{swin}	&  29M 	& $224^2$ & 80.3\% &  5.2\% & 0.984 & 0.938 & \textbf{0.046} & 0.067 \\
+	\bottomrule
+\end{tabular}
+    }}
+\end{center}
+\end{table}
+
+\begin{figure}[!t]
+	\centering
+	\begin{subfigure}[t]{0.49\textwidth}
+	    \includegraphics[width=\textwidth]{./images/Chapter2/prop.png}
+	    \caption{Prevalence of violating counting or localizing rules.}
+	    \label{fig:prop}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.49\textwidth}
+	    \includegraphics[width=\textwidth]{./images/Chapter2/prop_adj.png}
+	    \caption{Adjust likelihood of violating counting or localizing rules (Equation \ref{eq:adj}).}
+	    \label{fig:cnt}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.6\textwidth}
+	   \includegraphics[width=\linewidth]{./images/Chapter2/rule.png}
+	   \caption{Adjusted likelihood of violating each rule.}
+	   \label{fig:loc}
+	\end{subfigure}
+\caption{Errors arising due to counting or localizing.}
+\label{fig:figstack}
+\end{figure}
+
+Given that our rule set includes several rules specifically tailored to evaluate 
+localization ability, i.e., constraints on where objects can be located in the 
+scene, and counting ability, i.e., constraints on the number of objects of a 
+certain kind in the scene, we examined how well models perform along these
+categories. Although ostensibly it is evident that most errors made by the
+models stem from breaching counting constraints (see Figure \ref{fig:prop}), it
+is important to recognize that the probability of making counting errors is
+elevated due to the significantly greater number of potential predictions that 
+can infringe upon these constraints. To adjust for this, we calculate-
+\begin{equation}
+	P^{\mathrm{R}}_{model} = f^{\mathrm{R}}_{model}/f^{\mathrm{R}}_{random}
+	\label{eq:adj}
+\end{equation}
+where $f^{\mathrm{R}}_{model}$ is the frequency of rule $\mathrm{R}$ being 
+violated by the model in question, and $f^{\mathrm{R}}_{random}$ is the 
+frequency of rule violation of a random guesser ($P(s) = P(s'), \forall s,s' 
+\in \mathrm{P}^{64}$). This shows (see Figure \ref{fig:cnt}) that the models 
+are more likely to make errors in regard to localization 
+($\mu = 0.0052\pm0.0025$) than counting ($\mu=0.0042\pm0.0023$).
+
+Additionally, we examined the models to assess the likelihood of each rule 
+being violated within the two main categories. Surprisingly, rule $(\mathrm{v})$ 
+in Table \ref{tab:ValuedRule} was never violated by any model, while rules 
+$(\mathrm{iii})$ and $(\mathrm{vii})$ were unlikely to be violated (see 
+Figure \ref{fig:loc}). Conversely, locality constraints $(\mathrm{ii})$ and 
+$(\mathrm{viii})$, alongside counting rules $(\mathrm{i})$, $(\mathrm{iv})$, 
+and $(\mathrm{vi})$, were frequently violated. This points to the fact that the 
+ability of models to adhere to domain constraints is somewhat dependent on the 
+nature of the constraints themselves.
+
+\subsection{Discussions}
+
+Our study reveals that while conventional \ac{DL} methods may appear
+effective when evaluated using standard metrics on the VALUE Dataset (refer to
+Table \ref{tab:VALUEDres}), they often struggle to comply with domain-specific
+constraints. Even among the highest-performing models, 5.2\% of predictions
+(up to 30\% in the worst case) exhibit logical inconsistencies, which are
+unacceptable in critical applications and result in a reduced effective F1
+score (sF1). Additionally, we found that these \ac{DL} approaches exhibit
+a limited ability to learn constraint-related information from data alone, a
+capability that significantly varies based on the type of constraint. Moreover,
+it remains uncertain whether the enhanced performance of certain models (as
+shown in Table \ref{tab:VALUEDres}) is due to their ability to align with
+dataset constraints or if such results are meretricious. Further exploration
+into model robustness is also necessary, particularly since integrating domain
+knowledge has shown potential in enhancing adversarial robustness \cite{pami}.
+
+Given the significant practical relevance of the problem of incorporating 
+domain knowledge into \ac{DL} systems, this subject has garnered 
+considerable attention. However, the scarcity of high-quality datasets featuring 
+a diverse and well-curated set of rules has limited thorough analyses and 
+the advancement of incorporation techniques. The VALUE Dataset represents a step 
+toward addressing this gap. Nonetheless, additional research is essential to 
+establish a standardized framework for integrating domain constraints into deep 
+learning methodologies. Further investigations into how different characteristics
+of these rules---such as compositionality, specificity, and their prevalence in
+the training distribution---challenge \ac{SoTA} vision systems constitute a
+promising avenue for future work.

@@ -1,0 +1,45 @@
+\subsubsection{Example Uses}
+
+\ac{DL} is used across a variety of settings with different datasets, models, 
+and objective functions, ranging from language modeling, semantic segmentation, 
+variational auto-encoders, and denoising-diffusion to contrastive learning, 
+reinforcement learning, meta-learning, and more. We provide a few illustrative 
+example tasks and their associated objective functions here.
+
+In non-linear \emph{regression} tasks, $\mathcal{D} = \{(x_i, y_i)| \forall i 
+\in \{1, \ldots, n\}\}$, where $x_i \in \mathbb{R}^M$ and $\mathbb{R}^N$. The 
+loss function is typically $L_2$ norm aka \ac{MSE} of the output $\hat{y}_i$ and 
+ground truth $y_i$, although other disparate losses like $\text{smooth}L_1$ or 
+\emph{intersection-over-union} (bounding box regression) are often used.
+
+In \emph{binary classification}, every sample $(x_i, y_i) \in \mathcal{D}$ 
+belongs to the `$+$' or `$-$' class and has an associated $y_i = P(+|x_i)$. The 
+model's output $\hat{y}_i = f_{\theta}(x_i) \in (0,1)$ is interpreted as the 
+probability $Q(+|x_i) := \hat{y}_i$. The typical loss function in this setting 
+is the \ac{BCE} loss defined as:
+\begin{equation}
+    \begin{split}
+        \mathcal{L}_{\text{BCE}}&(\hat{y}_i, y_i) = H(P,Q) = -\mathbb{E}_P[log(Q)]\\
+        &= - P(+|x_i)\log \big(Q(+|x_i)\big) - \big(1- P(+|x_i)\big) \log\big(1-Q(+|x_i)\big)\\
+        &= - P(+|x_i)\log \big(Q(+|x_i)\big) - P(-|x_i)\log \big(Q(-|x_i)\big)
+    \end{split}
+\end{equation}
+If discrete decisions are needed, we fix a constant $\kappa \in (0,1)$, such 
+that $x_i$ is `$+$' if $\hat{y}_i \geq \kappa$.
+
+\emph{\Ac{MCC}} generalizes this notion to $C$ classes, and for every $x_i$ we 
+have $y_i \in (0,1)^C$ such that $[y_i]_{\mu} = P(\mu|x_i)$ and 
+$\sum_{\nu=1}^C [y_i]_{\nu} = 1$. Here we typically use the general \ac{CE} loss
+defined as:
+\begin{equation}
+    \begin{split}
+        \mathcal{L}_{\text{CE}}&(\hat{y}_i, y_i) = H(P,Q) = -\mathbb{E}_P[log(Q)]\\
+        &= - \sum_{\nu = 1}^C P(\nu|x_i)\log \big([\hat{y}_i]_{\nu} \big)
+    \end{split}
+\end{equation}
+
+\emph{Auto-encoders} employ a model $f_{\theta}$ to create a low-dimensional
+representation $z_i \in \mathbb{R}^d$ for $x_i \in \mathbb{R}^D$ ($d < D$) and
+another model $g_{\phi}$ to reconstruct $x_i$ from $z_i$. The combined model
+$(f \circ g)_{\{\theta, \phi\}}$ uses a reconstruction loss like \ac{MSE} between
+$x_i$ and $(f \circ g)_{\{\theta, \phi\}}(x_i)$.

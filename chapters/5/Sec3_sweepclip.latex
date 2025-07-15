@@ -1,0 +1,85 @@
+In this section, we attempt to address the challenge of completing crossword 
+grids with the assistance of \acp{LLM}. This problem requires more than merely 
+generating correct answers for the given clues; it also involves capitalizing on 
+constraints set by words already placed on the grid. Additionally, it 
+necessitates backtracking to revise previous candidates that may no longer be 
+valid with the emergence of new information. Given that \acp{LLM} exhibit the
+capability to exploit partially filled grids, when coupled with an appropriate 
+search algorithm, they can potentially be effective in solving crosswords.
+
+Our proposed algorithm - \emph{SweepClip}, initiates by generating a set of 
+candidate answers for all the clues in the crossword (\emph{Sweep}) and removing 
+any answers that do not fit using a graph based criterion (\emph{Clip}).
+Following this, constraints derived from the previously accepted answers are 
+utilized to generate neighboring candidate answers\footnote{Using prompts with 
+appropriate letter masks, see Figure \ref{fig:partclcs}.} and further prune 
+candidates that do not fit correctly. This strategy is applied iteratively until 
+one of the following conditions is met: (i) the entire crossword is successfully 
+filled, (ii) the number of iterations surpasses a predetermined limit 
+(\texttt{max\_iter}), or (iii) the \ac{LLM} computational budget is exhausted. 
+Our algorithm implicitly performs self-consistency checks to improve candidate 
+answers; e.g., an answer generated at the first sweep may be discarded only to be 
+accepted in later iterations, when it is consistent with a larger number of 
+other answers.
+
+Formally, a crossword puzzle consists of a grid and a set of clues $C = \{c_1, 
+\ldots c_n\}$ and answers (ground truth) $A = \{a_1, \ldots a_n\}$ corresponding 
+to position $i$ in the grid. The grid imposes a graph $G = (V, E)$, where $V = 
+\{v_1, \ldots v_n\}$ is the set of vertices corresponding to every clue/answer 
+in the crossword, and:
+\begin{equation}
+    E = \{(v_i,v_j)| \; \forall i,j\;i\neq j\: s.t. \; a_i, a_j \textrm{ share a grid position}\}
+\end{equation}
+
+Given an LLM, and a set of clues $C' \subseteq C, C' =\{c_{j_1}, c_{j_2}, \ldots \}$ 
+corresponding to vertices $\{v_{j_1}, v_{j_2}, \ldots \}$ we can generate 
+candidate answers $\hat{A} = \{\hat{a}_{j_1}, \hat{a}_{j_2}, \ldots\}$, where 
+$\hat{a} = LLM(c)$. We abbreviate this as $\hat{A} = LLM(C')$. For a subset $V'$ of $V$,
+let the set of clues associated with $V$ be denoted by $C(V')$.
+
+Two candidate answers $\hat{a}_i, \hat{a}_j$ are said to be in \textbf{conflict},
+if $\mu$-th position of $a_i$ and $\nu$-th position of $a_j$ are in the same
+grid position, however $\hat{a}_i [ \mu ] \neq \hat{a}_j [ \nu ]$, i.e., the
+$\mu$-th character of $a_i$ and $\nu$-th character of $a_j$ are different.
+
+There are two sub-graphs $G_p(\hat{A})$ and $G_n(\hat{A})$ of $G$ that
+correspond to a set of candidate answers $\hat{A}$. Let $v_i,v_j$ correspond to
+$\hat{a}_i, \hat{a}_j \in \hat{A}$. An edge $(v_i, v_j) \in E$ is in
+$G_p(\hat{A})$ if and only if $\hat{a}_i, \hat{a}_j$ don't conflict, else it is
+in $G_n(\hat{A})$. We call the largest connected component of a graph $H$,
+$LCC(H)$, and for a subset $S$ of vertices $V$ of a graph $G$, $ngbd(G, S)$
+denotes the vertices in $V$ that are adjacent to $S$ but not in $S$. The
+algorithm is detailed in Algorithm \ref{alg:sweep_clip}.
+
+\begin{algorithm}
+    \caption{\textbf{: SweepClip}}
+\label{alg:sweep_clip}
+\begin{algorithmic}[1]
+    \State Given $C$, crossword graph $G$ and an LLM.
+    \State Generate $\hat{A} \leftarrow LLM(C)$.
+    \For{$i$ in $\{1, \ldots, \texttt{max\_iter}\}$}
+        \State Construct $G_p(\hat{A}), G_n(\hat{A})$
+        \State $L \leftarrow LCC(G_p(\hat{A}))$.
+        \State $\hat{A} \leftarrow \{\hat{a}_i |\;v_i \in L\}$
+        \While{$G_n(\hat{A})$ has edges.}
+            \State A max degree vertex in $G_n(\hat{A}) \rightarrow v_m$
+            \State Remove $v_m$ from $G_n(\hat{A})$.
+            \State $\hat{A} \leftarrow \hat{A} - \hat{a}_m$
+        \EndWhile
+        \State Calculate $N \leftarrow ngbd(G, \hat{A})$.
+        \State Augment $C(N)$ with character information.
+        \State $\hat{A} \leftarrow \hat{A} \cup LLM(C(N))$
+        \If{\texttt{solved} or \texttt{budget\_exceeded}}
+            \State \texttt{break}
+		\EndIf
+	\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+For pruning, we employ the largest connected component from the answers 
+generated thus far, thereby ensuring a degree of coherence among the selected 
+answers. While this approach is somewhat restrictive—since isolated answers can 
+indeed be correct—it proves effective in eliminating incorrect answers at an 
+early stage. This prevents the propagation of errors by avoiding the use of 
+potentially incorrect constraints that could lead to further incorrect answers 
+in subsequent iterations.

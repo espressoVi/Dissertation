@@ -1,0 +1,36 @@
+\documentclass[a4paper, 12pt]{article}
+
+\input{synop_material/preamble.latex}
+\input{synop_material/abbreviations.latex}
+
+%\title{\textsc{Dissertation Synopsis}\\
+%    \Huge{Domain Obedient Deep Learning}}
+%\author{Soumadeep Saha\\[-1ex]
+%\textbf{\textsc{Advisor:}} Utpal Garain\\[-1ex]
+%\small{Computer Vision and Pattern Recognition Unit,}\\[-1ex]
+%\small{Indian Statistical Institute, Kolkata}}
+%\date{\vspace{-3ex}}
+
+\begin{document}
+
+\input{synop_material/title.latex}
+
+\section*{Abstract}
+\input{synop_material/abstract.latex}
+
+\section*{Background}
+\input{synop_material/background.latex}
+
+\section*{Dissertation Outline and Contributions}
+\input{synop_material/contrib.latex}
+
+\section*{Publications}
+\input{synop_material/pub.latex}
+
+\nocite{*}
+\begin{spacing}{0.9}
+\bibliographystyle{./frontbackmatter/acl_style.bst}
+\bibliography{chapters/references}
+\end{spacing}
+
+\end{document}

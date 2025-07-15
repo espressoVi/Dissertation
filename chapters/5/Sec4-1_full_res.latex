@@ -1,0 +1,53 @@
+To report performance results of our algorithm \emph{SweepClip} (Algorithm 
+\ref{alg:sweep_clip}), we use the set of 100 randomly sampled Monday \emph{NYT} 
+crossword puzzles (see Table \ref{tab:model-details}). Monday crosswords are 
+typically easier, and we restrict ourselves to them solely to limit 
+computational cost. We used two LLMs for this: GPT-4-Turbo and Llama 3 70B. The 
+results are produced with a \texttt{max\_iter} of 30 and a budget of 0.5 US 
+dollars per crossword for GPT-4-Turbo and a \texttt{max\_iter} of 35 and a 
+budget of 600 LLM calls for LLaMA 3 70B.
+
+\begin{table}[!ht]
+    \caption{Results from solving NYT crosswords with \emph{SweepClip}.}
+    \label{tab:sweep_clip}
+    \begin{center}
+        \begin{tabular}[c]{l r r}
+            \toprule
+            \multirow{2}{*}{\textbf{Error Tolerance}} & \multicolumn{2}{c}{\textbf{\% of Crosswords}} \\
+            \cline{2-3}
+                                      & LLaMa 3  & GPT-4 T\\
+            \midrule
+            \textbf{100\% solved}     & 0  & \textbf{48}  \\
+            $\leq$ 1 character error  & 1  & \textbf{55}  \\
+            $\leq$ 5 character error  & 10 & \textbf{71}  \\
+            $\geq 90\%$ Accuracy      & 30 & \textbf{80}  \\
+            $\geq 50\%$ Accuracy      & 82 & \textbf{98}  \\
+            \bottomrule
+        \end{tabular}
+    \end{center}
+\end{table}
+
+Our experiments (see Table \ref{tab:sweep_clip}) demonstrate that \emph{SweepClip}
+paired with GPT-4-Turbo is able to solve \textbf{48\%} of crosswords without any 
+errors and \textbf{55\%} of crosswords with at most 1 wrong character. The 
+average character level accuracy in crossword solving is \textbf{93.1\%} 
+($\pm$ 14.1\%). Our algorithm improves the clue-wise answer accuracy\footnote{
+Clue level accuracy is different from character level accuracy \citep{dacross}; 
+e.g., it is possible to have a filled-in crossword without deciphering all clues.
+} (exact match) to \textbf{89.6\%} ($\pm$ 16.9\%) from the base accuracy 
+(without the algorithm), which is 43.5\% ($\pm$ 23.5\%), an improvement of 
+\textbf{2.1}$\times$. The previously reported \ac{SoTA} accuracy on this task 
+with a foundational \ac{LLM} (without fine-tuning) was \textbf{26\%} with 
+retrieval-augmented generation and an SMT solver coupled with an oracle that 
+eliminates parts of the crossword grid that do not have suitable generated 
+answers \citep{dacross}.
+
+When we apply our algorithm with the smaller LLaMA 3 70B model, the overall 
+performance does degrade; however, the final clue-answering accuracy still sees 
+an uplift, reaching \textbf{59.4\%} ($\pm$ 24.1\%) compared to a baseline of 
+just 22.3\% ($\pm$ 14.4\%). Thus, through the application of our algorithm, 
+we've exploited constraint information to enhance \ac{LLM} performance, 
+significantly overtaking \ac{QA} techniques typically employed for clue 
+deciphering. To the best of our knowledge, \emph{this is the first demonstration 
+of an algorithm that successfully solves crosswords utilizing out-of-the-box 
+\acp{LLM}}.

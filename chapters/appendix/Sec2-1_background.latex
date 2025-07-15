@@ -1,0 +1,67 @@
+\subsubsection{Datasets}
+Our study features the \emph{Pantheon} \cite{Scolnic2018} and \emph{Pantheon+}
+\cite{panprelease} SNIa datasets. The \emph{Pantheon} compilation features data from 
+1048 spectroscopically confirmed SNIa covering a redshift range of 
+$0.01\lesssim{}z<2.3$, with most of the samples being on the lower end of that
+redshift range. The \emph{Pantheon+} dataset is similar and features data from 
+1550 distinct SNIa over a redshift range of $0.001\lesssim{}z<2.3$ and has a 
+higher density at the lower redshift range (see Figure \ref{fig:density}). There 
+is some overlap between the datasets, and we \emph{reserve the 753 data points 
+in Pantheon+ that are not in the Pantheon compilation for testing.}
+
+\begin{figure}[!ht]
+    \begin{center}
+        \includegraphics[width=0.9\textwidth]{images/Appendix/density.png}
+    \end{center}
+    \caption{\textbf{Distribution of the \emph{Pantheon} \cite{Scolnic2018} and 
+    \emph{Pantheon}+ \cite{panprelease} datasets.}\\
+    \emph{Pantheon}+ covers a wider range of redshifts with a higher density at lower
+    redshifts. Figure is reproduced from \citet{myLadder}.
+    }
+    \label{fig:density}
+\end{figure}
+
+In addition to the apparent magnitude ($m$) and the associated error 
+($\Delta m$), at various $z$, the datasets contain 
+$[\mathbf{C}_{\text{sys}}]_{ij}$ which corresponds to the covariance between 
+sample $i$ and $j \; \forall i,j$.
+
+\subsubsection{Formal Problem Description}
+
+Given the \emph{Pantheon} dataset, 
+$\mathcal{D}=\{(z_i,m_i,\Delta m_i)|\forall{}i\in\{1,\ldots{}N\}\}$, where 
+$z_i, m_i$, and $\Delta m_i \in\mathbb{R}$, which is drawn from some 
+\textit{a priori} unknown distribution, and $\mathbf{C}_{\text{sys}}$, we are 
+interested in estimating the distribution of $\mathcal{P}(M=m|z)\;\forall\: z\in
+\mathbb{R}^+$ with the assumption $\mathcal{P}(M=m|z)=\mathcal{N}(\mu_{\theta}(z),
+\sigma_{\theta}(z))$, for some functions $\mu_{\theta},\sigma_{\theta}$ and some 
+parameter $\theta$. In the typical empirical risk minimization paradigm, this
+can be restated as - 
+given 
+$(\mathcal{D},\mathbf{C}_{\text{sys}})$ find 
+$f:\mathcal{Z}\rightarrow\mathbb{R}^2$, such that for any new input $z$, we have:
+\begin{align}
+    &\min_{f\in\mathcal{F}} \mathcal{E}[f]\:,\\
+    \mathcal{E}[f] = \frac{1}{N}\sum_{i=1}^N & \ell\Big(\mathcal{N}(m_i,\Delta m_i),\mathcal{N}([f(z_i)]_1,[f(z_i)]_2)\Big)
+\end{align}
+for some class of functions $\mathcal{F}$ and loss $\ell$. $\mathcal{E}$ is the
+empirical risk functional. We choose $\ell$ to be the KL-divergence since we
+seek to model the distribution of $m(z)$.
+
+Although we seek to interpolate from the dataset, this is not a standard 
+regression problem since we have:
+\begin{equation}
+    \mathcal{P}(m_1,m_2,\ldots,m_N|z_1, z_2, \ldots, z_N) \neq \prod_{i=1}^N\mathcal{P}(m_i|z_i)
+\end{equation}
+Thus, we have to contend with the following intractable empirical risk:
+\begin{equation}
+    \begin{split}
+        \mathcal{E}^{\text{emp}}[f] = &\ell\Big(\mathcal{N}\big((m_1, m_2, \ldots m_N), \Sigma_m\big),\\
+                & \qquad \mathcal{N}\big(([f(z_1)]_1, [f(z_2)]_1, \ldots, [f(z_N)]_1), \Sigma_f\big)\Big)
+    \end{split}
+    \label{eq:intractable}
+\end{equation}
+for some covariance matrix $\Sigma_m, \Sigma_f$. We also have a few constraints
+based on known laws of physics--(i) $m(z)$ is monotonic, i.e., $m(z_1) \geq 
+m(z_2) \:\: \forall z_1 \geq z_2$, and (ii) $m(z)$ is at least once
+differentiable.

@@ -1,0 +1,24 @@
+\chapter{Faithful Language Modeling}
+\label{chap:Faithful Language Modeling}
+    
+    \input{chapters/3/Sec0_intro.latex}
+
+    \section{Background}
+
+        \input{chapters/3/Sec1_background.latex}
+
+    \section{Methodology}
+
+            \input{chapters/3/Sec1-1_details.latex}
+
+    \section{Experiments}
+
+        \subsection{Faithfulness}
+
+            \input{chapters/3/Sec2-1_deletion.latex}
+
+        \subsection{Understanding IBT}
+
+            \input{chapters/3/Sec2-2_ibt.latex}
+
+\insertdecoration

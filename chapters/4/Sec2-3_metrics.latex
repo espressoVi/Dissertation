@@ -1,0 +1,61 @@
+\subsubsection{Label-Based Metrics}
+
+Label-based metrics \cite{extensiveML} typically use micro- or macro-averages of
+binary classification metrics like precision, recall, and $F_1$ (or the more
+general $F_{\beta}$) to summarize performance across multiple categories (see
+Table \ref{subtable:lab-based}). Specificity alone is not ideal for settings
+with class imbalance, a common challenge in many diagnostic datasets \cite{spBad}.
+
+A \emph{macro-averaged} metric is calculated by independently evaluating the 
+binary metric for each class and then averaging over all classes. Conversely, 
+a \emph{micro-averaged} metric aggregates the statistics across all classes 
+before computing the final metric. Both methods, however, have inherent 
+limitations. Micro-averaging tends to favor classifiers that perform well on the
+abundant classes, while macro-averaging benefits classifiers that excel in 
+detecting rare classes. In clinical contexts, where certain presentations are
+infrequent but critical, micro-averaged measures are less meaningful, as rare
+conditions are often a cause for concern and might benefit greatly from 
+intervention. Problems arise when the majority class is the primary cause for
+concern since a macro-averaged metric might give an overly positive impression
+of the diagnostic system's performance.
+
+\subsubsection{Example-Based Metrics}
+
+Example-based metrics \cite{metrics} (Table \ref{subtable:exa-based}), are
+specifically crafted to highlight certain critical aspects of a multi-label
+classifier. It is generally insufficient to rely on just one or two metrics 
+\cite{diabMetric}, as each offers unique insights that can be valuable.
+
+A noteworthy recent effort by \citet{cmpaper} aimed to develop a metric that 
+incorporates clinical outcomes in a multi-label diagnostic context. This metric 
+was designed to assess various computational models, which are tasked with 
+identifying a subset of diagnostic features from 12-lead ECG signals across 27 
+potential diagnostic classes, many of which may coexist simultaneously. In this 
+metric, we first define the multi-class confusion matrix $a$ as:
+\begin{align}
+    [a]_{jk} &= \sum_{i=1}^N [a]_{\textbf{i}jk}, \text{ where, }\\
+    [a]_{\textbf{i}jk} &= 
+    \begin{cases}
+	    \frac{1}{|\{\hat{z}_i \cup y_i\}|}, \quad \text{ if } c_k \in \hat{z}_i \text{ and } c_j \in y_i \\
+        0, \text{ otherwise}.\\
+    \end{cases}   
+    \label{eq:cm2}
+\end{align}
+Next we compute $t(Y, Z) = \sum_k \sum_j [w]_{jk} [a]_{jk}$ where $[w]_{jk}$ is
+the weight matrix giving partial rewards to incorrect guesses. $[w]_{jj} = 1$
+and in general $0 < w_{jk} \leq 1$. The final score is given as:
+ \begin{equation}
+	 \label{eq:cm1}
+	 CM = \frac{ t(Y,Z) - t(Y, X_{\{NSR\}}) }{ t(Y,Y) - t(Y, X_{\{NSR\}}) }  
+ \end{equation}
+where $X_{\{NSR\}}$ is a prediction set where all predictions are the normal 
+class $\{NSR\}$. This metric, which is a weighted version of accuracy 
+\cite{Liu2021}, is limited to being used on the PhysioNet 2020/21 dataset 
+\cite{cmpaper}, however, with additional domain knowledge inputs, it can be used 
+in different contexts.
+ 
+These metrics often fall short in addressing clinical considerations, such as 
+the fact that over-diagnosis is generally less detrimental than missed 
+diagnosis, and they do not sufficiently account for the severity of the 
+diagnosis. In the next section, we will conduct a comprehensive analysis of 
+existing metrics from a clinical standpoint.
