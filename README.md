@@ -1,17 +1,17 @@
-# Domain Obedient Deep Learning
+# 🎓 Domain Obedient Deep Learning 🎓
 
 This repository contains the TeX source and other materials necessary to create
 my thesis titled _"Domain Obedient Deep Learning"_. This was accepted by the
 PhD/DSC committee of the [Indian Statistical Institute, Kolkata](https://www.isical.ac.in)
 for a PhD in Computer Science.  
 
-[Link to pdf](https://espressovi.github.io/assets/disseration.pdf)
+[📄Link to PDF 📄](https://espressovi.github.io/assets/pdf/disseration.pdf).
 
 > [!NOTE]
 > Update description after defense.
 _______________________________________________________________________________
 
-## Usage
+## 💻 Usage
 
 Main chapters are present in ```chapters/``` and extra materials are in
 ```frontbackmatter```. The main latex file that includes everything is 
@@ -22,7 +22,7 @@ make
 ```
 _______________________________________________________________________________
 
-## Updates
+## 📅 Updates
 
 * Submission: **10th February 2025**.
 * Reviews received: **July 7th, 2025** (_Accept with minor revisions_).
