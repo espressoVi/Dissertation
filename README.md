@@ -5,7 +5,7 @@ my thesis titled _"Domain Obedient Deep Learning"_. This was accepted by the
 PhD/DSC committee of the [Indian Statistical Institute, Kolkata](https://www.isical.ac.in)
 for a PhD in Computer Science.  
 
-[📄Link to PDF 📄](https://espressovi.github.io/assets/pdf/disseration.pdf).
+[📄Link to PDF 📄](https://espressovi.github.io/assets/pdf/dissertation.pdf).
 
 > [!NOTE]
 > Update description after defense.
