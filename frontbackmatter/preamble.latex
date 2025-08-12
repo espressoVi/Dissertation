@@ -1,4 +1,3 @@
-\documentclass[a4paper, 12pt]{book}
 \usepackage[square, sort, numbers]{natbib}
 \usepackage{xcolor}
 \usepackage[a4paper,left=40mm,right=30mm,top=40mm,bottom=30mm,heightrounded=true]{geometry}
