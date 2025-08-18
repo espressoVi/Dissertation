@@ -19,6 +19,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{amsmath, amsfonts, amssymb}
+\usepackage{ccicons}
 \usepackage{enumitem}
 \usepackage{setspace}   % Double spacing
 \usepackage{titlesec}
